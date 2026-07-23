@@ -7,7 +7,8 @@ Cell = {
     Player = {},
     Box = {},
     Timer = {},
-    Origin = {}
+    Origin = {},
+    Goal = {}
 }
 
 Direction = {
@@ -19,8 +20,9 @@ Direction = {
 
 Event = {
     Move = {},
+    TimerChange = {},
     -- Undo = {},
-    -- Reset = {},
+    Reset = {},
     -- Teleport = {} (i think this could just be part of Move but also maybe it might be useful to separate it)
     -- future miney here: yeah it's definitely better to separate it
 }
@@ -56,6 +58,19 @@ local function movableWithRegion(cells, region)
     end)
 end
 
+local function elem(t, item)
+    for _, i in ipairs(t) do
+        if i == item then return true end
+    end
+    return false
+end
+
+local function append(t1, t2)
+    for _, i in ipairs(t2) do
+        table.insert(t1, i)
+    end
+end
+
 function Level.new(height, width, cells, palette)
     return {
         height = height,
@@ -66,9 +81,9 @@ function Level.new(height, width, cells, palette)
     }
 end
 
-function Level.fromGrid(layer1, layer2, palette)
+function Level.fromGrid(layer1, layer2, layer3, palette)
     local cells = {}
-    
+
     local y = 0
     local x = 0
     for line in string.gmatch(layer1, "[^\n]+") do
@@ -115,13 +130,12 @@ function Level.fromGrid(layer1, layer2, palette)
         for character in string.gmatch(trimmedLine, ".") do
             if string.match(character, "[#.]") then
             elseif string.match(character, "%d") then
-                r = (function ()
-                    for _, cell in ipairs(findCells(cells, x, y)) do
-                        if cell.cell == Cell.Box then
-                            return cell.region
-                        end
+                local r
+                for _, cell in ipairs(findCells(cells, x, y)) do
+                    if cell.cell == Cell.Box then
+                        r = cell.region
                     end
-                end)()
+                end
                 table.insert(cells, {
                     cell = Cell.Origin,
                     x = x,
@@ -134,6 +148,27 @@ function Level.fromGrid(layer1, layer2, palette)
                     y = y,
                     region = r,
                     val = tonumber(character)
+                })
+            end
+            x = x + 1
+        end
+        y = y + 1
+    end
+
+    y = 0
+    for line in string.gmatch(layer3, "[^\n]+") do
+        local trimmedLine = string.gsub(line, "%s+", "")
+        if trimmedLine == "" then
+            break
+        end
+        x = 0
+        for character in string.gmatch(trimmedLine, ".") do
+            if string.match(character, "[#.]") then
+            elseif string.match(character, "G") then
+                table.insert(cells, {
+                    cell = Cell.Goal,
+                    x = x,
+                    y = y,
                 })
             end
             x = x + 1
@@ -156,26 +191,41 @@ function Level.draw(level)
         cellSize * level.width, cellSize * level.height)
 
     for _, cell in ipairs(level.cells) do
-        if cell.cell == Cell.Wall then
-            love.graphics.setColor(level.palette.wall())
-        elseif cell.cell == Cell.Player then
-            love.graphics.setColor(level.palette.player())
-        elseif cell.cell == Cell.Box then
+        if cell.cell == Cell.Goal then
+            love.graphics.setLineWidth(5)
+            love.graphics.setColor(level.palette[cell.cell]())
+            love.graphics.rectangle("line", cell.x * cellSize + (width - level.width * cellSize) / 2,
+            cell.y * cellSize + (height - level.height * cellSize) / 2, cellSize, cellSize)
+            love.graphics.setLineWidth(1)
+        end
+    end
+
+    for _, cell in ipairs(level.cells) do
+        if cell.cell == Cell.Box then
             -- print(cell.region, string.byte(cell.region), (string.byte(cell.region) * 10.2 - 663))
-            love.graphics.setColor(level.palette.box[string.byte(cell.region) - 64]())
+            love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
+        else
+            love.graphics.setColor(level.palette[cell.cell]())
         end
 
         if cell.cell == Cell.Wall or cell.cell == Cell.Player or cell.cell == Cell.Box then
             love.graphics.rectangle("fill", cell.x * cellSize + (width - level.width * cellSize) / 2,
             cell.y * cellSize + (height - level.height * cellSize) / 2, cellSize, cellSize)
-        elseif cell.cell == Cell.Timer then
-            love.graphics.setColor(level.palette.timer())
-            fwidth = godoMaum:getWidth(cell.val)
-            fheight = godoMaum:getHeight(cell.val) / 1.75 -- look it works for now okay don't question it
-            love.graphics.print(cell.val, godoMaum, cell.x * cellSize + (width - level.width * cellSize + (cellSize - fwidth)) / 2,
+        end
+    end
+
+    for _, cell in ipairs(level.cells) do
+        if cell.cell == Cell.Timer then
+            love.graphics.setColor(level.palette[cell.cell]())
+
+            local newFont = love.graphics.newFont(globals.font, cellSize * 0.9)
+            local fwidth = newFont:getWidth(cell.val)
+            local fheight = newFont:getHeight()
+
+            love.graphics.print(cell.val, newFont, cell.x * cellSize + (width - level.width * cellSize + (cellSize - fwidth)) / 2,
             cell.y * cellSize + (height - level.height * cellSize - (cellSize - fheight)) / 2)
         elseif cell.cell == Cell.Origin then
-            love.graphics.setColor(level.palette.origin())
+            love.graphics.setColor(level.palette[cell.cell]())
             love.graphics.rectangle("fill", (cell.x + 0.25) * cellSize + (width - level.width * cellSize) / 2,
             (cell.y + 0.25) * cellSize + (height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
         end
@@ -206,21 +256,22 @@ local function moveCells(level, agentRegion, direction)
     local addedregions = { agentRegion }
     local events = {}
 
-    print(#pending)
     while #pending ~= 0 do
-        c = table.remove(pending)
-        print(c.cell, c.x, c.y, c.region)
-        nx, ny = applyDirection(level, c, direction)
+        local c = table.remove(pending)
+        local nx, ny = applyDirection(level, c, direction)
+
         if not (nx and ny) then
-            print("what")
             return
         end -- something moved out of bounds, abort
         local ncells = findCells(level.cells, nx, ny)
         for _, ncell in ipairs(ncells) do
             if ncell.cell == Cell.Wall then
-                print("what2")
                 return -- something moved into a wall, abort
             elseif ncell.cell == Cell.Box or ncell.cell == Cell.Timer then
+                -- if ncell.cell == Cell.Timer and ncell.cell.val == 0 then
+                --     return -- something moved into a box with a timer of 0, abort
+                -- end
+
                 if not elem(addedregions, ncell.region) then
                     append(pending, movableWithRegion(level.cells, ncell.region))
                     table.insert(addedregions, ncell.region)
@@ -228,50 +279,65 @@ local function moveCells(level, agentRegion, direction)
             end
         end
 
-        table.insert(events, {
+        local move = {
             type = Event.Move,
             from_x = c.x,
             from_y = c.y,
             to_x = nx,
             to_y = ny,
             cell = c
-        })
-    end
-    return events
-end
--- deprecated
-local function moveCell(level, cell, direction)
-    local nx, ny = applyDirection(level, cell, direction)
-    local events = {}
+        }
+        table.insert(events, move)
 
-    if nx == cell.x and ny == cell.y then
-        return
-    end
-
-    local ncells = findCells(level.cells, nx, ny)
-    for _, ncell in ipairs(ncells) do
-        if ncell.cell == Cell.Wall then
-            return
-        elseif ncell.cell == Cell.Box then
-            local box_events = moveCell(level, ncell, direction)
-            if box_events == nil then
-                return
+        if c.cell == Cell.Timer then
+            local timer_change = {
+                type = Event.TimerChange,
+                cell = c,
+                from_val = c.val,
+                to_val = c.val - 1
+            }
+            if c.val == 0 then
+                timer_change.to_val = 0
             end
-            events = box_events
+            table.insert(events, timer_change)
         end
     end
-
-    table.insert(events, {
-        type = Event.Move,
-        from_x = cell.x,
-        from_y = cell.y,
-        to_x = nx,
-        to_y = ny,
-        cell = cell
-    })
-
     return events
 end
+
+-- decapitated ...
+-- local function moveCell(level, cell, direction)
+--     local nx, ny = applyDirection(level, cell, direction)
+--     local events = {}
+
+--     if nx == cell.x and ny == cell.y then
+--         return
+--     end
+
+--     local ncells = findCells(level.cells, nx, ny)
+--     for _, ncell in ipairs(ncells) do
+--         if ncell.cell == Cell.Wall then
+--             return
+--         elseif ncell.cell == Cell.Box then
+--             local box_events = moveCell(level, ncell, direction)
+--             if box_events == nil then
+--                 return
+--             end
+--             events = box_events
+--         end
+--     end
+
+--     table.insert(events, {
+--         type = Event.Move,
+--         from_x = cell.x,
+--         from_y = cell.y,
+--         to_x = nx,
+--         to_y = ny,
+--         cell = cell
+--     })
+
+--     return events
+-- end
 
 local function runUndo(level)
     local events = table.remove(level.eventLog)
@@ -283,18 +349,18 @@ local function runUndo(level)
         if event.type == Event.Move then
             event.cell.x = event.from_x
             event.cell.y = event.from_y
+        elseif event.type == Event.TimerChange then
+            event.cell.val = event.from_val
         end
     end
 end
 
 local function runEvent(level, event)
     if event.type == Event.Move then
-        for _, cell in ipairs(level.cells) do
-            if cell == event.cell then
-                event.cell.x = event.to_x
-                event.cell.y = event.to_y
-            end
-        end
+        event.cell.x = event.to_x
+        event.cell.y = event.to_y
+    elseif event.type == Event.TimerChange then
+        event.cell.val = event.to_val
     end
 end
 

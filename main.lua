@@ -3,41 +3,58 @@ require "util"
 require "level"
 
 state = {}
+globals = {}
 
 function love.load()
-    state.level = Level.fromGrid([[
-        .......
-        PP.....
-        P.A....
-        ..B....
-        .BB....
-        ]],[[
-        .......
-        .......
-        .......
-        .......
-        .......
-        ]])
     -- state.level = Level.fromGrid([[
-    --     ####..
-    --     #..#..
-    --     #P.#..
-    --     #..###
-    --     #A...#
-    --     #..B.#
-    --     #..###
-    --     ####..
-    -- ]],[[
-    --     ####..
-    --     #..#..
-    --     #..#..
-    --     #..###
-    --     #4+..#
-    --     #..3.#
-    --     #..###
-    --     ####..
-    -- ]])
-    godoMaum = love.graphics.newFont("godoMaum.ttf", 80) -- placeholder
+    --     .......
+    --     PP.....
+    --     P.A....
+    --     ..B....
+    --     .BB....
+    --     ]],[[
+    --     .......
+    --     .......
+    --     ..2....
+    --     .......
+    --     .......
+    --     ]])
+    globals.levels = {
+        {[[
+            ####..
+            #..#..
+            #P.#..
+            #..###
+            #A...#
+            #A.B.#
+            #..###
+            ####..
+        ]],[[
+            ####..
+            #..#..
+            #..#..
+            #..###
+            #4P..#
+            #..3.#
+            #..###
+            ####..
+        ]],[[
+            ####..
+            #..#..
+            #..#..
+            #..###
+            #....#
+            #.G..#
+            #..###
+            ####..
+        ]]}
+    }
+
+    state.levelIndex = 1
+    state.level = Level.fromGrid(globals.levels[state.levelIndex][1],
+        globals.levels[state.levelIndex][2], globals.levels[state.levelIndex][3])
+
+    globals.font = "godoMaum.ttf" -- placeholder
 end
 
 function love.update(dt)

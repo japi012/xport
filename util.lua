@@ -70,25 +70,26 @@ function Palette.gradient(color1, color2, steps)
         table.insert(result, Color.lerp(color1, color2, i / steps))
     end
 
-    return result;
+    return result
 end
 
 function Palette.manual(...)
-    return {...};
+    return {...}
 end
 
 function Palette.defaultList()
     return {
-        player = col(1, 1, 1),
-        wall = col(0.3, 0.3, 0.3),
-        box = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
-        timer = col(0.1, 0.1, 0.1),
-        origin = col255(211, 188, 141)
-    };
+        [Cell.Player] = col(1, 1, 1),
+        [Cell.Wall] = col(0.3, 0.3, 0.3),
+        [Cell.Box] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
+        [Cell.Timer] = col(0.1, 0.1, 0.1),
+        [Cell.Origin] = col255(211, 188, 141),
+        [Cell.Goal] = col(0.5, 0.5, 0.5)
+    }
 end
 
 function Palette.list(list)
-    local result = Palette.defaultList();
+    local result = Palette.defaultList()
     for key, value in pairs(list) do
         result[key] = value
     end
