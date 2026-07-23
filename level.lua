@@ -47,7 +47,7 @@ function Level.fromGrid(grid, layer2)
     local y = 0
     for line in string.gmatch(grid, "[^\n]+") do
         local x = 0
-        local trimmedLine = string.gsub(trimmedLine, "%s+", "")
+        local trimmedLine = string.gsub(line, "%s+", "")
         for i = 1, #trimmedLine do
             local character = string.sub(trimmedLine, i, i)
             if character == "#" then
@@ -69,16 +69,19 @@ function Level.fromGrid(grid, layer2)
         y = y + 1
     end
 
-    return Level.new(height or #grid, width or (function()
-        local max = 0
-        for _, row in ipairs(grid) do
-            local len = #row
-            if len > max then
-                max = len
-            end
-        end
-        return max
-    end)(), cells)
+    -- return Level.new(height or #grid, width or (function()
+    --     local max = 0
+    --     for _, row in ipairs(grid) do
+    --         local len = #row
+    --         if len > max then
+    --             max = len
+    --         end
+    --     end
+    --     return max
+    -- end)(), cells)
+
+    -- unfinished
+    return Level.new(0, 0, cells)
 end
 
 function Level.draw(level)
