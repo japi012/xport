@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://db26pkuyrj4e8"]
+
+[ext_resource type="Texture2D" uid="uid://ba1w525q52wfb" path="res://assets/spring.png" id="1_s4lh1"]
+[ext_resource type="Script" uid="uid://cn2a0tgk3dt1e" path="res://src/object_scripts/physics_object.gd" id="1_syhwk"]
+[ext_resource type="Script" uid="uid://dnwrfc70fp7ab" path="res://src/object_scripts/spring.gd" id="2_bdx62"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mi230"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7bweo"]
+size = Vector2(20, 2.5)
+
+[node name="Spring" type="Node2D" unique_id=335735286]
+script = ExtResource("1_syhwk")
+
+[node name="AnimatableBody2D" type="AnimatableBody2D" parent="." unique_id=1965248927]
+script = ExtResource("2_bdx62")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AnimatableBody2D" unique_id=926762233]
+shape = SubResource("RectangleShape2D_mi230")
+
+[node name="Spring" type="Sprite2D" parent="AnimatableBody2D" unique_id=1260280666]
+position = Vector2(1.2814999e-06, 7.1525574e-07)
+scale = Vector2(0.051999997, 0.039999995)
+texture = ExtResource("1_s4lh1")
+
+[node name="Area2D" type="Area2D" parent="AnimatableBody2D" unique_id=550848031]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AnimatableBody2D/Area2D" unique_id=1854445680]
+position = Vector2(0, -10.25)
+shape = SubResource("RectangleShape2D_7bweo")

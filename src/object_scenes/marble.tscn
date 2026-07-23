@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cpttjnv10xwal"]
+
+[ext_resource type="Texture2D" uid="uid://bbs3f36tb7p8i" path="res://assets/circle.png" id="1_7ritg"]
+[ext_resource type="Script" uid="uid://cn2a0tgk3dt1e" path="res://src/object_scripts/physics_object.gd" id="1_r7gfc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mi230"]
+
+[node name="Marble" type="Node2D" unique_id=474158830]
+script = ExtResource("1_r7gfc")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="." unique_id=2144951790]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D" unique_id=1979681895]
+shape = SubResource("CircleShape2D_mi230")
+
+[node name="Sprite2D" type="Sprite2D" parent="RigidBody2D" unique_id=1149772260]
+modulate = Color(1, 0.3882353, 1, 1)
+position = Vector2(1.0728836e-06, 1.4305115e-06)
+scale = Vector2(0.020000003, 0.020000003)
+texture = ExtResource("1_7ritg")

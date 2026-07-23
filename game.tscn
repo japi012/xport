@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://dsfc36udi7pjb"]
+
+[ext_resource type="PackedScene" uid="uid://cpttjnv10xwal" path="res://src/object_scenes/marble.tscn" id="1_80nbo"]
+[ext_resource type="Script" uid="uid://c6shff68x2pnn" path="res://src/game.gd" id="1_fc0e3"]
+[ext_resource type="PackedScene" uid="uid://xgcgxvt02smv" path="res://src/object_scenes/platform.tscn" id="2_e2o6t"]
+[ext_resource type="PackedScene" uid="uid://dyd3omp88xmhr" path="res://src/object_scenes/goal.tscn" id="3_feb5d"]
+[ext_resource type="PackedScene" uid="uid://db26pkuyrj4e8" path="res://src/object_scenes/spring.tscn" id="5_7jktm"]
+
+[node name="Game" type="Node2D" unique_id=1230420480]
+script = ExtResource("1_fc0e3")
+
+[node name="Objects" type="Node2D" parent="." unique_id=353241292 groups=["Objects"]]
+
+[node name="Goal" parent="Objects" unique_id=179533839 instance=ExtResource("3_feb5d")]
+position = Vector2(-462, 251)
+scale = Vector2(2, 2)
+
+[node name="Marble" parent="Objects" unique_id=2144951790 instance=ExtResource("1_80nbo")]
+position = Vector2(388, -244)
+
+[node name="Platform" parent="Objects" unique_id=1219535274 instance=ExtResource("2_e2o6t")]
+position = Vector2(341, -51.999992)
+rotation = -0.5235988
+scale = Vector2(15, 1)
+
+[node name="Spring" parent="Objects" unique_id=1406661713 instance=ExtResource("5_7jktm")]
+position = Vector2(136.99997, 136)
+rotation = -0.44854963
+scale = Vector2(3.2966259, 4.7598853)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1126770541]

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://xgcgxvt02smv"]
+
+[ext_resource type="Script" uid="uid://cn2a0tgk3dt1e" path="res://src/object_scripts/physics_object.gd" id="1_juy73"]
+[ext_resource type="Texture2D" uid="uid://c3dijj7iqsy17" path="res://assets/square.png" id="1_y5dbh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mi230"]
+
+[node name="Platform" type="Node2D" unique_id=852601752]
+script = ExtResource("1_juy73")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1219535274]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=540648946]
+shape = SubResource("RectangleShape2D_mi230")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D" unique_id=45083919]
+scale = Vector2(0.02, 0.02)
+texture = ExtResource("1_y5dbh")
