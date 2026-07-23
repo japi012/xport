@@ -1,3 +1,5 @@
+local love = require "love"
+
 function love.conf(t)
     t.version = "11.5"
     t.title = "gmtk game 2026 real"
