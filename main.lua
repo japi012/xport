@@ -1,4 +1,5 @@
 local love = require "love"
+require "util"
 require "level"
 
 state = {}

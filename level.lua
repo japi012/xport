@@ -56,29 +56,17 @@ local function movableWithRegion(cells, region)
     end)
 end
 
-local function elem(t, item)
-    for _, i in ipairs(t) do
-        if i == item then return true end
-    end
-    return false
-end
-
-local function append(t1, t2)
-    for _, i in ipairs(t2) do
-        table.insert(t1, i)
-    end
-end
-
-function Level.new(height, width, cells)
+function Level.new(height, width, cells, palette)
     return {
         height = height,
         width = width,
         cells = cells,
+        palette = palette or Palette.defaultList(),
         eventLog = {}
     }
 end
 
-function Level.fromGrid(layer1, layer2)
+function Level.fromGrid(layer1, layer2, palette)
     local cells = {}
     
     local y = 0
@@ -154,7 +142,7 @@ function Level.fromGrid(layer1, layer2)
     end
 
     -- sort of finished
-    return Level.new(y, x, cells)
+    return Level.new(y, x, cells, palette)
 end
 
 function Level.draw(level)
@@ -169,25 +157,25 @@ function Level.draw(level)
 
     for _, cell in ipairs(level.cells) do
         if cell.cell == Cell.Wall then
-            love.graphics.setColor(0.3, 0.3, 0.3)
+            love.graphics.setColor(level.palette.wall())
         elseif cell.cell == Cell.Player then
-            love.graphics.setColor(1, 1, 1)
+            love.graphics.setColor(level.palette.player())
         elseif cell.cell == Cell.Box then
-            print(cell.region, string.byte(cell.region), (string.byte(cell.region) * 10.2 - 663))
-            love.graphics.setColor((string.byte(cell.region) - 65) * 42.5 / 255, (string.byte(cell.region) - 65) * 42.5 / 255, (6 - (string.byte(cell.region) - 65)) * 42.5 / 255)
+            -- print(cell.region, string.byte(cell.region), (string.byte(cell.region) * 10.2 - 663))
+            love.graphics.setColor(level.palette.box[string.byte(cell.region) - 64]())
         end
 
         if cell.cell == Cell.Wall or cell.cell == Cell.Player or cell.cell == Cell.Box then
             love.graphics.rectangle("fill", cell.x * cellSize + (width - level.width * cellSize) / 2,
             cell.y * cellSize + (height - level.height * cellSize) / 2, cellSize, cellSize)
         elseif cell.cell == Cell.Timer then
-            love.graphics.setColor(0.1, 0.1, 0.1)
+            love.graphics.setColor(level.palette.timer())
             fwidth = godoMaum:getWidth(cell.val)
             fheight = godoMaum:getHeight(cell.val) / 1.75 -- look it works for now okay don't question it
             love.graphics.print(cell.val, godoMaum, cell.x * cellSize + (width - level.width * cellSize + (cellSize - fwidth)) / 2,
             cell.y * cellSize + (height - level.height * cellSize - (cellSize - fheight)) / 2)
         elseif cell.cell == Cell.Origin then
-            love.graphics.setColor(211 / 255, 188 / 255, 141 / 255)
+            love.graphics.setColor(level.palette.origin())
             love.graphics.rectangle("fill", (cell.x + 0.25) * cellSize + (width - level.width * cellSize) / 2,
             (cell.y + 0.25) * cellSize + (height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
         end
