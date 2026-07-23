@@ -29,46 +29,44 @@ function Level.new(height, width, cells)
     }
 end
 
-function Level.fromGridAscii(asciiGrid, height, width)
+function Level.fromGrid(grid, layer2)
     local cells = {}
 
-    for y, row in ipairs(grid) do
-        for x, cell in ipairs(row) do
-            if cell ~= Cell.Empty then
+    -- for y, row in ipairs(grid) do
+    --     for x, cell in ipairs(row) do
+    --         if cell ~= Cell.Empty then
+    --             table.insert(cells, {
+    --                 cell = cell,
+    --                 x = x - 1,
+    --                 y = y - 1
+    --             })
+    --         end
+    --     end
+    -- end
+
+    local y = 0
+    for line in string.gmatch(grid, "[^\n]+") do
+        local x = 0
+        local trimmedLine = string.gsub(trimmedLine, "%s+", "")
+        for i = 1, #trimmedLine do
+            local character = string.sub(trimmedLine, i, i)
+            if character == "#" then
                 table.insert(cells, {
-                    cell = cell,
-                    x = x - 1,
-                    y = y - 1
+                    cell = Cell.Wall,
+                    x = x,
+                    y = y,
+                })
+            elseif character == "." then
+            elseif string.match(character, "%d") then
+                table.insert(cells, {
+                    cell = Cell.Box,
+                    x = x,
+                    y = y,
                 })
             end
+            x = x + 1
         end
-    end
-
-    return Level.new(height or #grid, width or (function()
-        local max = 0
-        for _, row in ipairs(grid) do
-            local len = #row
-            if len > max then
-                max = len
-            end
-        end
-        return max
-    end)(), cells)
-end
-
-function Level.fromGrid(grid, height, width)
-    local cells = {}
-
-    for y, row in ipairs(grid) do
-        for x, cell in ipairs(row) do
-            if cell ~= Cell.Empty then
-                table.insert(cells, {
-                    cell = cell,
-                    x = x - 1,
-                    y = y - 1
-                })
-            end
-        end
+        y = y + 1
     end
 
     return Level.new(height or #grid, width or (function()

@@ -4,14 +4,25 @@ require "level"
 state = {}
 
 function love.load()
-    state.level = Level.fromGrid({
-        { Cell.Wall, Cell.Wall },
-        { Cell.Wall, Cell.Empty, Cell.Box, Cell.Box, Cell.Empty, Cell.Empty },
-        { Cell.Wall, Cell.Empty, Cell.Empty, Cell.Empty, Cell.Wall },
-        { Cell.Wall, Cell.Empty, Cell.Empty, Cell.Empty, Cell.Wall },
-        { Cell.Wall, Cell.Player, Cell.Empty, Cell.Empty, Cell.Wall },
-        { Cell.Wall, Cell.Wall, Cell.Wall },
-    })
+    state.level = Level.fromGrid([[
+        ####..
+        #..#..
+        #..#..
+        #..###
+        #A...#
+        #..B.#
+        #..###
+        ####..
+    ]],[[
+        ####..
+        #..#..
+        #..#..
+        #..###
+        #4+..#
+        #..3.#
+        #..###
+        ####..
+    ]])
 end
 
 function love.update(dt)
