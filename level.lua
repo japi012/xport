@@ -11,6 +11,13 @@ Cell = {
     Goal = {}
 }
 
+-- Types of cells that draw a solid square
+SolidDraw = {
+    [Cell.Wall] = true,
+    [Cell.Player] = true,
+    [Cell.Box] = true
+}
+
 Direction = {
     Up = {},
     Down = {},
@@ -180,11 +187,24 @@ function Level.fromGrid(layer1, layer2, layer3, palette)
     return Level.new(y, x, cells, palette)
 end
 
+local width = 0
+local height = 0
+local lastWidth = 0
+local lastHeight = 0
+
+local newFont = {}
+
 function Level.draw(level)
-    local width = love.graphics.getWidth()
-    local height = love.graphics.getHeight()
+    lastWidth = width
+    lastHeight = height
+    width = love.graphics.getWidth()
+    height = love.graphics.getHeight()
 
     local cellSize = math.min(width / level.width, height / level.height) * 0.5
+
+    if lastWidth ~= width or lastHeight ~= height then
+        newFont = love.graphics.newFont(globals.font, cellSize * 0.9)
+    end
 
     love.graphics.setColor(0.1, 0.1, 0.1)
     love.graphics.rectangle("fill", (width - level.width * cellSize) / 2, (height - level.height * cellSize) / 2,
@@ -201,14 +221,13 @@ function Level.draw(level)
     end
 
     for _, cell in ipairs(level.cells) do
-        if cell.cell == Cell.Box then
-            -- print(cell.region, string.byte(cell.region), (string.byte(cell.region) * 10.2 - 663))
-            love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
-        else
-            love.graphics.setColor(level.palette[cell.cell]())
-        end
+        if SolidDraw[cell.cell] then
+            if cell.cell == Cell.Box then
+                love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
+            else
+                love.graphics.setColor(level.palette[cell.cell]())
+            end
 
-        if cell.cell == Cell.Wall or cell.cell == Cell.Player or cell.cell == Cell.Box then
             love.graphics.rectangle("fill", cell.x * cellSize + (width - level.width * cellSize) / 2,
             cell.y * cellSize + (height - level.height * cellSize) / 2, cellSize, cellSize)
         end
@@ -218,7 +237,6 @@ function Level.draw(level)
         if cell.cell == Cell.Timer then
             love.graphics.setColor(level.palette[cell.cell]())
 
-            local newFont = love.graphics.newFont(globals.font, cellSize * 0.9)
             local fwidth = newFont:getWidth(cell.val)
             local fheight = newFont:getHeight()
 
