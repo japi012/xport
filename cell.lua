@@ -16,53 +16,64 @@ Cell = {
     Goal = makeType(3),
 }
 
--- local drawFunctions = {
---     default = function(cell) end,
---     [Cell.Wall] = function(cell)
---     end
--- }
-
--- Types of cells that draw a solid square
-Cell.solids = {
-    [Cell.Wall] = true,
-    [Cell.Player] = true,
-    [Cell.Box] = true
-}
-
 function Cell.draw(cell, level, cellSize)
     local animTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, animTime), lerp(cell.lastY, cell.y, animTime)
 
+    local color = level.palette[cell.cell]
+    if color.r == nil then
+        color = color[string.byte(cell.region) - 64]
+    end
+
+    love.graphics.setColor(color())
+
     if cell.cell == Cell.Goal then
         love.graphics.setLineWidth(5)
-        love.graphics.setColor(level.palette[cell.cell]())
         love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
         love.graphics.setLineWidth(1)
-    elseif Cell.solids[cell.cell] then
-        if cell.cell == Cell.Box then
-            love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
-        else
-            love.graphics.setColor(level.palette[cell.cell]())
-        end
 
+    elseif cell.cell == Cell.Player then
+        -- attempt 1
+        -- local dirx, diry = cell.x - cell.lastX, cell.y - cell.lastY
+        -- local xFactor = math.abs(cell.x - x) * cellSize * 2
+        -- local yFactor = math.abs(cell.y - y) * cellSize * 2
+
+        -- local xAdd = xFactor - yFactor * 0.5
+        -- local yAdd = yFactor - xFactor * 0.5
+        -- love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - xAdd) / 2,
+        --     y * cellSize + (state.height - level.height * cellSize - yAdd) / 2, (cellSize + xAdd), (cellSize + yAdd))
+
+        -- attempt 2
+        -- local originx = x * cellSize + (state.width - level.width * cellSize) / 2
+        -- local originy = y * cellSize + (state.height - level.height * cellSize) / 2
+        -- local dirx, diry = cell.x - cell.lastX, cell.y - cell.lastY
+
+        -- love.graphics.polygon("fill",
+        --     originx,originy,                    originx+cellSize,originy,
+        --     originx+cellSize,originy+cellSize,  originx,originy+cellSize
+        -- )
+
+        -- futility sets in
         love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
-    else
-        if cell.cell == Cell.Timer then
-            love.graphics.setColor(level.palette[cell.cell]())
 
-            local fwidth = globals.font:getWidth(cell.val)
-            local fheight = globals.font:getHeight()
+    elseif cell.cell == Cell.Wall or cell.cell == Cell.Box then
+        love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
+            y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
 
-            love.graphics.print(cell.val, globals.font,
-                x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
-                y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
-        elseif cell.cell == Cell.Origin then
-            love.graphics.setColor(level.palette[cell.cell]())
-            love.graphics.rectangle("fill", (x + 0.25) * cellSize + (state.width - level.width * cellSize) / 2,
-                (y + 0.25) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
-        end
+    elseif cell.cell == Cell.Timer then
+        local fwidth = globals.font:getWidth(cell.val)
+        local fheight = globals.font:getHeight()
+
+        love.graphics.print(cell.val, globals.font,
+            x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
+            y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
+
+    elseif cell.cell == Cell.Origin then
+        love.graphics.rectangle("fill", (x + 0.25) * cellSize + (state.width - level.width * cellSize) / 2,
+            (y + 0.25) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
+
     end
 end
 
