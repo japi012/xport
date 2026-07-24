@@ -37,6 +37,10 @@ function updateGraphics()
     if lastWidth ~= state.width or lastHeight ~= state.height then
         state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
         globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
+
+        if state.mode == Mode.Gameplay then
+            Level.onResize(state.level)
+        end
     end
 end
 

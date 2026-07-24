@@ -45,17 +45,13 @@ function Level.new(height, width, cells, palette)
         palette = palette or Palette.defaultList(),
         winning = false,
         animationTime = 0,
+        layers = {},
         eventLog = {}
     }
 
     table.sort(result.cells, function(a, b)
         return a.cell.layer < b.cell.layer
     end)
-
-    result.layers = {}
-    for i=1,5 do
-        table.insert(result.layers, love.graphics.newCanvas())
-    end
 
     return result
 end
@@ -124,6 +120,13 @@ function Level.fromGrid(grid, palette)
 
     -- sort of finished
     return Level.new(y, x, cells, palette)
+end
+
+function Level.onResize(level)
+    for i = 1, 5 do
+        if level.layers[i] ~= nil then level.layers[i]:release() end
+        level.layers[i] = love.graphics.newCanvas()
+    end
 end
 
 function Level.update(level, dt)
