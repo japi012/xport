@@ -99,6 +99,7 @@ RECENT_KEY = ''
 
 function love.update(dt)
     updateAnimations(dt)
+    updateGraphics()
 
     for key, data in pairs(KEYS_PRESSED) do
         data.time = data.time + dt
