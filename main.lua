@@ -1,7 +1,7 @@
 local love = require "love"
 require "util"
 require "level"
-require "anim"
+local Animation = require "anim"
 
 DEBUG = {
     AnimationTime = 0.16 -- default: 0.16
@@ -171,7 +171,7 @@ function love.keypressed(key)
                 love.graphics.setColor(1, 1, 1, 1 - easeInBack(progress))
                 love.graphics.push()
                 love.graphics.translate(width / 2, height / 2)
-                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale, rotation)
+                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
                 love.graphics.pop()
                 love.graphics.setColor(1, 1, 1)
             end)

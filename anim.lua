@@ -1,3 +1,5 @@
+local love = require "love"
+
 Animation = {}
 animations = {}
 
@@ -116,3 +118,5 @@ end
 function easeOutExpo(x)
     return (x == 1) and 1 or (1 - 2^(-10 * x));
 end
+
+return Animation

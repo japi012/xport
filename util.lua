@@ -1,3 +1,5 @@
+local love = require "love"
+
 -- BASIC UTIL FUNCTIONS
 
 function elem(t, item)
