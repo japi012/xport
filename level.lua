@@ -126,6 +126,10 @@ function Level.update(level, dt)
     for _, cell in ipairs(level.cells) do
         if cell.animTime < 1 then
             cell.animTime = math.min(1, cell.animTime + dt / DEBUG.AnimationTime)
+        elseif cell.cell == Cell.Origin then
+            cell.animTime = cell.animTime + dt / (DEBUG.AnimationTime * 25)
+            if cell.animTime >= 2 then cell.animTime = cell.animTime - 1 end
+            -- checking if >=2 here cause for some reason it becomes 10x slower if it's >=1 ??? either way this animation works modulo 1 so it doesn't matter
         end
     end
 end

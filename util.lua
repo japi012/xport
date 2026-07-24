@@ -132,7 +132,7 @@ function Palette.defaultList()
         [Cell.Wall] = col(0.3, 0.3, 0.3),
         [Cell.Box] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
         [Cell.Timer] = col(0.1, 0.1, 0.1),
-        [Cell.Origin] = col255(211, 188, 141),
+        [Cell.Origin] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
         [Cell.Goal] = col(0.5, 0.5, 0.5)
     }
 end
@@ -144,4 +144,19 @@ function Palette.list(list)
     end
 
     return result
+end
+
+-- GRAPHICS
+
+-- ripped from the wiki lmao (except now it draws and rotates about the center)
+function drawRotatedRectangle(mode, x, y, width, height, angle)
+    love.graphics.push()
+    love.graphics.translate(x, y)
+    love.graphics.rotate(angle)
+    love.graphics.rectangle(mode, -width/2, -height/2, width, height)
+    love.graphics.pop()
+end
+
+function cosh(x)
+    return (math.exp(x) + math.exp(-x)) / 2
 end

@@ -30,8 +30,10 @@ Cell.solids = {
 }
 
 function Cell.draw(cell, level, cellSize)
-    local animTime = easeOutExpo(cell.animTime)
-    local x, y = lerp(cell.lastX, cell.x, animTime), lerp(cell.lastY, cell.y, animTime)
+    local expAnimTime = easeOutExpo(cell.animTime)
+    local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
+    local w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
+    local h = 2 - w
 
     if cell.cell == Cell.Goal then
         love.graphics.setLineWidth(5)
@@ -46,8 +48,13 @@ function Cell.draw(cell, level, cellSize)
             love.graphics.setColor(level.palette[cell.cell]())
         end
 
-        love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
+        if cell.cell == Cell.Player then
+            love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - (w - 1) * cellSize) / 2,
+            y * cellSize + (state.height - level.height * cellSize - (h - 1) * cellSize) / 2, w * cellSize, h * cellSize)
+        else
+            love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
+        end
     else
         if cell.cell == Cell.Timer then
             love.graphics.setColor(level.palette[cell.cell]())
@@ -59,9 +66,9 @@ function Cell.draw(cell, level, cellSize)
                 x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
                 y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
         elseif cell.cell == Cell.Origin then
-            love.graphics.setColor(level.palette[cell.cell]())
-            love.graphics.rectangle("fill", (x + 0.25) * cellSize + (state.width - level.width * cellSize) / 2,
-                (y + 0.25) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
+            love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
+            drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
+                (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
         end
     end
 end
