@@ -13,10 +13,10 @@ Direction = {
 Event = {
     Move = {},
     TimerChange = {},
-    -- Undo = {},
     -- Reset = {},
-    Teleport = {} -- (i think this could just be part of Move but also maybe it might be useful to separate it)
+    Teleport = {}, -- (i think this could just be part of Move but also maybe it might be useful to separate it)
     -- future miney here: yeah it's definitely better to separate it
+    OriginMove = {}
 }
 
 -- maybe move these three to a "util.lua"?
@@ -35,6 +35,10 @@ local function movableWithRegion(cells, region)
     return allWithPredicate(cells, function(cell)
         return cell.region == region and cell.cell ~= Cell.Origin
     end)
+end
+
+local function isInBounds(level, x, y)
+    return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
 function Level.new(height, width, cells, palette)
@@ -215,10 +219,6 @@ local function moveCells(level, agentRegion, direction)
             if ncell.cell == Cell.Wall then
                 return {} -- something moved into a wall, abort
             elseif ncell.cell == Cell.Box or ncell.cell == Cell.Timer then
-                -- if ncell.cell == Cell.Timer and ncell.cell.val == 0 then
-                --     return -- something moved into a box with a timer of 0, abort
-                -- end
-
                 if not elem(addedregions, ncell.region) then
                     append(pending, movableWithRegion(level.cells, ncell.region))
                     table.insert(addedregions, ncell.region)
@@ -234,58 +234,19 @@ local function moveCells(level, agentRegion, direction)
             to_y = ny,
             cell = c
         })
-        -- table.insert(events, move)
 
     end
 
-    local teleportTimers = {}
     if #moves > 0 then
         for _, timer in ipairs(timers) do
-            if timer.val <= 1 then
-                local origin = allWithPredicate(level.cells, function(cell)
-                    return cell.cell == Cell.Origin and cell.region == timer.region
-                end)[1]
-                table.insert(teleportTimers, timer)
-                if timer.val > 0 then
-                    local timer_change = {
-                        type = Event.TimerChange,
-                        cell = timer,
-                        from_val = timer.val,
-                        to_val = timer.val - 1
-                    }
-                    table.insert(events, timer_change)
-                end
-                -- for i, move in ipairs(moves) do
-                --     if move.cell.region == timer.region then
-                --         local timerEvent = {
-                --             type = Event.Teleport,
-                --             from_x = move.cell.x,
-                --             from_y = move.cell.y,
-                --             to_x = -(timer.x - move.cell.x) + origin.x,
-                --             to_y = -(timer.y - move.cell.y) + origin.y,
-                --             region = timer.region,
-                --             cell = move.cell,
-                --             timer = timer,
-                --         }
-                --         table.insert(events, timerEvent)
-                --         if #moves == i then
-                --             timerEvent.move_origin_event = move
-                --             move.move_origin = true
-                --         end
-                --     end
-                -- end
-            else
-                for _, timer in ipairs(timers) do
-                    if not elem(teleportTimers, timer) and timer.val > 0 then
-                        local timer_change = {
-                            type = Event.TimerChange,
-                            cell = timer,
-                            from_val = timer.val,
-                            to_val = timer.val - 1
-                        }
-                        table.insert(events, timer_change)
-                    end
-                end
+            if timer.val > 0 then
+                local timer_change = {
+                    type = Event.TimerChange,
+                    cell = timer,
+                    from_val = timer.val,
+                    to_val = timer.val - 1
+                }
+                table.insert(events, timer_change)
             end
         end
     end
@@ -295,83 +256,85 @@ local function moveCells(level, agentRegion, direction)
     return events
 end
 
--- local function secondPassEvents(level, events)
---     local cells = level.cells
---     local newCells = {}
+local function handleTeleports(level, direction)
 
---     for i, cell in ipairs(cells) do
---         newCells[cell.id] = cloneUnitTables(cell)
---     end
+    local events = {}
+    
+    local zerotimers = allWithPredicate(level.cells, function (cell)
+        return cell.cell == Cell.Timer and cell.val == 0
+    end)
+    for _, timer in ipairs(zerotimers) do
+        print("here", timer.region)
+        origin = allWithPredicate(level.cells, function (cell)
+            return cell.cell == Cell.Origin and cell.region == timer.region
+        end)[1] -- if this ever throws an index error then we quit gamedev forever
+        boxes = allWithPredicate(level.cells, function (cell)
+            return cell.cell == Cell.Box and cell.region == timer.region
+        end)
+        blocked = false
+        for _, box in ipairs(boxes) do
+            if not isInBounds(level, box.x - timer.x + origin.x, box.y - timer.y + origin.y) then
+                print("oops out of bounds")
+                blocked = true
+                goto isBlocked -- this one is my fault though
+            end
+            targets = findCells(level.cells, box.x - timer.x + origin.x, box.y - timer.y + origin.y)
+            for _, target in ipairs(targets) do
+                if target.cell == Cell.Player or target.cell == Cell.Wall or (target.cell == Cell.Box and target.region ~= timer.region) then
+                    blocked = true
+                    goto isBlocked -- i had to. it was the only way...
+                end
+            end
+        end
+        ::isBlocked::
 
---     for _, event in ipairs(events) do
---         if event.type == Event.Move then
---             newCells[event.cell.id].x = event.to_x
---             newCells[event.cell.id].y = event.to_y
---         elseif event.type == Event.TimerChange then
---             newCells[event.cell.id].var = event.to_var
---         elseif event.type == Event.Teleport then
---             newCells[event.cell.id].x = event.to_x
---             newCells[event.cell.id].y = event.to_y
---         end
---     end
+        if blocked then
 
---     local newEvents = {}
---     local disabledTeleportRegions = {}
---     for _, event in ipairs(events) do
---         if event.type == Event.Teleport then
---             if not elem(disabledTeleportRegions, event.region) then
---                 local ncells = findCells(newCells, event.to_x, event.to_y)
---                 local canTeleport = true
---                 for _, ncell in ipairs(ncells) do
---                     if ncell.region ~= event.cell.region then
---                         if ncell.cell == Cell.Wall or ncell.cell == Cell.Box or ncell.cell == Cell.Player then
---                             canTeleport = false
---                         end
---                     end
---                 end
---                 print(canTeleport)
---                 if canTeleport then
---                     if event.to_x < 0 or event.to_x > level.width + 1 or event.to_y < 0 or event.to_y > level.height + 1 then
---                         table.insert(disabledTeleportRegions, event.region)
---                     else
---                         table.insert(newEvents, event)
---                     end
---                 else
---                     table.insert(disabledTeleportRegions, event.region)
---                 end
---             end
---         else
---             table.insert(newEvents, event)
---         end
---     end
-
---     print(#disabledTeleportRegions)
-
---     local finalEvents = {}
-
---     for _, event in ipairs(newEvents) do
---         if event.type == Event.Move then
---             table.insert(finalEvents, event)
---         end
---     end
-
---     for _, event in ipairs(newEvents) do
---         if not elem(finalEvents, event) then
---             if event.type == Event.Teleport then
---                 if not elem(disabledTeleportRegions, event.region) then
---                     table.insert(finalEvents, event)
---                     if event.move_origin_event then
---                         event.move_origin_event.move_origin = false
---                     end
---                 end
---             else
---                 table.insert(finalEvents, event)
---             end
---         end
---     end
-
---     return finalEvents
--- end
+            local movable = true
+            local nx, ny = applyDirection(level, origin, direction)
+            if not (nx and ny) then movable = false end
+            targets = findCells(level.cells, nx, ny)
+            for _, target in ipairs(targets) do
+                if target.cell == Cell.Wall then movable = false end
+            end
+            if movable then
+                local origin_move = {
+                    type = Event.OriginMove,
+                    from_x = origin.x,
+                    from_y = origin.y,
+                    to_x = nx,
+                    to_y = ny,
+                    cell = origin
+                }
+                table.insert(events, origin_move)
+            end
+        else
+            for _, box in ipairs(boxes) do
+                local teleport = {
+                    type = Event.Teleport,
+                    from_x = box.x,
+                    from_y = box.y,
+                    to_x = box.x - timer.x + origin.x,
+                    to_y = box.y - timer.y + origin.y,
+                    cell = box,
+                    timer = timer
+                }
+                table.insert(events, teleport)
+            end
+            local teleport = {
+                type = Event.Teleport,
+                from_x = timer.x,
+                from_y = timer.y,
+                to_x = origin.x,
+                to_y = origin.y,
+                cell = timer,
+                timer = timer
+            }
+            table.insert(events, teleport)
+        end
+    end
+	return events
+end
 
 local function isWinning(level)
     for _, cell in ipairs(level.cells) do
@@ -403,10 +366,13 @@ local function runUndo(level)
             event.cell.y = event.from_y
         elseif event.type == Event.TimerChange then
             event.cell.val = event.from_val
-        -- elseif event.type == Event.Teleport then
-        --     event.cell.x = event.from_x
-        --     event.cell.y = event.from_y
-        --     event.timer.val = 1
+        elseif event.type == Event.Teleport then
+            event.cell.x = event.from_x
+            event.cell.y = event.from_y
+            event.timer.val = 0
+        elseif event.type == Event.OriginMove then
+            event.cell.x = event.from_x
+            event.cell.y = event.from_y
         end
     end
 end
@@ -417,10 +383,13 @@ local function runEvent(level, event)
         event.cell.y = event.to_y
     elseif event.type == Event.TimerChange then
         event.cell.val = event.to_val
-    -- elseif event.type == Event.Teleport then
-    --     event.cell.x = event.to_x
-    --     event.cell.y = event.to_y
-    --     event.timer.val = event.timer.startVal
+    elseif event.type == Event.Teleport then
+        event.cell.x = event.to_x
+        event.cell.y = event.to_y
+        event.timer.val = event.timer.default_val
+    elseif event.type == Event.OriginMove then
+        event.cell.x = event.to_x
+        event.cell.y = event.to_y
     end
 end
 
@@ -443,13 +412,19 @@ function Level.turn(level, key)
     end
 
     local events = moveCells(level, 'P', direction)
-    if events == nil then events = {} end
-    -- events = secondPassEvents(level, events)
 
-    if #events ~= 0 then
-        table.insert(level.eventLog, events)
-        for _, event in ipairs(events) do
-            runEvent(level, event)
-        end
+    for _, event in ipairs(events) do
+        runEvent(level, event)
     end
+
+    local teleports = handleTeleports(level, direction) -- also includes origin moves
+
+    -- teleports = secondPassEvents(level, teleports)
+    for _, teleport in ipairs(teleports) do
+        print("here")
+        runEvent(level, teleport)
+    end
+    
+    append(teleports, events) -- very important that teleports get undone before moves
+    if #teleports ~= 0 then table.insert(level.eventLog, teleports) end
 end
