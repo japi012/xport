@@ -3,13 +3,42 @@ require "util"
 require "level"
 require "anim"
 
-state = {}
-globals = {}
+DEBUG = {
+    AnimationTime = 0.16 -- default: 0.16
+}
 
 Mode = {
     Gameplay = {},
     Menu = {}
 }
+
+state = {
+    width = 0,
+    height = 0,
+
+    mode = Mode.Menu,
+    cellSize = 0
+}
+
+globals = {
+    font = {},
+    fontFile = "futura-pt-bold.ttf" -- NOT a placeholder,
+}
+
+local lastWidth = 0
+local lastHeight = 0
+
+function updateGraphics()
+    lastWidth = state.width
+    lastHeight = state.height
+    state.width = love.graphics.getWidth()
+    state.height = love.graphics.getHeight()
+
+    if lastWidth ~= state.width or lastHeight ~= state.height then
+        state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
+        globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
+    end
+end
 
 function love.load()
     -- state.level = Level.fromGrid([[
@@ -57,12 +86,10 @@ function love.load()
     }
 
     state.levelIndex = 1
-    state.level = Level.fromGrid(globals.levels[state.levelIndex][1],
-        globals.levels[state.levelIndex][2], globals.levels[state.levelIndex][3])
-
+    state.level = Level.fromGrid(globals.levels[state.levelIndex])
     state.mode = Mode.Gameplay
 
-    globals.font = "futura-pt-bold.ttf" -- NOT a placeholder
+    updateGraphics()
 end
 
 KEYS_PRESSED = {}
@@ -85,6 +112,7 @@ function love.update(dt)
             end
         end
     end
+    Level.update(state.level, dt)
 end
 
 function love.draw()

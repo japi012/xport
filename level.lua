@@ -1,22 +1,7 @@
 local love = require "love"
+local Cell = require "cell"
 
 Level = {}
-
-Cell = {
-    Wall = {},
-    Player = {},
-    Box = {},
-    Timer = {},
-    Origin = {},
-    Goal = {}
-}
-
--- Types of cells that draw a solid square
-SolidDraw = {
-    [Cell.Wall] = true,
-    [Cell.Player] = true,
-    [Cell.Box] = true
-}
 
 Direction = {
     Up = {},
@@ -35,20 +20,7 @@ Event = {
 }
 
 -- maybe move these three to a "util.lua"?
-local function allWithPredicate(list, predicate)
-    -- imperative under the hood, but we hide it under a functional wrapper
-    -- kinda neat
-    local found = {}
-
-    for _, value in ipairs(list) do
-        if predicate(value) then
-            table.insert(found, value)
-        end
-    end
-
-    return found
-end
-
+-- answer: only one goes (wee)
 local function findCells(cells, x, y)
     -- stinky imperative programming   ewwww
     -- [code removed because of how horrifying it looked]
@@ -66,17 +38,24 @@ local function movableWithRegion(cells, region)
 end
 
 function Level.new(height, width, cells, palette)
-    return {
+    local result = {
         height = height,
         width = width,
         cells = cells,
         palette = palette or Palette.defaultList(),
-        eventLog = {},
-        winning = false
+        winning = false,
+        animationTime = 0,
+        eventLog = {}
     }
+
+    table.sort(result.cells, function(a, b)
+        return a.cell.layer < b.cell.layer
+    end)
+    return result
 end
 
-function Level.fromGrid(layer1, layer2, layer3, palette)
+function Level.fromGrid(grid, palette)
+    local layer1, layer2, layer3 = grid[1], grid[2], grid[3]
     local cells = {}
 
     local y = 0
@@ -88,30 +67,8 @@ function Level.fromGrid(layer1, layer2, layer3, palette)
         end
         x = 0
         for character in string.gmatch(trimmedLine, ".") do
-            if character == "#" then
-                table.insert(cells, {
-                    cell = Cell.Wall,
-                    id = #cells + 1,
-                    x = x,
-                    y = y,
-                })
-            elseif character == "." then
-            elseif string.match(character, "[ABCDEF]") then
-                table.insert(cells, {
-                    cell = Cell.Box,
-                    id = #cells + 1,
-                    x = x,
-                    y = y,
-                    region = character
-                })
-            elseif character == "P" then
-                table.insert(cells, {
-                    cell = Cell.Player,
-                    id = #cells + 1,
-                    x = x,
-                    y = y,
-                    region = 'P'
-                })
+            if character ~= "." then
+                table.insert(cells, Cell.fromChar(x, y, #cells + 1, character))
             end
             x = x + 1
         end
@@ -130,26 +87,12 @@ function Level.fromGrid(layer1, layer2, layer3, palette)
             elseif string.match(character, "%d") then
                 local r
                 for _, cell in ipairs(findCells(cells, x, y)) do
-                    if cell.cell == Cell.Box then
+                    if cell.region ~= nil then
                         r = cell.region
                     end
                 end
-                table.insert(cells, {
-                    cell = Cell.Origin,
-                    id = #cells + 1,
-                    x = x,
-                    y = y,
-                    region = r
-                })
-                table.insert(cells, {
-                    cell = Cell.Timer,
-                    id = #cells + 1,
-                    x = x,
-                    y = y,
-                    region = r,
-                    val = tonumber(character),
-                    startVal = tonumber(character)
-                })
+                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Origin, r))
+                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Timer, r, tonumber(character)))
             end
             x = x + 1
         end
@@ -166,12 +109,7 @@ function Level.fromGrid(layer1, layer2, layer3, palette)
         for character in string.gmatch(trimmedLine, ".") do
             if string.match(character, "[#.]") then
             elseif string.match(character, "G") then
-                table.insert(cells, {
-                    cell = Cell.Goal,
-                    id = #cells + 1,
-                    x = x,
-                    y = y,
-                })
+                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Goal))
             end
             x = x + 1
         end
@@ -182,73 +120,29 @@ function Level.fromGrid(layer1, layer2, layer3, palette)
     return Level.new(y, x, cells, palette)
 end
 
-local width = 0
-local height = 0
-local lastWidth = 0
-local lastHeight = 0
+function Level.update(level, dt)
+    -- level.animationTime = math.min(1, level.animationTime + dt / DEBUG.AnimationTime)
 
-local newFont = {}
+    for _, cell in ipairs(level.cells) do
+        if cell.animTime < 1 then
+            cell.animTime = math.min(1, cell.animTime + dt / DEBUG.AnimationTime)
+        end
+    end
+end
 
 function Level.draw(level)
-    lastWidth = width
-    lastHeight = height
-    width = love.graphics.getWidth()
-    height = love.graphics.getHeight()
-
-    local cellSize = math.min(width / level.width, height / level.height) * 0.5
-
-    if lastWidth ~= width or lastHeight ~= height then
-        newFont = love.graphics.newFont(globals.font, cellSize * 0.9)
-    end
-
     love.graphics.setColor(0.1, 0.1, 0.1)
-    love.graphics.rectangle("fill", (width - level.width * cellSize) / 2, (height - level.height * cellSize) / 2,
-        cellSize * level.width, cellSize * level.height)
+    love.graphics.rectangle("fill", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
+        state.cellSize * level.width, state.cellSize * level.height)
 
     for _, cell in ipairs(level.cells) do
-        if cell.cell == Cell.Goal then
-            love.graphics.setLineWidth(5)
-            love.graphics.setColor(level.palette[cell.cell]())
-            love.graphics.rectangle("line", cell.x * cellSize + (width - level.width * cellSize) / 2,
-            cell.y * cellSize + (height - level.height * cellSize) / 2, cellSize, cellSize)
-            love.graphics.setLineWidth(1)
-        end
+        cell:draw(level, state.cellSize);
     end
-
-    for _, cell in ipairs(level.cells) do
-        if SolidDraw[cell.cell] then
-            if cell.cell == Cell.Box then
-                love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
-            else
-                love.graphics.setColor(level.palette[cell.cell]())
-            end
-
-            love.graphics.rectangle("fill", cell.x * cellSize + (width - level.width * cellSize) / 2,
-            cell.y * cellSize + (height - level.height * cellSize) / 2, cellSize, cellSize)
-        end
-    end
-
-    for _, cell in ipairs(level.cells) do
-        if cell.cell == Cell.Timer then
-            love.graphics.setColor(level.palette[cell.cell]())
-
-            local fwidth = newFont:getWidth(cell.val)
-            local fheight = newFont:getHeight()
-
-            love.graphics.print(cell.val, newFont, cell.x * cellSize + (width - level.width * cellSize + (cellSize - fwidth)) / 2,
-            cell.y * cellSize + (height - level.height * cellSize - (cellSize - fheight * 1.3)) / 2)
-        elseif cell.cell == Cell.Origin then
-            love.graphics.setColor(level.palette[cell.cell]())
-            love.graphics.rectangle("fill", (cell.x + 0.25) * cellSize + (width - level.width * cellSize) / 2,
-            (cell.y + 0.25) * cellSize + (height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
-        end
-    end
-
-    love.graphics.setColor(1, 1, 1)
 end
 
 -- modified so that it returns nil when out of bounds instead of saturating
 local function applyDirection(level, cell, direction)
+    Cell.startMoveAnim(cell)
     if direction == Direction.Up then
         if cell.y <= 0 then return nil, nil end
         return cell.x, cell.y - 1
@@ -463,6 +357,8 @@ local function isWinning(level)
 end
 
 local function runUndo(level)
+    level.animationTime = 0
+
     local events = table.remove(level.eventLog)
     if events == nil then
         return
@@ -470,6 +366,7 @@ local function runUndo(level)
 
     for _, event in ipairs(events) do
         if event.type == Event.Move then
+            Cell.startMoveAnim(event.cell)
             event.cell.x = event.from_x
             event.cell.y = event.from_y
 

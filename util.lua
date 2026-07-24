@@ -48,6 +48,24 @@ function cloneUnitTables(value)
     end
 end
 
+function easeOutExpo(x)
+    return (x == 1) and 1 or (1 - 2^(-10 * x));
+end
+
+function allWithPredicate(list, predicate)
+    -- imperative under the hood, but we hide it under a functional wrapper
+    -- kinda neat
+    local found = {}
+
+    for _, value in ipairs(list) do
+        if predicate(value) then
+            table.insert(found, value)
+        end
+    end
+
+    return found
+end
+
 -- SPECIAL ENUM FUNCTIONS
 Enum = {}
 
