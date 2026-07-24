@@ -160,6 +160,7 @@ function Level.draw(level)
     end
 
     love.graphics.setCanvas()
+    love.graphics.setBlendMode("alpha", "premultiplied")
 
     for _, layer in ipairs(level.layers) do
         -- love.graphics.setColor(0, 0, 0, 0.5)
@@ -171,6 +172,8 @@ function Level.draw(level)
         love.graphics.clear()
         love.graphics.setCanvas()
     end
+
+    love.graphics.setBlendMode("alpha") -- Default blend mode.
 end
 
 -- modified so that it returns nil when out of bounds instead of saturating
