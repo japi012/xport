@@ -104,9 +104,9 @@ function love.keypressed(key)
 
     -- animation test
     if key == "t" then
-        local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-        local anim = Animation.chainLoop(
+        local anim = Animation.chained(
             Animation.new(3.0, function(self, progress)
+                local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
                 local progress = easeInOutCubic(progress)
                 local width = love.graphics.getWidth()
                 local height = love.graphics.getHeight()
@@ -114,10 +114,11 @@ function love.keypressed(key)
                 love.graphics.push()
                 love.graphics.translate(width / 2, height / 2)
                 love.graphics.rotate(progress * 8 * 3.14)
-                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale, rotation)
+                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
                 love.graphics.pop()
             end),
             Animation.new(2.0, function(self, progress)
+                local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
                 local progress = easeInOutCubic(progress)
                 local width = love.graphics.getWidth()
                 local height = love.graphics.getHeight()
