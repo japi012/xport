@@ -232,8 +232,7 @@ local function moveCells(level, agentRegion, direction)
             from_y = c.y,
             to_x = nx,
             to_y = ny,
-            cell = c,
-            move_origin = false,
+            cell = c
         })
         -- table.insert(events, move)
 
@@ -402,18 +401,6 @@ local function runUndo(level)
             Cell.startMoveAnim(event.cell)
             event.cell.x = event.from_x
             event.cell.y = event.from_y
-
-            if event.move_origin then
-                local dirX = event.from_x - event.to_x
-                local dirY = event.from_y - event.to_y
-                local origin = allWithPredicate(level.cells, function(cell)
-                    return cell.cell == Cell.Origin and cell.region == event.cell.region
-                end)[1]
-                if origin then
-                    origin.x = origin.x + dirX
-                    origin.y = origin.y + dirY
-                end
-            end
         elseif event.type == Event.TimerChange then
             event.cell.val = event.from_val
         -- elseif event.type == Event.Teleport then
@@ -428,18 +415,6 @@ local function runEvent(level, event)
     if event.type == Event.Move then
         event.cell.x = event.to_x
         event.cell.y = event.to_y
-
-        if event.move_origin then
-            local dirX = event.to_x - event.from_x
-            local dirY = event.to_y - event.from_y
-            local origin = allWithPredicate(level.cells, function(cell)
-                return cell.cell == Cell.Origin and cell.region == event.cell.region
-            end)[1]
-            if origin then
-                origin.x = origin.x + dirX
-                origin.y = origin.y + dirY
-            end
-        end
     elseif event.type == Event.TimerChange then
         event.cell.val = event.to_val
     -- elseif event.type == Event.Teleport then
