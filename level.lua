@@ -51,6 +51,12 @@ function Level.new(height, width, cells, palette)
     table.sort(result.cells, function(a, b)
         return a.cell.layer < b.cell.layer
     end)
+
+    result.layers = {}
+    for i=1,5 do
+        table.insert(result.layers, love.graphics.newCanvas())
+    end
+
     return result
 end
 
@@ -135,12 +141,32 @@ function Level.update(level, dt)
 end
 
 function Level.draw(level)
+    love.graphics.setColor(0.3, 0.3, 0.3)
+    love.graphics.setLineWidth(5)
+    love.graphics.rectangle("line", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
+        state.cellSize * level.width, state.cellSize * level.height)
+    love.graphics.setLineWidth(1)
+
     love.graphics.setColor(0.1, 0.1, 0.1)
     love.graphics.rectangle("fill", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
         state.cellSize * level.width, state.cellSize * level.height)
+    love.graphics.setColor(1, 1, 1)
 
     for _, cell in ipairs(level.cells) do
-        cell:draw(level, state.cellSize);
+        cell:draw(level, state.cellSize)
+    end
+
+    love.graphics.setCanvas()
+
+    for _, layer in ipairs(level.layers) do
+        -- love.graphics.setColor(0, 0, 0, 0.5)
+        -- love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.draw(layer)
+
+        love.graphics.setCanvas(layer)
+        love.graphics.clear()
+        love.graphics.setCanvas()
     end
 end
 

@@ -3,8 +3,8 @@
 - (J) make a menu (programming)
 - (M) menu (art)
 - (T) make levels (0/20)
-- (Z) add animations
-- (Z) add particles
+* (Z) add animations
+- (J) add particles
 - (M) add skippable ads
 - (0) music
 - (0) sfx
