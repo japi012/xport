@@ -22,6 +22,8 @@ function Cell.draw(cell, level, cellSize)
     local w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
     local h = 2 - w
 
+    if cell.lastY == cell.y then h, w = w, h end
+    
     local color = level.palette[cell.cell]
     if color.r == nil then
         color = color[string.byte(cell.region) - 64]
