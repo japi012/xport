@@ -32,11 +32,13 @@ end
 function cloneUnitTables(value)
     if type(value) == "table" then
         local newTable = {}
+        local isEmpty = true
         for k, v in pairs(value) do
+            isEmpty = false
             newTable[k] = cloneUnitTables(v)
         end
 
-        if #value == 0 then
+        if isEmpty then
             return value
         else
             return newTable
