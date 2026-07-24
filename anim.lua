@@ -28,7 +28,10 @@ function Animation.start(animation)
 end
 
 function Animation.chainLoop(...)
-    local chain = {...}
+    return Animation.chainArrayLoop({...})
+end
+
+function Animation.chainArrayLoop(chain)
     for i, animation in ipairs(chain) do
         if i < #chain then
             animation.chain = chain[i + 1]
@@ -41,7 +44,10 @@ function Animation.chainLoop(...)
 end
 
 function Animation.chained(...)
-    local chain = {...}
+    return Animation.chainedArray({...})
+end
+
+function Animation.chainedArray(chain)
     for i, animation in ipairs(chain) do
         if i < #chain then
             animation.chain = chain[i + 1]
