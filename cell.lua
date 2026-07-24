@@ -35,16 +35,9 @@ function Cell.draw(cell, level, cellSize)
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
         love.graphics.setLineWidth(1)
 
-        if cell.cell == Cell.Player then
-            love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - (w - 1) * cellSize) / 2,
-            y * cellSize + (state.height - level.height * cellSize - (h - 1) * cellSize) / 2, w * cellSize, h * cellSize)
-        else
-            love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
-            y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
-        end
-    else
-        if cell.cell == Cell.Timer then
-            love.graphics.setColor(level.palette[cell.cell]())
+    elseif cell.cell == Cell.Player then
+        love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - (w - 1) * cellSize) / 2,
+        y * cellSize + (state.height - level.height * cellSize - (h - 1) * cellSize) / 2, w * cellSize, h * cellSize)
 
     elseif cell.cell == Cell.Wall or cell.cell == Cell.Box then
         love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
@@ -57,10 +50,11 @@ function Cell.draw(cell, level, cellSize)
         love.graphics.print(cell.val, globals.font,
             x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
             y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
+
     elseif cell.cell == Cell.Origin then
-        love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
         drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
             (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
+
     end
 end
 
