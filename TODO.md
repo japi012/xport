@@ -1,4 +1,4 @@
-- (J) make goals function
+* (J) make goals function
 - (J) make teleporting function
 - (J) make a menu (programming)
 - (M) menu (art)
