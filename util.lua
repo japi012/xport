@@ -17,6 +17,35 @@ function lerp(from, to, i)
     return from + (to - from) * i
 end
 
+function clone(value)
+    if type(value) == "table" then
+        local newTable = {}
+        for k, v in pairs(value) do
+            newTable[k] = clone(v)
+        end
+        return newTable
+    else
+        return value
+    end
+end
+
+function cloneUnitTables(value)
+    if type(value) == "table" then
+        local newTable = {}
+        for k, v in pairs(value) do
+            newTable[k] = cloneUnitTables(v)
+        end
+
+        if #value == 0 then
+            return value
+        else
+            return newTable
+        end
+    else
+        return value
+    end
+end
+
 -- SPECIAL ENUM FUNCTIONS
 Enum = {}
 
