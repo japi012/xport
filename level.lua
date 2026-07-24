@@ -244,7 +244,7 @@ local function moveCells(level, agentRegion, direction)
                 -- end
             else
                 for _, timer in ipairs(timers) do
-                    if not elem(teleportTimers, timer) then
+                    if not elem(teleportTimers, timer) and timer.val > 0 then
                         local timer_change = {
                             type = Event.TimerChange,
                             cell = timer,
