@@ -92,6 +92,21 @@ function love.load()
     state.mode = Mode.Gameplay
 
     updateGraphics()
+
+    local iconImageData = {}
+    local iconAnimCount = 12
+    local iconAnims = {}
+    for i=1,iconAnimCount do
+        local imageData = love.image.newImageData("icons/square" .. tostring(i) .. ".png")
+        table.insert(iconImageData, imageData)
+
+        local anim = Animation.new(1 / iconAnimCount, nil, function()
+            love.window.setIcon(iconImageData[i])
+        end)
+        table.insert(iconAnims, anim)
+    end
+    local iconAnimation = Animation.chainArrayLoop(iconAnims)
+    Animation.start(iconAnimation)
 end
 
 KEYS_PRESSED = {}
