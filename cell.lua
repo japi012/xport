@@ -57,19 +57,10 @@ function Cell.draw(cell, level, cellSize)
         love.graphics.print(cell.val, globals.font,
             x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
             y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
-
     elseif cell.cell == Cell.Origin then
-        love.graphics.rectangle("fill", (x + 0.25) * cellSize + (state.width - level.width * cellSize) / 2,
-            (y + 0.25) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2)
-
-            love.graphics.print(cell.val, globals.font,
-                x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
-                y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
-        elseif cell.cell == Cell.Origin then
-            love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
-            drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
-                (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
-        end
+        love.graphics.setColor(level.palette[cell.cell][string.byte(cell.region) - 64]())
+        drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
+            (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
     end
 end
 
