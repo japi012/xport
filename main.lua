@@ -37,15 +37,19 @@ function updateGraphics()
     state.height = love.graphics.getHeight()
 
     if lastWidth ~= state.width or lastHeight ~= state.height then
-        state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
-        globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
-        -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
+        forceUpdateGraphics()
+    end
+end
 
-        if state.mode == Mode.Gameplay then
-            Level.onResize(state.level)
-        elseif state.mode == Mode.Menu then
-            Menu.onResize(state.menu)
-        end
+function forceUpdateGraphics()
+    state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
+    globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
+    -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
+
+    if state.mode == Mode.Gameplay then
+        Level.onResize(state.level)
+    elseif state.mode == Mode.Menu then
+        Menu.onResize(state.menu)
     end
 end
 
@@ -147,8 +151,8 @@ function love.load()
             h = 50,
             levelIndex = 2,
         },{
-            x = 210,
-            y = 30,
+            x = 100,
+            y = 100,
             w = 50,
             h = 50,
             levelIndex = 3,
@@ -157,10 +161,17 @@ function love.load()
         {
             x = 450,
             y = 300,
-            h = 100,
+            h = 150,
+            value = 0,
+            connect = print
+        },
+        {
+            x = 400,
+            y = 300,
+            h = 150,
             value = 0,
             connect = function(value)
-                print(value)
+                print(tostring(value) .. " but like sfx")
             end
         }
     }, true)

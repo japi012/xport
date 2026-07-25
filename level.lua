@@ -150,14 +150,14 @@ function Level.update(level, dt)
 end
 
 function Level.draw(level)
-    love.graphics.setBackgroundColor(79 / 255, 42 / 255, 85 / 255)
-    love.graphics.setColor(127 / 255, 34 / 255, 153 / 255)
+    love.graphics.setBackgroundColor(level.palette.background())
+    love.graphics.setColor(level.palette.levelStroke())
     love.graphics.setLineWidth(5)
     love.graphics.rectangle("line", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
         state.cellSize * level.width, state.cellSize * level.height)
     love.graphics.setLineWidth(1)
 
-    love.graphics.setColor(255 / 255, 208 / 255, 249 / 255)
+    love.graphics.setColor(level.palette.levelFill())
     love.graphics.rectangle("fill", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
         state.cellSize * level.width, state.cellSize * level.height)
     love.graphics.setColor(1, 1, 1)
@@ -172,7 +172,7 @@ function Level.draw(level)
     for i, layer in ipairs(level.layers) do
         -- love.graphics.setColor(0, 0, 0, 0.5)
         -- love.graphics.rectangle("fill", 0, 0, state.width, state.height)
-        local layer = level.layers[1]
+        local layer = level.layers[i]
         love.graphics.setColor(1, 1, 1)
         love.graphics.draw(layer)
 
@@ -480,5 +480,6 @@ function Level.levelEndAnim(duration)
         love.graphics.setColor(1, 1, 1)
     end, function()
         state.mode = Mode.Menu
+        forceUpdateGraphics()
     end)
 end

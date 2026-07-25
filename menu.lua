@@ -14,6 +14,8 @@ function Menu.new(size, levelRects, scrollBars, debugDraw)
         marginX = 0,
         marginY = 0,
         pixelSize = 0,
+        selectedIndex = 0,
+        levelOpening = false
     }
 end
 
@@ -85,9 +87,10 @@ function Menu.update(menu, dt)
             hovering = true
             rect.hovering = true
 
-            if love.mouse.isDown(1) and not rect.clicked then
+            if love.mouse.isDown(1) and not rect.clicked and not menu.levelOpening then
                 rect.clicked = true
-                Animation.start(Menu.levelStartAnim(rect, realX, realY, realW, realH))
+                Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
+                menu.levelOpening = true
             end
         else
             rect.hovering = false
@@ -144,7 +147,7 @@ function Menu.draw(menu)
     love.graphics.setColor(1, 1, 1)
 end
 
-function Menu.levelStartAnim(rect, realX, realY, realW, realH)
+function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
     return Animation.chained(
         Animation.new(
             1.5, function(self, progress)
@@ -173,6 +176,8 @@ function Menu.levelStartAnim(rect, realX, realY, realW, realH)
                 state.mode = Mode.Gameplay
                 rect.clicked = false
                 rect.hovering = false
+                menu.levelOpening = false
+                forceUpdateGraphics()
             end
         )
     )

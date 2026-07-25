@@ -79,7 +79,7 @@ function Cell.draw(cell, level, cellSize)
         love.graphics.setColor(1, 1, 1)
         love.graphics.print(cell.val, globals.font,
             x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
-            y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
+            y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.4)) / 2)
 
         love.graphics.setColor(1, 1, 1, 0.5)
         love.graphics.setLineWidth(5)

@@ -137,7 +137,10 @@ function Palette.defaultList()
         [Cell.Timer] = col(0.1, 0.1, 0.1),
         -- [Cell.Origin] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
         [Cell.Origin] = Palette.gradient(col255(218, 80, 195), col255(103, 10, 80), 6),
-        [Cell.Goal] = col(0.5, 0.5, 0.5)
+        [Cell.Goal] = col(0.5, 0.5, 0.5),
+        background = col255(255, 208, 249),
+        levelFill = col255(79, 42, 85),
+        levelStroke = col255(127, 34, 153),
     }
 end
 
