@@ -74,8 +74,8 @@ globals = {
         ###...###
         #########
         ]],
-        "There is a man here.",
-        ""
+        "",
+        "There is a man here."
     }
 }
 
