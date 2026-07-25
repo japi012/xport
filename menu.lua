@@ -15,6 +15,7 @@ function Menu.new(size, levelRects, scrollBars, debugDraw)
         marginY = 0,
         pixelSize = 0,
         selectedIndex = nil,
+        lastSelectedIndex = nil,
         levelOpening = false
     }
 end
@@ -29,17 +30,26 @@ local function pointInRect(x, y, rx, ry, rw, rh)
     return x >= rx and y >= ry and x <= rx + rw and y <= ry + rh
 end
 
-local function hover()
+local function hover(menu)
     local cursor = love.mouse.getCursor()
     if cursor == nil or cursor:getType() ~= "hand" then
         love.mouse.setCursor(globals.mouseCursors.hand)
     end
+
+    if menu.selectedIndex ~= nil then
+        menu.lastSelectedIndex = menu.selectedIndex
+        menu.selectedIndex = nil
+    end
 end
 
-local function noHover()
+local function noHover(menu)
     local cursor = love.mouse.getCursor()
     if cursor == nil or cursor:getType() ~= "arrow" then
         love.mouse.setCursor(globals.mouseCursors.arrow)
+    end
+
+    if menu.selectedIndex == nil then
+        menu.selectedIndex = menu.lastSelectedIndex
     end
 end
 
@@ -50,7 +60,15 @@ function Menu.update(menu, dt)
     -- end
     local hovering = false
 
+    local alreadySliding = false
+
     for _, scrollBar in ipairs(menu.scrollBars) do
+        if scrollBar.sliding then
+            alreadySliding = true
+        end
+    end
+
+    for i, scrollBar in ipairs(menu.scrollBars) do
         if not love.mouse.isDown(1) then scrollBar.sliding = false end
 
         local realX = menu.marginX + (scrollBar.x / menu.size) * menu.pixelSize
@@ -59,10 +77,12 @@ function Menu.update(menu, dt)
         local realH = (scrollBar.h / menu.size) * menu.pixelSize
 
         if pointInRect(mx, my, realX, realY, realW, realH) then
-            hover()
+            hover(menu)
 
             if love.mouse.isDown(1) then
-                scrollBar.sliding = true
+                if not alreadySliding then
+                    scrollBar.sliding = true
+                end
             end
         end
 
@@ -83,21 +103,22 @@ function Menu.update(menu, dt)
         local realH = (rect.h / menu.size) * menu.pixelSize
 
         if pointInRect(mx, my, realX, realY, realW, realH) then
-            hover()
+            hover(menu)
             hovering = true
             rect.hovering = true
 
-            if love.mouse.isDown(1) and not rect.clicked and not menu.levelOpening then
+            if love.mouse.isDown(1) and not rect.clicked and not menu.levelOpening and not alreadySliding then
                 rect.clicked = true
                 Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
                 menu.levelOpening = true
+                break
             end
         else
             rect.hovering = false
         end
     end
 
-    if not hovering then noHover() end
+    if not hovering then noHover(menu) end
 end
 
 
@@ -175,7 +196,7 @@ function Menu.draw(menu)
         love.graphics.setColor(0.7, 0.7, 0.7)
         love.graphics.rectangle("fill", realX, realY, realW, realH)
 
-        if i + #menu.levelRects == menu.selectedIndex then
+        if i + #menu.levelRects == menu.selectedIndex or scrollBar.sliding then
             love.graphics.setColor(0.8, 0.8, 0.8)
         else
             love.graphics.setColor(1, 1, 1)
@@ -208,7 +229,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                 drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
                 love.graphics.setColor(1, 1, 1)
             end, function()
-                noHover()
+                noHover(menu)
                 state.levelIndex = rect.levelIndex
                 state.level = Level.fromGrid(globals.levels[state.levelIndex])
                 state.mode = Mode.Gameplay

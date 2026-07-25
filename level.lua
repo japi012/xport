@@ -404,6 +404,12 @@ end
 function Level.turn(level, key)
     if level.goalPlaying then return end
 
+    if key == "escape" then
+        state.mode = Mode.Menu
+        forceUpdateGraphics()
+        return
+    end
+
     local direction
     if key == "up" then
         direction = Direction.Up
