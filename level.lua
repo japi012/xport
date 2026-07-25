@@ -457,13 +457,13 @@ function Level.turn(level, key)
     end
 
     local direction
-    if key == "up" then
+    if key == "up"          or key == "w" then
         direction = Direction.Up
-    elseif key == "down" then
+    elseif key == "down"    or key == "s" then
         direction = Direction.Down
-    elseif key == "left" then
+    elseif key == "left"    or key == "a" then
         direction = Direction.Left
-    elseif key == "right" then
+    elseif key == "right"   or key == "d" then
         direction = Direction.Right
     else
         if key == "z" then

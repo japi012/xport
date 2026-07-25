@@ -123,13 +123,13 @@ end
 
 
 function Menu.keypressed(menu, key)
-    if key == "tab" or key == "right" then
+    if key == "tab" or key == "right" or key == "d" then
         if not menu.selectedIndex or menu.selectedIndex >= #menu.scrollBars + #menu.levelRects then
             menu.selectedIndex = 1
         else
             menu.selectedIndex = menu.selectedIndex + 1
         end
-    elseif key == "left" then
+    elseif key == "left" or key == "a" then
         if not menu.selectedIndex or menu.selectedIndex <= 1 then
             menu.selectedIndex = #menu.scrollBars + #menu.levelRects
         else
@@ -148,12 +148,12 @@ function Menu.keypressed(menu, key)
                 Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
                 menu.levelOpening = true
             end
-        elseif key == "up" then
+        elseif key == "up" or key == "w" then
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
                 scrollBar.value = math.min(1, scrollBar.value + 0.1)
             end
-        elseif key == "down" then
+        elseif key == "down" or key == "s" then
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
                 scrollBar.value = math.max(scrollBar.value - 0.1, 0)
