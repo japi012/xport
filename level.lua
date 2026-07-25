@@ -312,7 +312,7 @@ local function handleTeleports(level, direction)
         ::isBlocked::
 
         -- if blocked then
-        -- 
+        --
         --     local movable = true
         --     local nx, ny = applyDirection(level, origin, direction)
         --     if not (nx and ny) then movable = false end
@@ -470,8 +470,7 @@ function Level.turn(level, key)
     end
 
     append(teleports, events) -- very important that teleports get undone before moves
-    if #teleports ~= 0 then print("what")
-        table.insert(level.eventLog, teleports) end
+    if #teleports > 0 then table.insert(level.eventLog, teleports) end
 
     if isWinning(level) then
         state.levelClears[state.levelIndex] = true
