@@ -5,6 +5,15 @@ require "level"
 local Menu = require "menu"
 local Animation = require "anim"
 
+--[[
+
+TODO:
+- Fix bug with fullscreen enter also working as entering a level
+- Fix particles still appearing on the menu after closing a level
+- Make the menu look nicer
+
+]]
+
 DEBUG = {
     AnimationTime = 0.16 -- default: 0.16
 }
@@ -96,6 +105,7 @@ end
 function forceUpdateGraphics()
     state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.65
     globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
+    globals.menuFont = love.graphics.newFont(globals.fontFile, math.min(state.width, state.height) * 0.067)
     globals.levelFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.067)
     globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.05)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
@@ -280,6 +290,29 @@ function love.load()
             "Press ESCAPE to exit level"
         },{
             [[
+            #############
+            #...####....#
+            #.P..ACF....#
+            #....####...#
+            #############
+            ]],
+            [[
+            #############
+            #...####....#
+            #....125....#
+            #....####...#
+            #############
+            ]],
+            [[
+            #############
+            #...####...G#
+            #.P.........#
+            #....####..G#
+            #############
+            ]],
+            "7 - Bone",
+        },{
+            [[
             ########
             #.....##
             #.....##
@@ -307,29 +340,6 @@ function love.load()
             ########
             ]],
             "C1 - unnamed",
-        },{
-            [[
-            #############
-            #...####....#
-            #.P..ACF....#
-            #....####...#
-            #############
-            ]],
-            [[
-            #############
-            #...####....#
-            #....125....#
-            #....####...#
-            #############
-            ]],
-            [[
-            #############
-            #...####...G#
-            #.P.........#
-            #....####..G#
-            #############
-            ]],
-            "C2 - Bone",
         },{
             [[
             #############
@@ -375,67 +385,118 @@ function love.load()
     state.level = Level.fromGrid(globals.levels[state.levelIndex])
     state.levelClears = {}
 
-    state.menu = Menu.new(500, 500, {
+    local menuLevelSize = 0.1
+    state.menu = Menu.new(1, 1, {
         {
-            x = 30,
-            y = 30,
-            w = 50,
-            h = 50,
+            x = 0.5 - menuLevelSize * 1.5,
+            y = menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 1,
-        },{
-            x = 120,
-            y = 30,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5,
+            y = menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 2,
-        },{
-            x = 210,
-            y = 30,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 3,
-        },{
-            x = 300,
-            y = 30,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 4,
-        },{
-            x = 390,
-            y = 30,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5,
+            y = menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 5,
-        },{
-            x = 30,
-            y = 120,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 6,
-        },{
-            x = 120,
-            y = 210,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = 0.5 - menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 7,
-        },{
-            x = 210,
-            y = 210,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5,
+            y = 0.5 - menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 8,
-        },{
-            x = 300,
-            y = 210,
-            w = 50,
-            h = 50,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = 0.5 - menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
             levelIndex = 9,
         },
-    }, {
         {
-            x = 370,
-            y = 300,
-            h = 150,
+            x = 0.5,
+            y = 0.5 + menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelIndex = 10,
+        },
+        {
+            x = 0.5 - menuLevelSize * 0.75,
+            y = 1 - menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelIndex = 11,
+        },
+        {
+            x = 0.5 + menuLevelSize * 0.75,
+            y = 1 - menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelIndex = 12,
+        },
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelIndex = 13,
+        },
+        {
+            x = 0.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelIndex = 14,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelIndex = 15,
+        },
+    },{
+        {
+            x = 1/7 - Menu.scrollBarWidth / 2,
+            y = 3/5,
+            h = 0.3,
             value = state.sfxVolume,
             connect = function(value)
                 if (state.sfxVolume ~= value) then
@@ -446,9 +507,9 @@ function love.load()
             label = "sfx"
         },
         {
-            x = 450,
-            y = 300,
-            h = 150,
+            x = 6/7 - Menu.scrollBarWidth / 2,
+            y = 3/5,
+            h = 0.3,
             value = state.musicVolume,
             connect = function(value)
                 if (state.musicVolume ~= value) then
@@ -458,7 +519,9 @@ function love.load()
             end,
             label = "music"
         }
-    }, true)
+    })
+
+    globals.challengeLevels = { 11, 12, 13, 14, 15 }
 
     state.mode = Mode.Menu
     state.musicVolume = 0.5

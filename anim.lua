@@ -18,7 +18,8 @@ function Animation.new(duration, draw, onStart, finalCallback, chain)
         progress = 0,
         dt = 0,
         chain = chain,
-        stop = false
+        stop = false,
+        data = {}
     }
 end
 
