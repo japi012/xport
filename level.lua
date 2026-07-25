@@ -488,7 +488,9 @@ function Level.turn(level, key)
             state.mode = Mode.Menu
         else
             state.levelIndex = -6
+            globals.entered_level_six = 6.66
             state.level = Level.fromGrid(globals.man)
+            Animation.start(Level.fadeFromBlack(1))
         end
         forceUpdateGraphics()
         return
@@ -602,5 +604,13 @@ function Level.levelEndAnim(duration)
     end, function()
         state.mode = Mode.Menu
         forceUpdateGraphics()
+    end)
+end
+
+function Level.fadeFromBlack(duration)
+    return Animation.new(duration, function(self, progress)
+        love.graphics.setColor(0, 0, 0, 1 - easeOutExpo(progress))
+        drawRotatedRectangle("fill", state.width / 2, state.height / 2, state.width, state.height, 0)
+        love.graphics.setColor(1, 1, 1)
     end)
 end
