@@ -23,7 +23,7 @@ function Cell.draw(cell, level, cellSize)
     local h = 2 - w
 
     if cell.lastY == cell.y then h, w = w, h end
-    
+
     local color = level.palette[cell.cell]
     if color.r == nil then
         color = color[string.byte(cell.region) - 64]
@@ -32,7 +32,7 @@ function Cell.draw(cell, level, cellSize)
     love.graphics.setColor(color())
 
     if cell.cell == Cell.Goal then
-        love.graphics.setCanvas(level.layers[2])
+        love.graphics.setCanvas(level.layers[1])
         love.graphics.setLineWidth(5)
         love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
@@ -44,14 +44,28 @@ function Cell.draw(cell, level, cellSize)
         y * cellSize + (state.height - level.height * cellSize - (h - 1) * cellSize) / 2, w * cellSize, h * cellSize)
 
     elseif cell.cell == Cell.Wall or cell.cell == Cell.Box then
-        love.graphics.setCanvas(level.layers[4])
-        love.graphics.setColor(color())
+        local timerIsZero = false
+        if cell.cell == Cell.Box then
+            local timers = allWithPredicate(level.cells, function(c)
+                return c.cell == Cell.Timer and c.region == cell.region and c.val == 0
+            end)
+            if #timers > 0 then
+                timerIsZero = true
+            end
+        end
+        love.graphics.setCanvas(level.layers[3])
+        if not timerIsZero then
+            love.graphics.setColor(color())
+        else
+            local r, g, b = color()
+            love.graphics.setColor(r - 0.2, g - 0.2, b - 0.2) -- REALLY stupid
+        end
         love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
 
-        love.graphics.setCanvas(level.layers[3])
+        love.graphics.setCanvas(level.layers[2])
         local r, g, b = color()
-        love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2)
+        love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2) -- REALLY stupid
         love.graphics.setLineWidth(4)
         love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
@@ -67,7 +81,7 @@ function Cell.draw(cell, level, cellSize)
             x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
             y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.35)) / 2)
 
-        love.graphics.setColor(1, 1, 1, 0.2)
+        love.graphics.setColor(1, 1, 1, 0.5)
         love.graphics.setLineWidth(5)
         local origins = allWithPredicate(level.cells, function(c)
             return c.region == cell.region and c.cell == Cell.Origin
@@ -82,7 +96,7 @@ function Cell.draw(cell, level, cellSize)
         end
 
     elseif cell.cell == Cell.Origin then
-        love.graphics.setCanvas(level.layers[1])
+        love.graphics.setCanvas(level.layers[3])
         drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
             (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
     end
@@ -107,6 +121,7 @@ function Cell.new(x, y, id, type, region, timer)
         cell = type,
         region = region,
         val = timer,
+        default_val = timer,
 
         draw = Cell.draw,
         animTime = 0

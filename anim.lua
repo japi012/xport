@@ -1,3 +1,5 @@
+local love = require "love"
+
 Animation = {}
 animations = {}
 
@@ -28,7 +30,10 @@ function Animation.start(animation)
 end
 
 function Animation.chainLoop(...)
-    local chain = {...}
+    return Animation.chainArrayLoop({...})
+end
+
+function Animation.chainArrayLoop(chain)
     for i, animation in ipairs(chain) do
         if i < #chain then
             animation.chain = chain[i + 1]
@@ -41,7 +46,10 @@ function Animation.chainLoop(...)
 end
 
 function Animation.chained(...)
-    local chain = {...}
+    return Animation.chainedArray({...})
+end
+
+function Animation.chainedArray(chain)
     for i, animation in ipairs(chain) do
         if i < #chain then
             animation.chain = chain[i + 1]
@@ -49,6 +57,16 @@ function Animation.chained(...)
     end
 
     return chain[1]
+end
+
+function Animation.delay(delay, callback)
+    return Animation.new(delay, nil, nil, callback)
+end
+
+function Animation.delayedStart(delay, animation)
+    Animation.start(Animation.delay(delay, function()
+        Animation.start(animation)
+    end))
 end
 
 function updateAnimations(dt)
@@ -100,6 +118,10 @@ function easeOutCubic(t)
     return 1 - (1 - t) ^ 3
 end
 
+function easeInCubic(t)
+    return t ^ 3
+end
+
 function easeInBack(t)
     local c1 = 1.70158;
     local c3 = c1 + 1;
@@ -110,3 +132,5 @@ end
 function easeOutExpo(x)
     return (x == 1) and 1 or (1 - 2^(-10 * x));
 end
+
+return Animation
