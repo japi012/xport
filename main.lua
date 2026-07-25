@@ -18,6 +18,9 @@ state = {
     width = 0,
     height = 0,
 
+    sfxVolume = 0.5;
+    musicVolume = 0.5;
+
     mode = Mode.Menu,
     cellSize = 0
 }
@@ -190,7 +193,7 @@ function love.load()
             x = 400,
             y = 300,
             h = 150,
-            value = 0.5,
+            value = state.sfxVolume,
             connect = function(value)
                 state.sfxVolume = value
             end
@@ -199,7 +202,7 @@ function love.load()
             x = 450,
             y = 300,
             h = 150,
-            value = 0.5,
+            value = state.musicVolume,
             connect = function(value)
                 state.musicVolume = value
             end

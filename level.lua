@@ -416,6 +416,7 @@ local function runUndo(level)
         return
     end
 
+    Sounds.undo:play()
     for _, event in ipairs(events) do
         if event.type == Event.Move then
             Cell.startMoveAnim(event.cell)
@@ -485,8 +486,11 @@ function Level.turn(level, key)
         direction = Direction.Right
     else
         if key == "z" then
-            local log = runUndo(level)
+            runUndo(level)
         elseif key == "r" then
+            if (#level.eventLog == 0) or (level.eventLog[#level.eventLog][1].type == Event.Reset) then return end
+
+            Sounds.restart:play()
             local events = {}
 
             for _, cell in ipairs(level.cells) do
@@ -509,9 +513,9 @@ function Level.turn(level, key)
 
     local events = moveCells(level, 'P', direction)
     if #events > 0 then
-        Sounds.play(Sounds.move)
+        Sounds.move:play()
     else
-        Sounds.play(Sounds.moveFail)
+        Sounds.moveFail:play()
     end
 
     for _, event in ipairs(events) do
@@ -530,10 +534,13 @@ function Level.turn(level, key)
         append(teleports, teleportbatch)
     end
 
+    if #teleports > 0 then Sounds.teleport:play() end
+
     append(teleports, events) -- very important that teleports get undone before moves
     if #teleports > 0 then table.insert(level.eventLog, teleports) end
 
     if isWinning(level) then
+        Sounds.complete:play()
         state.levelClears[state.levelIndex] = true
 
         local goals = allWithPredicate(level.cells, function(cell)
