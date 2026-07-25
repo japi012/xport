@@ -490,7 +490,7 @@ function Level.turn(level, key)
         elseif key == "r" then
             if (#level.eventLog == 0) or (level.eventLog[#level.eventLog][1].type == Event.Reset) then return end
 
-            Sounds.restart:play()
+            Sounds.levelRestart:play()
             local events = {}
 
             for _, cell in ipairs(level.cells) do
@@ -540,7 +540,7 @@ function Level.turn(level, key)
     if #teleports > 0 then table.insert(level.eventLog, teleports) end
 
     if isWinning(level) then
-        Sounds.complete:play()
+        Sounds.levelComplete:play()
         state.levelClears[state.levelIndex] = true
 
         local goals = allWithPredicate(level.cells, function(cell)
