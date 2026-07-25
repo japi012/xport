@@ -45,7 +45,7 @@ local function isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
-function Level.new(height, width, cells, palette)
+function Level.new(height, width, cells, palette, title, text)
     local result = {
         height = height,
         width = width,
@@ -55,7 +55,9 @@ function Level.new(height, width, cells, palette)
         animationTime = 0,
         layers = {},
         eventLog = {},
-        goalPlaying = false
+        goalPlaying = false,
+        title = title,
+        text = text
     }
 
     table.sort(result.cells, function(a, b)
@@ -66,7 +68,7 @@ function Level.new(height, width, cells, palette)
 end
 
 function Level.fromGrid(grid, palette)
-    local layer1, layer2, layer3 = grid[1], grid[2], grid[3]
+    local layer1, layer2, layer3, title, text = grid[1], grid[2], grid[3], grid[4], grid[5]
     local cells = {}
 
     local y = 0
@@ -128,7 +130,7 @@ function Level.fromGrid(grid, palette)
     end
 
     -- sort of finished
-    return Level.new(y, x, cells, palette)
+    return Level.new(y, x, cells, palette, title, text)
 end
 
 function Level.onResize(level)
@@ -185,6 +187,18 @@ function Level.draw(level)
     end
 
     love.graphics.setBlendMode("alpha") -- Default blend mode.
+
+    if level.title then
+        local padding = state.cellSize / 2
+        love.graphics.print(level.title, globals.levelFont, padding, padding)
+    end
+
+    if level.text then
+        local padding = state.cellSize / 2
+        local fontWidth = globals.tutorialFont:getWidth(level.text)
+        local fontHeight = globals.tutorialFont:getHeight()
+        love.graphics.print(level.text, globals.tutorialFont, state.width / 2 - fontWidth / 2, state.height - padding - fontHeight)
+    end
 end
 
 -- modified so that it returns nil when out of bounds instead of saturating
