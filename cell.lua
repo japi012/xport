@@ -24,14 +24,22 @@ function Cell.draw(cell, level, cellSize)
         w = 1
     else
         w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
-    end 
+    end
     local h = 2 - w
 
     if cell.lastY == cell.y then h, w = w, h end
 
     local color = level.palette[cell.cell]
-    if color.r == nil then
+    while color.r == nil do
+        local rootColor = color
         color = color[string.byte(cell.region) - 64]
+        if color == nil then
+            if cell.region == 'P' then
+                color = rootColor.player
+            else
+                color = rootColor.default
+            end
+        end
     end
 
     love.graphics.setColor(color())
@@ -58,6 +66,7 @@ function Cell.draw(cell, level, cellSize)
                 timerIsZero = true
             end
         end
+
         love.graphics.setCanvas(level.layers[3])
         if not timerIsZero then
             love.graphics.setColor(color())
@@ -75,13 +84,13 @@ function Cell.draw(cell, level, cellSize)
         love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
         love.graphics.setLineWidth(1)
+
     elseif cell.cell == Cell.Timer then
         local fwidth = globals.font:getWidth(cell.val)
         local fheight = globals.font:getHeight()
 
         love.graphics.setCanvas(level.layers[5])
         love.graphics.setLineWidth(1)
-        love.graphics.setColor(1, 1, 1)
         love.graphics.print(cell.val, globals.font,
             x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
             y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.4)) / 2)
@@ -91,6 +100,7 @@ function Cell.draw(cell, level, cellSize)
         local origins = allWithPredicate(level.cells, function(c)
             return c.region == cell.region and c.cell == Cell.Origin
         end)
+
         love.graphics.setCanvas(level.layers[1])
         for _, origin in ipairs(origins) do
             love.graphics.line(

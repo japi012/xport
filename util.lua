@@ -141,9 +141,15 @@ function Palette.defaultList()
         [Cell.Wall] = col(0.3, 0.3, 0.3),
         -- [Cell.Box] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
         [Cell.Box] = Palette.gradient(col255(255, 117, 247), col255(153, 16, 128), 6),
-        [Cell.Timer] = col(0.1, 0.1, 0.1),
+        [Cell.Timer] = {
+            default = col(1, 1, 1),
+            player = col(0, 0, 0)
+        },
         -- [Cell.Origin] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
-        [Cell.Origin] = Palette.gradient(col255(218, 80, 195), col255(103, 10, 80), 6),
+        [Cell.Origin] = {
+            default = Palette.gradient(col255(218, 80, 195), col255(103, 10, 80), 6),
+            player = col(1, 1, 1)
+        },
         [Cell.Goal] = col(0.5, 0.5, 0.5),
         background = col255(255, 208, 249),
         levelFill = col255(79, 42, 85),

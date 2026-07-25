@@ -256,9 +256,12 @@ local function moveCells(level, agentRegion, direction)
                 table.insert(events, timer_change)
             else
                 local movable = true
+                local origin = allWithPredicate(level.cells, function (cell)
+                    return cell.cell == Cell.Origin and cell.region == timer.region
+                end)[1] -- if this ever throws an index error then we quit gamedev forever
+
                 local nx, ny = applyDirection(level, origin, direction)
                 if not (nx and ny) then movable = false end
-                targets = findCells(level.cells, nx, ny)
                 if movable then
                     -- origin moves moved here
                     local origin_move = {
@@ -288,20 +291,20 @@ local function handleTeleports(level, direction)
     end)
     for _, timer in ipairs(zerotimers) do
         -- print("here", timer.region)
-        origin = allWithPredicate(level.cells, function (cell)
+        local origin = allWithPredicate(level.cells, function (cell)
             return cell.cell == Cell.Origin and cell.region == timer.region
         end)[1] -- if this ever throws an index error then we quit gamedev forever
-        boxes = allWithPredicate(level.cells, function (cell)
-            return cell.cell == Cell.Box and cell.region == timer.region
+        local boxes = allWithPredicate(level.cells, function (cell)
+            return (cell.cell == Cell.Box or cell.cell == Cell.Player) and cell.region == timer.region
         end)
-        blocked = false
+        local blocked = false
         for _, box in ipairs(boxes) do
             if not isInBounds(level, box.x - timer.x + origin.x, box.y - timer.y + origin.y) then
                 -- print("oops out of bounds")
                 blocked = true
                 goto isBlocked -- this one is my fault though
             end
-            targets = findCells(level.cells, box.x - timer.x + origin.x, box.y - timer.y + origin.y)
+            local targets = findCells(level.cells, box.x - timer.x + origin.x, box.y - timer.y + origin.y)
             for _, target in ipairs(targets) do
                 if target.cell == Cell.Player or target.cell == Cell.Wall or (target.cell == Cell.Box and target.region ~= timer.region) then
                     blocked = true
