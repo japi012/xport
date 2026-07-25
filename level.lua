@@ -2,6 +2,7 @@ local love = require "love"
 local Cell = require "cell"
 local Palette = require "palette"
 local Animation = require "anim"
+local Particle = require "particles"
 
 Level = {}
 
@@ -359,6 +360,10 @@ local function handleTeleports(level, direction)
                 timer = timer
             }
             table.insert(events, teleport)
+        else    
+            for _, box in ipairs(boxes) do
+                Animation.start(Particle.teleFailParticle(box.x - timer.x + origin.x, box.y - timer.y + origin.y, level, box))
+            end
         end
     end
 	return events
@@ -436,11 +441,15 @@ end
 
 local function runEvent(level, event)
     if event.type == Event.Move then
+        if event.cell.cell == Cell.Player then
+            Animation.start(Particle.playerParticle(event.cell.x, event.cell.y, level))
+        end
         event.cell.x = event.to_x
         event.cell.y = event.to_y
     elseif event.type == Event.TimerChange then
         event.cell.val = event.to_val
     elseif event.type == Event.Teleport then
+        Animation.start(Particle.teleParticle(event.cell.x, event.cell.y, level, event.cell))
         event.cell.x = event.to_x
         event.cell.y = event.to_y
         event.timer.val = event.timer.default_val
@@ -476,7 +485,6 @@ function Level.turn(level, key)
     else
         if key == "z" then
             local log = runUndo(level)
-            if log then print(#log) else print("empty") end
         elseif key == "r" then
             local events = {}
 
