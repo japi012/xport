@@ -159,21 +159,21 @@ function love.load()
         }
     }, {
         {
-            x = 450,
-            y = 300,
-            h = 150,
-            value = 0.5,
-            connect = function(value)
-                state.musicVolume = value
-            end
-        },
-        {
             x = 400,
             y = 300,
             h = 150,
             value = 0.5,
             connect = function(value)
                 state.sfxVolume = value
+            end
+        },
+        {
+            x = 450,
+            y = 300,
+            h = 150,
+            value = 0.5,
+            connect = function(value)
+                state.musicVolume = value
             end
         }
     }, true)
@@ -250,43 +250,13 @@ function love.keypressed(key)
         time = 0,
         repeatTime = 0
     }
-
-    -- animation test
-    if key == "t" then
-        local anim = Animation.chained(
-            Animation.new(3.0, function(self, progress)
-                local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-                local progress = easeInOutCubic(progress)
-                local width = love.graphics.getWidth()
-                local height = love.graphics.getHeight()
-                local scale = progress * highScale
-                love.graphics.push()
-                love.graphics.translate(width / 2, height / 2)
-                love.graphics.rotate(progress * 8 * math.pi)
-                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
-                love.graphics.pop()
-            end),
-            Animation.new(2.0, function(self, progress)
-                local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-                local progress = easeInOutCubic(progress)
-                local width = love.graphics.getWidth()
-                local height = love.graphics.getHeight()
-                local scale = (1 - easeInBack(progress)) * highScale
-                love.graphics.setColor(1, 1, 1, 1 - easeInBack(progress))
-                love.graphics.push()
-                love.graphics.translate(width / 2, height / 2)
-                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
-                love.graphics.pop()
-                love.graphics.setColor(1, 1, 1)
-            end)
-        )
-        Animation.start(anim)
-    end
 end
 
 function pressedKey(key)
     if state.mode == Mode.Gameplay then
         Level.turn(state.level, key)
+    elseif state.mode == Mode.Menu then
+        Menu.keypressed(state.menu, key)
     end
 end
 
