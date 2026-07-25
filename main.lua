@@ -159,21 +159,21 @@ function love.load()
         }
     }, {
         {
-            x = 450,
-            y = 300,
-            h = 150,
-            value = 0.5,
-            connect = function(value)
-                state.musicVolume = value
-            end
-        },
-        {
             x = 400,
             y = 300,
             h = 150,
             value = 0.5,
             connect = function(value)
                 state.sfxVolume = value
+            end
+        },
+        {
+            x = 450,
+            y = 300,
+            h = 150,
+            value = 0.5,
+            connect = function(value)
+                state.musicVolume = value
             end
         }
     }, true)
@@ -255,6 +255,8 @@ end
 function pressedKey(key)
     if state.mode == Mode.Gameplay then
         Level.turn(state.level, key)
+    elseif state.mode == Mode.Menu then
+        Menu.keypressed(state.menu, key)
     end
 end
 
