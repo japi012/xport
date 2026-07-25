@@ -272,7 +272,9 @@ function love.keypressed(key)
 end
 
 function pressedKey(key)
-    Level.turn(state.level, key)
+    if state.mode == Mode.Gameplay then
+        Level.turn(state.level, key)
+    end
 end
 
 function love.keyreleased(key)
