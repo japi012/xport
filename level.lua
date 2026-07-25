@@ -362,8 +362,27 @@ end
 
 local function secondPassEvents(level, teleports)
     local occupied = {}
+    local bannedregions = {}
     for _, event in ipairs(teleports) do
-        occupied[event.to_x][event.to_y] = event.timer.region
+        print(event.to_x, event.to_y, event.timer.region)
+        print(tostring(event.to_x) .. tostring(event.to_y), occupied[tostring(event.to_x) .. tostring(event.to_y)])
+        if occupied[tostring(event.to_x) .. tostring(event.to_y)] and occupied[tostring(event.to_x) .. tostring(event.to_y)] ~= event.timer.region then
+            print("here", event.to_x, event.to_y, event.timer.region)
+            bannedregions[event.timer.region] = true
+            bannedregions[occupied[tostring(event.to_x) .. tostring(event.to_y)]] = true
+        else
+            occupied[tostring(event.to_x) .. tostring(event.to_y)] = event.timer.region
+        end
+    end
+
+    print(bannedregions['A'], bannedregions['B'])
+    local unbannedevents = {}
+    for _, event in ipairs(teleports) do
+        if not bannedregions[event.timer.region] then
+            table.insert(unbannedevents, event)
+        end
+    end
+    return unbannedevents
 end
 
 local function isWinning(level)
@@ -460,9 +479,9 @@ function Level.turn(level, key)
     local teleports = {}
     while true do
         local teleportbatch = handleTeleports(level, direction) -- also includes origin moves
+        teleportbatch = secondPassEvents(level, teleportbatch)
 
         if #teleportbatch == 0 then break end
-        teleports = secondPassEvents(level, teleports)
         for _, teleport in ipairs(teleportbatch) do
             runEvent(level, teleport)
         end
