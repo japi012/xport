@@ -94,7 +94,7 @@ function updateGraphics()
 end
 
 function forceUpdateGraphics()
-    state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
+    state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.65
     globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
     globals.levelFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.067)
     globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.05)
