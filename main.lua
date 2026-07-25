@@ -438,7 +438,10 @@ function love.load()
             h = 150,
             value = state.sfxVolume,
             connect = function(value)
-                state.sfxVolume = value
+                if (state.sfxVolume ~= value) then
+                    state.sfxVolume = value
+                    Sounds.move:play()
+                end
             end,
             label = "sfx"
         },
@@ -448,7 +451,10 @@ function love.load()
             h = 150,
             value = state.musicVolume,
             connect = function(value)
-                state.musicVolume = value
+                if (state.musicVolume ~= value) then
+                    state.musicVolume = value
+                    Sounds.move:play(true)
+                end
             end,
             label = "music"
         }

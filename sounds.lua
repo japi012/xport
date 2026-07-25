@@ -3,10 +3,10 @@ if Sounds ~= nil then return Sounds end
 
 Sounds = {}
 
-local function playSound(sound, loop)
+local function playSound(sound, isMusic, loop)
     sound.audio:stop()
     sound.audio:setPitch(math.random() * (sound.variation * 2) + (1 - sound.variation))
-    sound.audio:setVolume(sound.volume * state.sfxVolume)
+    sound.audio:setVolume(sound.volume * (isMusic and state.musicVolume or state.sfxVolume))
     sound.audio:setLooping((loop ~= nil) and loop or (sound.loop))
     sound.audio:play()
 end
