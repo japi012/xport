@@ -25,7 +25,7 @@ Sounds.undo = newSound("sfx_undo.wav", 0.2, 0.2)
 Sounds.hoverUI = newSound("sfx_menu-hover.wav")
 Sounds.teleport = newSound("sfx_teleport.wav", 0.4, 0.05)
 Sounds.levelStart = newSound("sfx_level-start.wav", nil, 0.25)
-Sounds.levelRestart = newSound("sfx_level-restart.wav", nil, 0.05)
+Sounds.levelRestart = newSound("sfx_level-restart.wav", 0.4, 0.05)
 Sounds.levelComplete = newSound("sfx_level-complete.wav")
 
 return Sounds
