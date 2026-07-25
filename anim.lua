@@ -59,6 +59,16 @@ function Animation.chainedArray(chain)
     return chain[1]
 end
 
+function Animation.delay(delay, callback)
+    return Animation.new(delay, nil, nil, callback)
+end
+
+function Animation.delayedStart(delay, animation)
+    Animation.start(Animation.delay(delay, function()
+        Animation.start(animation)
+    end))
+end
+
 function updateAnimations(dt)
     local deleteAnimations = {}
     for i, animation in ipairs(animations) do
@@ -106,6 +116,10 @@ end
 
 function easeOutCubic(t)
     return 1 - (1 - t) ^ 3
+end
+
+function easeInCubic(t)
+    return t ^ 3
 end
 
 function easeInBack(t)

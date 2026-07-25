@@ -1,5 +1,6 @@
 local love = require "love"
 local Cell = require "cell"
+local Animation = require "anim"
 
 Level = {}
 
@@ -148,13 +149,14 @@ function Level.update(level, dt)
 end
 
 function Level.draw(level)
-    love.graphics.setColor(0.3, 0.3, 0.3)
+    love.graphics.setBackgroundColor(79 / 255, 42 / 255, 85 / 255)
+    love.graphics.setColor(127 / 255, 34 / 255, 153 / 255)
     love.graphics.setLineWidth(5)
     love.graphics.rectangle("line", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
         state.cellSize * level.width, state.cellSize * level.height)
     love.graphics.setLineWidth(1)
 
-    love.graphics.setColor(0.1, 0.1, 0.1)
+    love.graphics.setColor(255 / 255, 208 / 255, 249 / 255)
     love.graphics.rectangle("fill", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
         state.cellSize * level.width, state.cellSize * level.height)
     love.graphics.setColor(1, 1, 1)
@@ -165,9 +167,10 @@ function Level.draw(level)
 
     love.graphics.setCanvas()
 
-    for _, layer in ipairs(level.layers) do
+    for i, layer in ipairs(level.layers) do
         -- love.graphics.setColor(0, 0, 0, 0.5)
-        -- love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+        -- love.graphics.rectangle("fill", 0, 0, state.width, state.height)
+        local layer = level.layers[1]
         love.graphics.setColor(1, 1, 1)
         love.graphics.draw(layer)
 
@@ -257,14 +260,13 @@ local function moveCells(level, agentRegion, direction)
 end
 
 local function handleTeleports(level, direction)
-
     local events = {}
-    
+
     local zerotimers = allWithPredicate(level.cells, function (cell)
         return cell.cell == Cell.Timer and cell.val == 0
     end)
     for _, timer in ipairs(zerotimers) do
-        print("here", timer.region)
+        -- print("here", timer.region)
         origin = allWithPredicate(level.cells, function (cell)
             return cell.cell == Cell.Origin and cell.region == timer.region
         end)[1] -- if this ever throws an index error then we quit gamedev forever
@@ -274,7 +276,7 @@ local function handleTeleports(level, direction)
         blocked = false
         for _, box in ipairs(boxes) do
             if not isInBounds(level, box.x - timer.x + origin.x, box.y - timer.y + origin.y) then
-                print("oops out of bounds")
+                -- print("oops out of bounds")
                 blocked = true
                 goto isBlocked -- this one is my fault though
             end
@@ -337,6 +339,7 @@ local function handleTeleports(level, direction)
 end
 
 local function isWinning(level)
+    local winning = true
     for _, cell in ipairs(level.cells) do
         if cell.cell == Cell.Goal then
             local ncells = findCells(level.cells, cell.x, cell.y)
@@ -344,11 +347,12 @@ local function isWinning(level)
                 return cell.cell == Cell.Box
             end)
 
-            if #boxes > 0 then
-                level.winning = true
+            if #boxes == 0 then
+                winning = false
             end
         end
     end
+    return winning
 end
 
 local function runUndo(level)
@@ -424,7 +428,48 @@ function Level.turn(level, key)
         print("here")
         runEvent(level, teleport)
     end
-    
+
     append(teleports, events) -- very important that teleports get undone before moves
     if #teleports ~= 0 then table.insert(level.eventLog, teleports) end
+
+    if isWinning(level) then
+        state.levelClears[state.levelIndex] = true
+
+        local goals = allWithPredicate(level.cells, function(cell)
+            return cell.cell == Cell.Goal
+        end)
+        local startDelay = 0.5
+        local goalAnimTime = 2.0
+        local endAnimTime = 1.0
+        for _, goal in ipairs(goals) do
+            Animation.delayedStart(startDelay, Level.levelClearAnim(goalAnimTime, level, goal))
+        end
+        Animation.delayedStart(startDelay + goalAnimTime, Level.levelEndAnim(endAnimTime))
+    end
+end
+
+function Level.levelClearAnim(duration, level, goal)
+    return Animation.new(duration, function(self, progress)
+        local progress = easeInOutCubic(progress)
+        local scale =
+            math.max(state.width, state.height) * progress * 2
+        local angle = progress * 2 * math.pi
+        love.graphics.setColor(1, 1, 1)
+        drawRotatedRectangle("fill",
+            (goal.x + 0.5) * state.cellSize + (state.width - level.width * state.cellSize) / 2,
+            (goal.y + 0.5) * state.cellSize + (state.height - level.height * state.cellSize) / 2,
+            scale, scale, angle)
+    end)
+end
+
+function Level.levelEndAnim(duration)
+    return Animation.new(duration, function(self, progress)
+        local progress = easeOutCubic(progress)
+        local scale = math.max(state.width, state.height)
+        love.graphics.setColor(1, 1, 1, 1 - progress)
+        drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
+        love.graphics.setColor(1, 1, 1)
+    end, function()
+        state.mode = Mode.Menu
+    end)
 end

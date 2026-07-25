@@ -1,6 +1,7 @@
 * (J) make goals function
-- (J) make teleporting function
-- (J) make a menu (programming)
+* (M) make teleporting function
+- (M) rework origin movement and second pass
+- (J) make a menu
 - (M) menu (art)
 - (T) make levels (0/20)
 * (Z) add animations

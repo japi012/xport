@@ -1,6 +1,8 @@
 local love = require "love"
 require "util"
 require "level"
+
+local Menu = require "menu"
 local Animation = require "anim"
 
 DEBUG = {
@@ -37,9 +39,12 @@ function updateGraphics()
     if lastWidth ~= state.width or lastHeight ~= state.height then
         state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
         globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
+        -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
         if state.mode == Mode.Gameplay then
             Level.onResize(state.level)
+        elseif state.mode == Mode.Menu then
+            Menu.onResize(state.menu)
         end
     end
 end
@@ -61,6 +66,43 @@ function love.load()
     globals.levels = {
         {
           [[
+          ........
+          .PA.....
+          ........
+          ]],
+          [[
+          ........
+          ........
+          ........
+          ]],
+          [[
+          ........
+          ......G.
+          ........
+          ]],
+        },
+        {
+          [[
+          .........
+          .PA......
+          ..B..#...
+          .........
+          ]],
+          [[
+          .........
+          .........
+          .........
+          .........
+          ]],
+          [[
+          .........
+          ......G..
+          ......G..
+          .........
+          ]],
+        },
+        {
+          [[
           .P.....
           .......
           .......
@@ -72,7 +114,7 @@ function love.load()
           .P.....
           .......
           .......
-          .5..7..
+          .7..5..
           .......
           .......
           ]],
@@ -80,16 +122,40 @@ function love.load()
           .P.....
           .......
           .......
+          ......G
           .......
-          .......
-          .......
+          ......G
           ]],
         }
     }
 
     state.levelIndex = 1
     state.level = Level.fromGrid(globals.levels[state.levelIndex])
-    state.mode = Mode.Gameplay
+    state.levelClears = {}
+
+    state.menu = Menu.new(500, {
+        {
+            x = 30,
+            y = 30,
+            w = 50,
+            h = 50,
+            levelIndex = 1,
+        },{
+            x = 120,
+            y = 30,
+            w = 50,
+            h = 50,
+            levelIndex = 2,
+        },{
+            x = 210,
+            y = 30,
+            w = 50,
+            h = 50,
+            levelIndex = 3,
+        }
+    }, {}, true)
+
+    state.mode = Mode.Menu
 
     updateGraphics()
 
@@ -107,6 +173,11 @@ function love.load()
     end
     local iconAnimation = Animation.chainArrayLoop(iconAnims)
     Animation.start(iconAnimation)
+
+    globals.mouseCursors = {
+        ["hand"] = love.mouse.getSystemCursor("hand"),
+        ["arrow"] = love.mouse.getSystemCursor("arrow"),
+    }
 end
 
 KEYS_PRESSED = {}
@@ -129,13 +200,22 @@ function love.update(dt)
             end
         end
     end
-    Level.update(state.level, dt)
+
+    if state.mode == Mode.Gameplay then
+        Level.update(state.level, dt)
+    elseif state.mode == Mode.Menu then
+        Menu.update(state.menu, dt)
+    end
 end
 
 function love.draw()
     -- does this not have deltatime?
     -- japi: yeah it's kinda crazy
-    Level.draw(state.level)
+    if state.mode == Mode.Gameplay then
+        Level.draw(state.level)
+    elseif state.mode == Mode.Menu then
+        Menu.draw(state.menu, dt)
+    end
     drawAnimations()
 end
 
@@ -158,7 +238,7 @@ function love.keypressed(key)
                 local scale = progress * highScale
                 love.graphics.push()
                 love.graphics.translate(width / 2, height / 2)
-                love.graphics.rotate(progress * 8 * 3.14)
+                love.graphics.rotate(progress * 8 * math.pi)
                 love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
                 love.graphics.pop()
             end),
