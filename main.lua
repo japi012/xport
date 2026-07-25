@@ -462,6 +462,7 @@ function love.load()
 
     state.mode = Mode.Menu
     state.musicVolume = 0.5
+    state.fullscreen = false
 
     updateGraphics()
 
@@ -533,6 +534,12 @@ function love.keypressed(key)
     pressedKey(key)
     keyClear(key, 0)
     KEYS_PRESSED[#KEYS_PRESSED+1] = key
+
+    if (key == "return" and (love.keyboard.isDown("lalt") or love.keyboard.isDown("ralt")))
+       or key == "f11" then
+       state.fullscreen = not state.fullscreen
+       love.window.setFullscreen(state.fullscreen)
+    end
 end
 
 function pressedKey(key)
