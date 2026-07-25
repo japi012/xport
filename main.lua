@@ -277,7 +277,7 @@ function love.load()
             #########
             ]],
             "6 - Origin Shift",
-            "Press ESCAPE to exit a level"
+            "Press ESCAPE to exit level"
         },{
             [[
             ########
