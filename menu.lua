@@ -123,33 +123,41 @@ end
 
 
 function Menu.keypressed(menu, key)
-    if key == "tab" then
+    if key == "tab" or key == "right" then
         if not menu.selectedIndex or menu.selectedIndex >= #menu.scrollBars + #menu.levelRects then
             menu.selectedIndex = 1
         else
             menu.selectedIndex = menu.selectedIndex + 1
         end
-    elseif key == "space" or key == "return" then
-        if menu.selectedIndex <= #menu.levelRects then
-            local rect = menu.levelRects[menu.selectedIndex]
-            local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
-            local realY = menu.marginY + (rect.y / menu.size) * menu.pixelSize
-            local realW = (rect.w / menu.size) * menu.pixelSize
-            local realH = (rect.h / menu.size) * menu.pixelSize
+    elseif key == "left" then
+        if not menu.selectedIndex or menu.selectedIndex <= 1 then
+            menu.selectedIndex = #menu.scrollBars + #menu.levelRects
+        else
+            menu.selectedIndex = menu.selectedIndex - 1
+        end
+    elseif menu.selectedIndex ~= nil then
+    	if key == "space" or key == "return" then
+            if menu.selectedIndex <= #menu.levelRects then
+                local rect = menu.levelRects[menu.selectedIndex]
+                local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
+                local realY = menu.marginY + (rect.y / menu.size) * menu.pixelSize
+                local realW = (rect.w / menu.size) * menu.pixelSize
+                local realH = (rect.h / menu.size) * menu.pixelSize
 
-            rect.clicked = true
-            Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
-            menu.levelOpening = true
-        end
-    elseif key == "up" then
-        if menu.selectedIndex > #menu.levelRects then
-            local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
-            scrollBar.value = math.min(1, scrollBar.value + 0.1)
-        end
-    elseif key == "down" then
-        if menu.selectedIndex > #menu.levelRects then
-            local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
-            scrollBar.value = math.max(scrollBar.value - 0.1, 0)
+                rect.clicked = true
+                Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
+                menu.levelOpening = true
+            end
+        elseif key == "up" then
+            if menu.selectedIndex > #menu.levelRects then
+                local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
+                scrollBar.value = math.min(1, scrollBar.value + 0.1)
+            end
+        elseif key == "down" then
+            if menu.selectedIndex > #menu.levelRects then
+                local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
+                scrollBar.value = math.max(scrollBar.value - 0.1, 0)
+            end
         end
     end
 end
