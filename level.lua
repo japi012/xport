@@ -259,9 +259,6 @@ local function moveCells(level, agentRegion, direction)
                 local nx, ny = applyDirection(level, origin, direction)
                 if not (nx and ny) then movable = false end
                 targets = findCells(level.cells, nx, ny)
-                for _, target in ipairs(targets) do
-                    if target.cell == Cell.Wall then movable = false end
-                end
                 if movable then
                     -- origin moves moved here
                     local origin_move = {
@@ -363,6 +360,12 @@ local function handleTeleports(level, direction)
 	return events
 end
 
+local function secondPassEvents(level, teleports)
+    local occupied = {}
+    for _, event in ipairs(teleports) do
+        occupied[event.to_x][event.to_y] = event.timer.region
+end
+
 local function isWinning(level)
     local winning = true
     for _, cell in ipairs(level.cells) do
@@ -459,7 +462,7 @@ function Level.turn(level, key)
         local teleportbatch = handleTeleports(level, direction) -- also includes origin moves
 
         if #teleportbatch == 0 then break end
-        -- teleports = secondPassEvents(level, teleports)
+        teleports = secondPassEvents(level, teleports)
         for _, teleport in ipairs(teleportbatch) do
             runEvent(level, teleport)
         end
@@ -467,7 +470,8 @@ function Level.turn(level, key)
     end
 
     append(teleports, events) -- very important that teleports get undone before moves
-    if #teleports ~= 0 then table.insert(level.eventLog, teleports) end
+    if #teleports ~= 0 then print("what")
+        table.insert(level.eventLog, teleports) end
 
     if isWinning(level) then
         state.levelClears[state.levelIndex] = true

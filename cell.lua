@@ -19,7 +19,12 @@ Cell = {
 function Cell.draw(cell, level, cellSize)
     local expAnimTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
-    local w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
+    local w
+    if cell.animTime == 1 then
+        w = 1
+    else
+        w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
+    end 
     local h = 2 - w
 
     if cell.lastY == cell.y then h, w = w, h end
