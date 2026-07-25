@@ -96,8 +96,8 @@ end
 function forceUpdateGraphics()
     state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.5
     globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
-    globals.levelFont = love.graphics.newFont(globals.levelFontFile, state.cellSize * 0.9)
-    globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, state.cellSize * 0.7)
+    globals.levelFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.067)
+    globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.05)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
     if state.mode == Mode.Gameplay then
@@ -218,38 +218,37 @@ function love.load()
             "4 - Welcome to XPORT",
         },{
             [[
-            ####################
-            #.......############
-            #.......############
-            #P..A...###........#
-            #..B.##.###..#######
-            #....#..####.#######
-            ######.......#######
-            ###########..#######
-            ####################
+            #########
+            #.......#
+            #.......#
+            #P..A...#
+            #..BB##.#
+            #....##.#
+            #######.#
+            #########
             ]],
             [[
-            ####################
-            #.......############
-            #.......############
-            #...6...###........#
-            #....##.###..#######
-            #....#..####.#######
-            ######.......#######
-            ###########..#######
-            ####################
+            #########
+            #.......#
+            #.......#
+            #...5...#
+            #....##.#
+            #....##.#
+            #######.#
+            #########
             ]],
             [[
-            ####################
-            #.......############
-            #.......############
-            #.......###.......G#
-            #....##.###..#######
-            #....#..####.#######
-            ######.......#######
-            ###########..#######
-            ####################
+            #########
+            #.......#
+            #.......#
+            #.......#
+            #....##.#
+            #....##G#
+            #######.#
+            #########
             ]],
+            "5 - Point of No Return",
+            ""
         },{
             [[
             ########
