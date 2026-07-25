@@ -375,7 +375,7 @@ function love.load()
     state.level = Level.fromGrid(globals.levels[state.levelIndex])
     state.levelClears = {}
 
-    state.menu = Menu.new(750, 500, 100, 100, {
+    state.menu = Menu.new(500, 500, {
         {
             x = 30,
             y = 30,
@@ -433,13 +433,14 @@ function love.load()
         },
     }, {
         {
-            x = 400,
+            x = 370,
             y = 300,
             h = 150,
             value = state.sfxVolume,
             connect = function(value)
                 state.sfxVolume = value
-            end
+            end,
+            label = "sfx"
         },
         {
             x = 450,
@@ -448,7 +449,8 @@ function love.load()
             value = state.musicVolume,
             connect = function(value)
                 state.musicVolume = value
-            end
+            end,
+            label = "music"
         }
     }, true)
 

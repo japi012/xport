@@ -5,14 +5,10 @@ require "level"
 Menu = {}
 Menu.scrollBarWidth = 20
 
-function Menu.new(width, height, borderX, borderY, levelRects, scrollBars, debugDraw)
+function Menu.new(width, height, levelRects, scrollBars, debugDraw)
     return {
         width = width,
         height = height,
-        size = math.min(width, height),
-
-        minSize = math.min(width, height),
-        maxSize = math.max(width, height),
 
         levelRects = levelRects,
         scrollBars = scrollBars,
@@ -23,7 +19,8 @@ function Menu.new(width, height, borderX, borderY, levelRects, scrollBars, debug
 
         marginX = 0,
         marginY = 0,
-        pixelSize = 0,
+        pixelWidth = 0,
+        pixelHeight = 0,
 
         selectedIndex = nil,
         lastSelectedIndex = nil,
@@ -32,9 +29,15 @@ function Menu.new(width, height, borderX, borderY, levelRects, scrollBars, debug
 end
 
 function Menu.onResize(menu)
-    menu.pixelSize = math.min(state.width, state.height)
-    menu.marginX = (state.width - menu.pixelSize) / 2
-    menu.marginY = (state.height - menu.pixelSize) / 2
+    -- width height
+    if menu.width > menu.height then
+    elseif menu.height > menu.width then
+    else
+        menu.pixelWidth = math.min(state.width, state.height)
+        menu.pixelHeight = math.min(state.width, state.height)
+        menu.marginX = (state.width - menu.pixelWidth) / 2
+        menu.marginY = (state.height - menu.pixelHeight) / 2
+    end
 end
 
 local function pointInRect(x, y, rx, ry, rw, rh)
@@ -82,10 +85,10 @@ function Menu.update(menu, dt)
     for i, scrollBar in ipairs(menu.scrollBars) do
         if not love.mouse.isDown(1) then scrollBar.sliding = false end
 
-        local realX = menu.marginX + (scrollBar.x / menu.size) * menu.pixelSize
-        local realY = menu.marginY + (scrollBar.y / menu.size) * menu.pixelSize
-        local realW = (Menu.scrollBarWidth / menu.size) * menu.pixelSize
-        local realH = (scrollBar.h / menu.size) * menu.pixelSize
+        local realX = menu.marginX + (scrollBar.x / menu.width) * menu.pixelWidth
+        local realY = menu.marginY + (scrollBar.y / menu.height) * menu.pixelHeight
+        local realW = (Menu.scrollBarWidth / menu.width) * menu.pixelWidth
+        local realH = (scrollBar.h / menu.height) * menu.pixelHeight
 
         if pointInRect(mx, my, realX, realY, realW, realH) then
             hover(menu)
@@ -108,10 +111,10 @@ function Menu.update(menu, dt)
     end
 
     for _, rect in ipairs(menu.levelRects) do
-        local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
-        local realY = menu.marginY + (rect.y / menu.size) * menu.pixelSize
-        local realW = (rect.w / menu.size) * menu.pixelSize
-        local realH = (rect.h / menu.size) * menu.pixelSize
+        local realX = menu.marginX + (rect.x / menu.width) * menu.pixelWidth
+        local realY = menu.marginY + (rect.y / menu.height) * menu.pixelHeight
+        local realW = (rect.w / menu.width) * menu.pixelWidth
+        local realH = (rect.h / menu.height) * menu.pixelHeight
 
         if pointInRect(mx, my, realX, realY, realW, realH) then
             hover(menu)
@@ -150,10 +153,10 @@ function Menu.keypressed(menu, key)
     	if key == "space" or key == "return" then
             if menu.selectedIndex <= #menu.levelRects then
                 local rect = menu.levelRects[menu.selectedIndex]
-                local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
-                local realY = menu.marginY + (rect.y / menu.size) * menu.pixelSize
-                local realW = (rect.w / menu.size) * menu.pixelSize
-                local realH = (rect.h / menu.size) * menu.pixelSize
+                local realX = menu.marginX + (rect.x / menu.width) * menu.pixelWidth
+                local realY = menu.marginY + (rect.y / menu.height) * menu.pixelHeight
+                local realW = (rect.w / menu.width) * menu.pixelWidth
+                local realH = (rect.h / menu.height) * menu.pixelHeight
 
                 rect.clicked = true
                 Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
@@ -177,13 +180,16 @@ function Menu.draw(menu)
     love.graphics.setBackgroundColor(0, 0, 0)
     if menu.debugDraw then
         love.graphics.setColor(0.2, 0.2, 0.2)
-        love.graphics.rectangle("fill", menu.borderX, menu.borderY, state.width - menu.borderX * 2, state.height - menu.borderY * 2)
+        -- love.graphics.rectangle("fill",
+            -- menu.borderX, menu.borderY, state.width - menu.borderX * 2, state.height - menu.borderY * 2)
+        love.graphics.rectangle("fill",
+            menu.marginX / 2, menu.marginY / 2, state.width - menu.marginX, state.height - menu.marginY)
 
         for i, rect in ipairs(menu.levelRects) do
-            local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
-            local realY = menu.marginY + (rect.y / menu.size) * menu.pixelSize
-            local realW = (rect.w / menu.size) * menu.pixelSize
-            local realH = (rect.h / menu.size) * menu.pixelSize
+            local realX = menu.marginX + (rect.x / menu.width) * menu.pixelWidth
+            local realY = menu.marginY + (rect.y / menu.height) * menu.pixelHeight
+            local realW = (rect.w / menu.width) * menu.pixelWidth
+            local realH = (rect.h / menu.height) * menu.pixelHeight
 
             if (rect.hovering or menu.selectedIndex == i) and state.levelClears[rect.levelIndex] then
                 love.graphics.setColor(0.5, 0, 0)
@@ -207,10 +213,10 @@ function Menu.draw(menu)
     end
 
     for i, scrollBar in ipairs(menu.scrollBars) do
-        local realX = menu.marginX + (scrollBar.x / menu.size) * menu.pixelSize
-        local realY = menu.marginY + (scrollBar.y / menu.size) * menu.pixelSize
-        local realW = (Menu.scrollBarWidth / menu.size) * menu.pixelSize
-        local realH = (scrollBar.h / menu.size) * menu.pixelSize
+        local realX = menu.marginX + (scrollBar.x / menu.width) * menu.pixelWidth
+        local realY = menu.marginY + (scrollBar.y / menu.height) * menu.pixelHeight
+        local realW = (Menu.scrollBarWidth / menu.width) * menu.pixelWidth
+        local realH = (scrollBar.h / menu.height) * menu.pixelHeight
 
         love.graphics.setColor(0.7, 0.7, 0.7)
         love.graphics.rectangle("fill", realX, realY, realW, realH)
@@ -221,6 +227,11 @@ function Menu.draw(menu)
             love.graphics.setColor(1, 1, 1)
         end
         love.graphics.rectangle("fill", realX, realY + (1 - scrollBar.value) * (realH- realW), realW, realW)
+
+        local fontWidth = globals.tutorialFont:getWidth(scrollBar.label)
+        local fontHeight = globals.tutorialFont:getHeight()
+        love.graphics.print(scrollBar.label, globals.tutorialFont,
+            realX - fontWidth / 2 + realW / 2, realY + realH + fontHeight / 2)
     end
     love.graphics.setColor(1, 1, 1)
 end
