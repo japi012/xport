@@ -1,4 +1,5 @@
 local love = require "love"
+local Palette = require "palette"
 if Cell ~= nil then return Cell end
 
 local function makeType(drawLayer)

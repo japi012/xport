@@ -1,5 +1,6 @@
 local love = require "love"
 local Cell = require "cell"
+local Palette = require "palette"
 local Animation = require "anim"
 
 Level = {}
