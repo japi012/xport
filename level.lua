@@ -51,7 +51,8 @@ function Level.new(height, width, cells, palette)
         winning = false,
         animationTime = 0,
         layers = {},
-        eventLog = {}
+        eventLog = {},
+        goalPlaying = false
     }
 
     table.sort(result.cells, function(a, b)
@@ -398,6 +399,8 @@ local function runEvent(level, event)
 end
 
 function Level.turn(level, key)
+    if level.goalPlaying then return end
+
     local direction
     if key == "up" then
         direction = Direction.Up
@@ -445,6 +448,8 @@ function Level.turn(level, key)
             Animation.delayedStart(startDelay, Level.levelClearAnim(goalAnimTime, level, goal))
         end
         Animation.delayedStart(startDelay + goalAnimTime, Level.levelEndAnim(endAnimTime))
+
+        level.goalPlaying = true
     end
 end
 
