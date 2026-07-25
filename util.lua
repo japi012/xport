@@ -75,6 +75,20 @@ function allWithPredicate(list, predicate)
     return found
 end
 
+-- borrowed from https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console
+function dump(o)
+   if type(o) == 'table' then
+      local s = '{ '
+      for k,v in pairs(o) do
+         if type(k) ~= 'number' then k = '"'..dump(k)..'"' end
+         s = s .. '['..dump(k)..'] = ' .. dump(v) .. ','
+      end
+      return s .. '} '
+   else
+      return tostring(o)
+   end
+end
+
 -- SPECIAL ENUM FUNCTIONS
 Enum = {}
 

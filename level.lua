@@ -14,10 +14,10 @@ Direction = {
 Event = {
     Move = {},
     TimerChange = {},
-    -- Reset = {},
     Teleport = {}, -- (i think this could just be part of Move but also maybe it might be useful to separate it)
     -- future miney here: yeah it's definitely better to separate it
-    OriginMove = {}
+    OriginMove = {},
+    Reset = {}
 }
 
 -- maybe move these three to a "util.lua"?
@@ -367,10 +367,7 @@ local function secondPassEvents(level, teleports)
     local occupied = {}
     local bannedregions = {}
     for _, event in ipairs(teleports) do
-        print(event.to_x, event.to_y, event.timer.region)
-        print(tostring(event.to_x) .. tostring(event.to_y), occupied[tostring(event.to_x) .. tostring(event.to_y)])
         if occupied[tostring(event.to_x) .. tostring(event.to_y)] and occupied[tostring(event.to_x) .. tostring(event.to_y)] ~= event.timer.region then
-            print("here", event.to_x, event.to_y, event.timer.region)
             bannedregions[event.timer.region] = true
             bannedregions[occupied[tostring(event.to_x) .. tostring(event.to_y)]] = true
         else
@@ -378,7 +375,6 @@ local function secondPassEvents(level, teleports)
         end
     end
 
-    print(bannedregions['A'], bannedregions['B'])
     local unbannedevents = {}
     for _, event in ipairs(teleports) do
         if not bannedregions[event.timer.region] then
@@ -427,8 +423,20 @@ local function runUndo(level)
         elseif event.type == Event.OriginMove then
             event.cell.x = event.from_x
             event.cell.y = event.from_y
+        elseif event.type == Event.Reset then
+            level = clone(event.backup)
         end
     end
+
+    return level.eventLog
+end
+
+local function runUndos(level)
+    local backup = clone(level)
+    while true do
+        if not runUndo(level) then break end
+    end
+    return backup
 end
 
 local function runEvent(level, event)
@@ -444,6 +452,8 @@ local function runEvent(level, event)
     elseif event.type == Event.OriginMove then
         event.cell.x = event.to_x
         event.cell.y = event.to_y
+    elseif event.type == Event.Reset then
+        -- not made to run, just undo
     end
 end
 
@@ -467,9 +477,18 @@ function Level.turn(level, key)
         direction = Direction.Right
     else
         if key == "z" then
-            runUndo(level)
+            local log = runUndo(level)
+            if log then print(#log) else print("empty") end
+        elseif key == "r" then
+            local l = runUndos(level)
+            local events = {}
+            local reset = {
+                type = Event.Reset,
+                backup = l.eventLog
+            }
+            table.insert(events,reset)
+            table.insert(level.eventLog, events)
         end
-
         return
     end
 
