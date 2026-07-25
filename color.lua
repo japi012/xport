@@ -139,14 +139,7 @@ function Color.lerp(from, to, i)
 end
 
 function Color.lerpHSV(from, to, i)
-    print ("  from " .. tostring(from) .. " " .. tostring(Color.fromHSV(from.h, from.s, from.v)))
-    print ("  from " .. tostring(Color.new(Color.fromHSV(from.h, from.s, from.v)())))
-    print ("    to " .. tostring(to) .. " " .. tostring(Color.fromHSV(to.h, to.s, to.v)))
-    print ("    to " .. tostring(Color.new(Color.fromHSV(to.h, to.s, to.v)())))
-
-    local result = Color.fromHSV(lerp(from.h, to.h, i), lerp(from.s, to.s, i), lerp(from.v, to.v, i))
-    print ("result " .. tostring(Color.new(result())) .. " " .. tostring(result))
-    return result
+    return Color.fromHSV(lerp(from.h, to.h, i), lerp(from.s, to.s, i), lerp(from.v, to.v, i))
 end
 
 col = Color.new
