@@ -205,20 +205,23 @@ end
 KEYS_PRESSED = {}
 REPEAT_START = 0.5
 REPEAT_INTERVAL = 0.05
-RECENT_KEY = ''
+
+local pressTime = 0
+local repeatTime = 0
 
 function love.update(dt)
     updateAnimations(dt)
     updateGraphics()
 
-    for key, data in pairs(KEYS_PRESSED) do
-        data.time = data.time + dt
+    local currentKey = KEYS_PRESSED[#KEYS_PRESSED]
+    if currentKey ~= nil then
+        pressTime = pressTime + dt
 
-        if RECENT_KEY == key and data.time > REPEAT_START then
-            data.repeatTime = data.repeatTime + dt
-            if data.repeatTime > REPEAT_INTERVAL then
-                data.repeatTime = 0
-                pressedKey(key)
+        if pressTime > REPEAT_START then
+            repeatTime = repeatTime + dt
+            if repeatTime > REPEAT_INTERVAL then
+                repeatTime = 0
+                pressedKey(currentKey)
             end
         end
     end
@@ -243,43 +246,8 @@ end
 
 function love.keypressed(key)
     pressedKey(key)
-    RECENT_KEY = key
-    KEYS_PRESSED[key] = {
-        time = 0,
-        repeatTime = 0
-    }
-
-    -- animation test
-    if key == "t" then
-        local anim = Animation.chained(
-            Animation.new(3.0, function(self, progress)
-                local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-                local progress = easeInOutCubic(progress)
-                local width = love.graphics.getWidth()
-                local height = love.graphics.getHeight()
-                local scale = progress * highScale
-                love.graphics.push()
-                love.graphics.translate(width / 2, height / 2)
-                love.graphics.rotate(progress * 8 * math.pi)
-                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
-                love.graphics.pop()
-            end),
-            Animation.new(2.0, function(self, progress)
-                local highScale = math.min(love.graphics.getWidth() / 2, love.graphics.getHeight() / 2)
-                local progress = easeInOutCubic(progress)
-                local width = love.graphics.getWidth()
-                local height = love.graphics.getHeight()
-                local scale = (1 - easeInBack(progress)) * highScale
-                love.graphics.setColor(1, 1, 1, 1 - easeInBack(progress))
-                love.graphics.push()
-                love.graphics.translate(width / 2, height / 2)
-                love.graphics.rectangle("fill", -scale / 2, -scale / 2, scale, scale)
-                love.graphics.pop()
-                love.graphics.setColor(1, 1, 1)
-            end)
-        )
-        Animation.start(anim)
-    end
+    keyClear(key, 0)
+    KEYS_PRESSED[#KEYS_PRESSED+1] = key
 end
 
 function pressedKey(key)
@@ -289,5 +257,12 @@ function pressedKey(key)
 end
 
 function love.keyreleased(key)
-    KEYS_PRESSED[key] = nil
+    keyClear(key, (#KEYS_PRESSED > 0) and (REPEAT_START * 0.5) or 0)
+end
+
+function keyClear(key, time)
+    pressTime = time
+    repeatTime = 0
+    local index = indexOf(KEYS_PRESSED, key)
+    table.remove(KEYS_PRESSED, index)
 end

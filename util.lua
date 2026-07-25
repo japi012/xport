@@ -9,6 +9,13 @@ function elem(t, item)
     return false
 end
 
+function indexOf(t, item)
+    for k, i in ipairs(t) do
+        if i == item then return k end
+    end
+    return -1
+end
+
 function append(t1, t2)
     for _, i in ipairs(t2) do
         table.insert(t1, i)
