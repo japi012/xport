@@ -492,6 +492,7 @@ function Level.turn(level, key)
             state.level = Level.fromGrid(globals.man)
             Animation.start(Level.fadeFromBlack(1))
         end
+        Sounds.levelRestart:play()
         forceUpdateGraphics()
         return
     end
@@ -585,7 +586,7 @@ function Level.levelClearAnim(duration, level, goal)
         local scale =
             math.max(state.width, state.height) * progress * 2
         local angle = progress * 2 * math.pi
-        love.graphics.setColor(0.98, 0.875, 0.678)
+        love.graphics.setColor(255 / 255, 193 / 255, 247 / 255)
         drawRotatedRectangle("fill",
             (goal.x + 0.5) * state.cellSize + (state.width - level.width * state.cellSize) / 2,
             (goal.y + 0.5) * state.cellSize + (state.height - level.height * state.cellSize) / 2,
@@ -598,7 +599,7 @@ function Level.levelEndAnim(duration)
     return Animation.new(duration, function(self, progress)
         local progress = easeOutCubic(progress)
         local scale = math.max(state.width, state.height)
-        love.graphics.setColor(0.98, 0.875, 0.678, 1 - progress)
+        love.graphics.setColor(255 / 255, 193 / 255, 247 / 255, 1 - progress)
         drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
         love.graphics.setColor(1, 1, 1)
     end, function()

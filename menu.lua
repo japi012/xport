@@ -46,8 +46,9 @@ end
 
 local function hover(menu)
     local cursor = love.mouse.getCursor()
-    if cursor == nil or cursor:getType() ~= "hand" then
+    if cursor == nil or cursor:getType() ~= "hand" and not menu.levelOpening then
         love.mouse.setCursor(globals.mouseCursors.hand)
+        Sounds.hoverUI:play()
     end
 
     if menu.selectedIndex ~= nil then
@@ -75,10 +76,19 @@ function Menu.update(menu, dt)
     local hovering = false
 
     local alreadySliding = false
+    local alreadyHovering = false
 
     for _, scrollBar in ipairs(menu.scrollBars) do
+        local realX = menu.marginX + (scrollBar.x / menu.width) * menu.pixelWidth
+        local realY = menu.marginY + (scrollBar.y / menu.height) * menu.pixelHeight
+        local realW = (Menu.scrollBarWidth / menu.width) * menu.pixelWidth
+        local realH = (scrollBar.h / menu.height) * menu.pixelHeight
+
         if scrollBar.sliding then
             alreadySliding = true
+        end
+        if pointInRect(mx, my, realX, realY, realW, realH) then
+            alreadyHovering = true
         end
     end
 
@@ -91,8 +101,9 @@ function Menu.update(menu, dt)
         local realH = (scrollBar.h / menu.height) * menu.pixelHeight
 
         if pointInRect(mx, my, realX, realY, realW, realH) then
-            hover(menu)
-
+            if not alreadyHovering then
+                hover(menu)
+            end
             if love.mouse.isDown(1) then
                 if not alreadySliding then
                     scrollBar.sliding = true
@@ -125,6 +136,7 @@ function Menu.update(menu, dt)
                 rect.clicked = true
                 Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
                 menu.levelOpening = true
+                Sounds.selectUI:play()
                 break
             end
         else
@@ -138,12 +150,14 @@ end
 
 function Menu.keypressed(menu, key)
     if key == "tab" or key == "right" or key == "d" then
+        Sounds.hoverUI:play()
         if not menu.selectedIndex or menu.selectedIndex >= #menu.scrollBars + #menu.levelRects then
             menu.selectedIndex = 1
         else
             menu.selectedIndex = menu.selectedIndex + 1
         end
     elseif key == "left" or key == "a" then
+        Sounds.hoverUI:play()
         if not menu.selectedIndex or menu.selectedIndex <= 1 then
             menu.selectedIndex = #menu.scrollBars + #menu.levelRects
         else
@@ -158,6 +172,7 @@ function Menu.keypressed(menu, key)
                 local realW = (rect.w / menu.width) * menu.pixelWidth
                 local realH = (rect.h / menu.height) * menu.pixelHeight
 
+                Sounds.selectUI:play()
                 rect.clicked = true
                 Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
                 menu.levelOpening = true
@@ -193,9 +208,9 @@ function Menu.draw(menu)
             local realW = (rect.w / menu.width) * menu.pixelWidth
             local realH = (rect.h / menu.height) * menu.pixelHeight
 
-            if (rect.hovering or menu.selectedIndex == i) and state.levelClears[rect.levelIndex] then
+            if (rect.hovering or menu.selectedIndex == i) and state.levelClears[rect.levelIndex] and not menu.levelOpening then
                 love.graphics.setColor(0.5, 0, 0)
-            elseif (rect.hovering or menu.selectedIndex == i) then
+            elseif (rect.hovering or menu.selectedIndex == i) and not menu.levelOpening then
                 love.graphics.setColor(1, 0, 0)
             elseif state.levelClears[rect.levelIndex] then
                 love.graphics.setColor(0.5, 0.5, 0.5)
@@ -246,7 +261,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                 local scale =
                     math.max(state.width, state.height) * progress * 2
                 local angle = progress * 2 * math.pi
-                love.graphics.setColor(0.98, 0.875, 0.678)
+                love.graphics.setColor(255 / 255, 193 / 255, 247 / 255)
                 drawRotatedRectangle("fill",
                     realX + realW / 2, realY + realH / 2,
                     scale, scale, angle)
@@ -257,7 +272,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
             0.5, function(self, progress)
                 local progress = easeOutCubic(progress)
                 local scale = math.max(state.width, state.height)
-                love.graphics.setColor(0.98, 0.875, 0.678, 1 - progress)
+                love.graphics.setColor(255 / 255, 193 / 255, 247 / 255, 1 - progress)
                 drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
                 love.graphics.setColor(1, 1, 1)
             end, function()

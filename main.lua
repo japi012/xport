@@ -220,7 +220,7 @@ function love.load()
             [[
             #########
             #.......#
-            #.......#
+            #...#...#
             #P..A...#
             #..BB##.#
             #....##.#
@@ -467,18 +467,19 @@ function love.load()
 
     local iconImageData = {}
     local iconAnimCount = 12
-    local iconAnims = {}
+    -- local iconAnims = {}
     for i=1,iconAnimCount do
         local imageData = love.image.newImageData("icons/square" .. tostring(i) .. ".png")
         table.insert(iconImageData, imageData)
 
-        local anim = Animation.new(1 / iconAnimCount, nil, function()
-            love.window.setIcon(iconImageData[i])
-        end)
-        table.insert(iconAnims, anim)
+        -- local anim = Animation.new(1 / iconAnimCount, nil, function()
+        --     love.window.setIcon(iconImageData[i])
+        -- end)
+        -- table.insert(iconAnims, anim)
     end
-    local iconAnimation = Animation.chainArrayLoop(iconAnims)
-    Animation.start(iconAnimation)
+    -- local iconAnimation = Animation.chainArrayLoop(iconAnims)
+    -- Animation.start(iconAnimation)
+    love.window.setIcon(iconImageData[7])
 
     globals.mouseCursors = {
         ["hand"] = love.mouse.getSystemCursor("hand"),
