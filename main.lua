@@ -162,16 +162,18 @@ function love.load()
             x = 450,
             y = 300,
             h = 150,
-            value = 0,
-            connect = print
+            value = 0.5,
+            connect = function(value)
+                state.musicVolume = value
+            end
         },
         {
             x = 400,
             y = 300,
             h = 150,
-            value = 0,
+            value = 0.5,
             connect = function(value)
-                print(tostring(value) .. " but like sfx")
+                state.sfxVolume = value
             end
         }
     }, true)
