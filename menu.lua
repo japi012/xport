@@ -250,6 +250,8 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
             end, function()
                 noHover(menu)
                 state.levelIndex = rect.levelIndex
+                if (state.levelIndex == 6) then globals.entered_level_six = globals.entered_level_six + 1
+                else globals.entered_level_six = 0 end
                 state.level = Level.fromGrid(globals.levels[state.levelIndex])
                 state.mode = Mode.Gameplay
                 rect.clicked = false

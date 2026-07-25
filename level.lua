@@ -303,8 +303,8 @@ end
 local function handleTeleports(level, direction)
     local events = {}
 
-    local zerotimers = allWithPredicate(level.cells, function (cell)
-        return cell.cell == Cell.Timer and cell.val == 0
+    local zerotimers = allWithPredicate(level.cells, function(cell)
+        return cell.cell == Cell.Timer and cell.val == 0 and cell.default_val ~= 0
     end)
     for _, timer in ipairs(zerotimers) do
         -- print("here", timer.region)
@@ -484,7 +484,12 @@ function Level.turn(level, key)
     if level.goalPlaying then return end
 
     if key == "escape" then
-        state.mode = Mode.Menu
+        if (globals.entered_level_six ~= 6) then
+            state.mode = Mode.Menu
+        else
+            state.levelIndex = -6
+            state.level = Level.fromGrid(globals.man)
+        end
         forceUpdateGraphics()
         return
     end

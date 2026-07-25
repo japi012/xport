@@ -29,8 +29,54 @@ globals = {
     font = {},
     levelFont = {},
     tutorialFont = {},
+
     fontFile = "fonts/futura-pt-bold.ttf", -- NOT a placeholder
-    levelFontFile = "fonts/Comfortaa-Regular.ttf" -- *REALLY* NOT a placeholder
+    levelFontFile = "fonts/Comfortaa-Regular.ttf", -- *REALLY* NOT a placeholder,
+
+    entered_level_six = 0,
+    man = {
+        [[
+        #########
+        ##.....##
+        #.......#
+        #..A....#
+        #.......#
+        ##.....##
+        ###...###
+        ###...###
+        ###.P.###
+        ###...###
+        #########
+        ]],
+        [[
+        #########
+        ##.....##
+        #.......#
+        #..0....#
+        #.......#
+        ##.....##
+        ###...###
+        ###...###
+        ###...###
+        ###...###
+        #########
+        ]],
+        [[
+        #########
+        ##.....##
+        #.......#
+        #....G..#
+        #.......#
+        ##.....##
+        ###...###
+        ###...###
+        ###...###
+        ###...###
+        #########
+        ]],
+        "There is a man here.",
+        ""
+    }
 }
 
 local lastWidth = 0

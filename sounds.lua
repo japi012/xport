@@ -3,18 +3,20 @@ if Sounds ~= nil then return Sounds end
 
 Sounds = {}
 
-local function playSound(sound)
+local function playSound(sound, loop)
     sound.audio:stop()
     sound.audio:setPitch(math.random() * (sound.variation * 2) + (1 - sound.variation))
     sound.audio:setVolume(sound.volume * state.sfxVolume)
+    sound.audio:setLooping((loop ~= nil) and loop or (sound.loop))
     sound.audio:play()
 end
 
-local function newSound(filename, volume, variation)
+local function newSound(filename, volume, variation, loop)
     return {
         audio = love.audio.newSource("sounds/" .. filename, "stream"),
         variation = variation or 0.1,
         volume = volume or 0.25,
+        loop = (loop ~= nil) and loop or false,
         play = playSound
     }
 end
