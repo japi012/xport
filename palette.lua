@@ -26,7 +26,7 @@ end
 function Palette.defaultList()
     return {
         [Cell.Player] = col(1, 1, 1),
-        [Cell.Wall] = col(0.3, 0.3, 0.3),
+        [Cell.Wall] = col255(43, 39, 81),
         -- [Cell.Box] = Palette.gradient(col255(42.5, 42.5, 255), col255(255, 255, 42.5), 6),
         [Cell.Box] = Palette.gradientHSV(col255(255, 117, 247), col255(153, 16, 128), 6),
         [Cell.Timer] = {
@@ -38,8 +38,8 @@ function Palette.defaultList()
             default = Palette.gradientHSV(col255(218, 80, 195), col255(103, 10, 80), 6),
             player = col(1, 1, 1)
         },
-        [Cell.Goal] = col(0.5, 0.5, 0.5),
-        background = col255(255, 208, 249),
+        [Cell.Goal] = col(1, 1, 1),
+        background = col255(71, 38, 57),
         levelFill = col255(79, 42, 85),
         levelStroke = col255(127, 34, 153),
     }

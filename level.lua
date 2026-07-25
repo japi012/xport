@@ -1,5 +1,6 @@
 local love = require "love"
 local Cell = require "cell"
+local Sounds = require "sounds"
 local Palette = require "palette"
 local Animation = require "anim"
 local Particle = require "particles"
@@ -360,7 +361,7 @@ local function handleTeleports(level, direction)
                 timer = timer
             }
             table.insert(events, teleport)
-        else    
+        else
             for _, box in ipairs(boxes) do
                 Animation.start(Particle.teleFailParticle(box.x - timer.x + origin.x, box.y - timer.y + origin.y, level, box))
             end
@@ -507,6 +508,11 @@ function Level.turn(level, key)
     end
 
     local events = moveCells(level, 'P', direction)
+    if #events > 0 then
+        Sounds.play(Sounds.move)
+    else
+        Sounds.play(Sounds.moveFail)
+    end
 
     for _, event in ipairs(events) do
         runEvent(level, event)

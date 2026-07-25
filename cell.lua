@@ -20,13 +20,6 @@ Cell = {
 function Cell.draw(cell, level, cellSize)
     local expAnimTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
-    local w
-    if cell.animTime == 1 then
-        w = 1
-    else
-        w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
-    end
-    local h = 2 - w
 
     if cell.lastY == cell.y then h, w = w, h end
 
@@ -43,16 +36,33 @@ function Cell.draw(cell, level, cellSize)
         end
     end
 
-    love.graphics.setColor(color())
+    local r, g, b = color()
+    love.graphics.setColor(r, g, b)
+
+    local drawX = x * cellSize + (state.width - level.width * cellSize) / 2
+    local drawY = y * cellSize + (state.height - level.height * cellSize) / 2
 
     if cell.cell == Cell.Goal then
+        love.graphics.setColor(r, g, b, 0.45)
         love.graphics.setCanvas(level.layers[1])
         love.graphics.setLineWidth(5)
-        love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
-            y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
+        love.graphics.rectangle("line", drawX, drawY, cellSize, cellSize)
+
+        love.graphics.setColor(r, g, b, 0.15)
+        love.graphics.setCanvas(level.layers[5])
+        love.graphics.setLineWidth(5)
+        love.graphics.rectangle("line", drawX, drawY, cellSize, cellSize)
         love.graphics.setLineWidth(1)
 
     elseif cell.cell == Cell.Player then
+        local w
+        if cell.animTime == 1 then
+            w = 1
+        else
+            w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
+        end
+        local h = 2 - w
+
         love.graphics.setCanvas(level.layers[5])
         love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - (w - 1) * cellSize) / 2,
         y * cellSize + (state.height - level.height * cellSize - (h - 1) * cellSize) / 2, w * cellSize, h * cellSize)

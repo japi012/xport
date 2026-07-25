@@ -1,19 +1,30 @@
-Menu = {}
-
+local love = require "love"
 local Animation = require "anim"
 require "level"
 
+Menu = {}
 Menu.scrollBarWidth = 20
 
-function Menu.new(size, levelRects, scrollBars, debugDraw)
+function Menu.new(width, height, borderX, borderY, levelRects, scrollBars, debugDraw)
     return {
-        size = size,
+        width = width,
+        height = height,
+        size = math.min(width, height),
+
+        minSize = math.min(width, height),
+        maxSize = math.max(width, height),
+
         levelRects = levelRects,
         scrollBars = scrollBars,
         debugDraw = debugDraw,
+
+        borderX = borderX,
+        borderY = borderY,
+
         marginX = 0,
         marginY = 0,
         pixelSize = 0,
+
         selectedIndex = nil,
         lastSelectedIndex = nil,
         levelOpening = false
@@ -166,7 +177,7 @@ function Menu.draw(menu)
     love.graphics.setBackgroundColor(0, 0, 0)
     if menu.debugDraw then
         love.graphics.setColor(0.2, 0.2, 0.2)
-        love.graphics.rectangle("fill", menu.marginX, menu.marginY, menu.pixelSize, menu.pixelSize)
+        love.graphics.rectangle("fill", menu.borderX, menu.borderY, state.width - menu.borderX * 2, state.height - menu.borderY * 2)
 
         for i, rect in ipairs(menu.levelRects) do
             local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
