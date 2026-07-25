@@ -21,8 +21,6 @@ function Cell.draw(cell, level, cellSize)
     local expAnimTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
 
-    if cell.lastY == cell.y then h, w = w, h end
-
     local color = level.palette[cell.cell]
     while color.r == nil do
         local rootColor = color
@@ -62,6 +60,8 @@ function Cell.draw(cell, level, cellSize)
             w = cosh(1.3169578969248*(expAnimTime - 0.5)) - 0.25 -- don't worry ! that horrendous constant is just arccosh(2)
         end
         local h = 2 - w
+
+        if cell.lastY == cell.y then h, w = w, h end
 
         love.graphics.setCanvas(level.layers[5])
         love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - (w - 1) * cellSize) / 2,
