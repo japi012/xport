@@ -425,19 +425,13 @@ local function runUndo(level)
             event.cell.x = event.from_x
             event.cell.y = event.from_y
         elseif event.type == Event.Reset then
-            level = clone(event.backup)
+            event.cell.x = event.from_x
+            event.cell.y = event.from_y
+            event.cell.val = event.from_val
         end
     end
 
     return level.eventLog
-end
-
-local function runUndos(level)
-    local backup = clone(level)
-    while true do
-        if not runUndo(level) then break end
-    end
-    return backup
 end
 
 local function runEvent(level, event)
@@ -454,7 +448,10 @@ local function runEvent(level, event)
         event.cell.x = event.to_x
         event.cell.y = event.to_y
     elseif event.type == Event.Reset then
-        -- not made to run, just undo
+        Cell.startMoveAnim(event.cell)
+        event.cell.x = event.cell.initial_x
+        event.cell.y = event.cell.initial_y
+        event.cell.val = event.cell.default_val
     end
 end
 
@@ -481,13 +478,21 @@ function Level.turn(level, key)
             local log = runUndo(level)
             if log then print(#log) else print("empty") end
         elseif key == "r" then
-            local l = runUndos(level)
             local events = {}
-            local reset = {
-                type = Event.Reset,
-                backup = l.eventLog
-            }
-            table.insert(events,reset)
+
+            for _, cell in ipairs(level.cells) do
+                local reset = {
+                    type = Event.Reset,
+                    cell = cell,
+                    from_x = cell.x,
+                    from_y = cell.y,
+                    from_val = cell.val
+                }
+
+                runEvent(level, reset)
+                table.insert(events, reset)
+            end
+
             table.insert(level.eventLog, events)
         end
         return

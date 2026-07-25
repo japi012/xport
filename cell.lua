@@ -137,6 +137,9 @@ function Cell.new(x, y, id, type, region, timer)
         cell = type,
         region = region,
         val = timer,
+
+        initial_x = x,
+        initial_y = y,
         default_val = timer,
 
         draw = Cell.draw,
