@@ -245,7 +245,6 @@ function love.load()
             #########
             ]],
             "5 - Point of No Return",
-            ""
         },{
             [[
             #########
@@ -278,6 +277,7 @@ function love.load()
             #########
             ]],
             "6 - Origin Shift",
+            "Press ESCAPE to exit a level"
         },{
             [[
             ########
