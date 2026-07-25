@@ -3,6 +3,8 @@ Menu = {}
 local Animation = require "anim"
 require "level"
 
+Menu.scrollBarWidth = 20
+
 function Menu.new(size, levelRects, scrollBars, debugDraw)
     return {
         size = size,
@@ -45,6 +47,33 @@ function Menu.update(menu, dt)
 
     -- end
     local hovering = false
+
+    for _, scrollBar in ipairs(menu.scrollBars) do
+        if not love.mouse.isDown(1) then scrollBar.sliding = false end
+
+        local realX = menu.marginX + (scrollBar.x / menu.size) * menu.pixelSize
+        local realY = menu.marginY + (scrollBar.y / menu.size) * menu.pixelSize
+        local realW = (Menu.scrollBarWidth / menu.size) * menu.pixelSize
+        local realH = (scrollBar.h / menu.size) * menu.pixelSize
+
+        if pointInRect(mx, my, realX, realY, realW, realH) then
+            hover()
+
+            if love.mouse.isDown(1) then
+                scrollBar.sliding = true
+            end
+        end
+
+        if scrollBar.sliding then
+            local value = 1 - math.max(math.min((my - realY) / realH, 1), 0)
+            scrollBar.value = value
+            hovering = true
+            scrollBar.connect(value)
+        else
+            hovering = false
+        end
+    end
+
     for _, rect in ipairs(menu.levelRects) do
         local realX = menu.marginX + (rect.x / menu.size) * menu.pixelSize
         local realY = menu.marginY + (rect.y / menu.size) * menu.pixelSize
@@ -99,6 +128,20 @@ function Menu.draw(menu)
         -- love.graphics.print("XPORT by TEAM NOMCAT", globals.titleFont,
         --     padding + menu.marginX, state.height - padding + menu.marginY - fontHeight / 2)
     end
+
+    for _, scrollBar in ipairs(menu.scrollBars) do
+        local realX = menu.marginX + (scrollBar.x / menu.size) * menu.pixelSize
+        local realY = menu.marginY + (scrollBar.y / menu.size) * menu.pixelSize
+        local realW = (Menu.scrollBarWidth / menu.size) * menu.pixelSize
+        local realH = (scrollBar.h / menu.size) * menu.pixelSize
+
+        love.graphics.setColor(0.7, 0.7, 0.7)
+        love.graphics.rectangle("fill", realX, realY, realW, realH)
+
+        love.graphics.setColor(1, 1, 1)
+        love.graphics.rectangle("fill", realX, realY + (1 - scrollBar.value) * (realH- realW), realW, realW)
+    end
+    love.graphics.setColor(1, 1, 1)
 end
 
 function Menu.levelStartAnim(rect, realX, realY, realW, realH)
@@ -109,16 +152,18 @@ function Menu.levelStartAnim(rect, realX, realY, realW, realH)
                 local scale =
                     math.max(state.width, state.height) * progress * 2
                 local angle = progress * 2 * math.pi
+                love.graphics.setColor(0.98, 0.875, 0.678)
                 drawRotatedRectangle("fill",
                     realX + realW / 2, realY + realH / 2,
                     scale, scale, angle)
+                love.graphics.setColor(1, 1, 1)
             end
         ),
         Animation.new(
             0.5, function(self, progress)
                 local progress = easeOutCubic(progress)
                 local scale = math.max(state.width, state.height)
-                love.graphics.setColor(1, 1, 1, 1 - progress)
+                love.graphics.setColor(0.98, 0.875, 0.678, 1 - progress)
                 drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
                 love.graphics.setColor(1, 1, 1)
             end, function()

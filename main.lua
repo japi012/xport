@@ -153,9 +153,20 @@ function love.load()
             h = 50,
             levelIndex = 3,
         }
-    }, {}, true)
+    }, {
+        {
+            x = 450,
+            y = 300,
+            h = 100,
+            value = 0,
+            connect = function(value)
+                print(value)
+            end
+        }
+    }, true)
 
     state.mode = Mode.Menu
+    state.musicVolume = 0.5
 
     updateGraphics()
 
