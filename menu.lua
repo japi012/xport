@@ -163,11 +163,13 @@ function Menu.keypressed(menu, key)
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
                 scrollBar.value = math.min(1, scrollBar.value + 0.1)
+                scrollBar.connect(scrollBar.value)
             end
         elseif key == "down" or key == "s" then
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
                 scrollBar.value = math.max(scrollBar.value - 0.1, 0)
+                scrollBar.connect(scrollBar.value)
             end
         end
     end
