@@ -121,6 +121,7 @@ function love.load()
 
     })
     local challengePalette = Palette.list({
+
     })
     local secretPalette = Palette.list({
         [Cell.Wall] = col(0, 0, 0),

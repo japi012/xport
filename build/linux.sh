@@ -13,8 +13,14 @@ zip -v -r ./build/export/XPORT.love ./ -x "./build/*" "./.git/*" "./.gitignore" 
 
 rm -f -r ./build/export/XPORT-LINUX
 mkdir ./build/export/XPORT-LINUX
+
+if [ ! -e "./build/dependencies/love-11.5-x86_64.AppImage" ]; then
+    wget https://github.com/love2d/love/releases/download/11.5/love-11.5-x86_64.AppImage -P ./build/dependencies -O ./build/dependencies/love-11.5-x86_64.AppImage
+fi
+
+chmod +x ./build/dependencies/love-11.5-x86_64.AppImage
 cd ./build/export/XPORT-LINUX/
-../../../build/dependencies/love-11.5-x86_64.AppImage --appimage-extract
+../../dependencies/love-11.5-x86_64.AppImage --appimage-extract
 
 cat squashfs-root/bin/love ../XPORT.love > squashfs-root/bin/XPORT
 chmod +x squashfs-root/bin/XPORT

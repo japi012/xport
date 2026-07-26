@@ -49,7 +49,13 @@ end
 function Palette.list(list)
     local result = Palette.defaultList()
     for key, value in pairs(list) do
-        result[key] = value
+        if (type(value) == 'table') and (value.r == nil) then
+            for key2, value2 in pairs(list) do
+                value[key2] = value2
+            end
+        else
+            result[key] = value
+        end
     end
 
     return result
