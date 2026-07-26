@@ -473,7 +473,7 @@ function love.load()
 			#GG#..#
             #######
             ]],
-            "C2 - Bedrock",
+            "C2 - Flower Pot",
         },{
             [[
             #############
@@ -525,7 +525,7 @@ function love.load()
             #####.G#
             ########
             ]],
-            "C4 - Drill",
+            "C4 - Embed",
         },{
             [[
             #############
