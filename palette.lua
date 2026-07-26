@@ -39,6 +39,7 @@ function Palette.defaultList()
             player = col(1, 1, 1)
         },
         [Cell.Goal] = col(1, 1, 1),
+        [Cell.Tree] = col(1, 1, 1),
         background = col255(71, 38, 57),
         levelFill = col255(79, 42, 85),
         levelStroke = col255(127, 34, 153),

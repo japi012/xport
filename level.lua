@@ -319,39 +319,24 @@ local function handleTeleports(level, direction)
             if not isInBounds(level, box.x - timer.x + origin.x, box.y - timer.y + origin.y) then
                 -- print("oops out of bounds")
                 blocked = true
-                goto isBlocked -- this one is my fault though
+                break -- this one is my fault though
             end
+
             local targets = findCells(level.cells, box.x - timer.x + origin.x, box.y - timer.y + origin.y)
+            local shouldBreak = false
             for _, target in ipairs(targets) do
                 if target.cell == Cell.Player or target.cell == Cell.Wall or (target.cell == Cell.Box and target.region ~= timer.region) then
                     blocked = true
-                    goto isBlocked -- i had to. it was the only way...
+                    shouldBreak = true
+                    break
                 end
             end
-        end
-        ::isBlocked::
 
-        -- if blocked then
-        --
-        --     local movable = true
-        --     local nx, ny = applyDirection(level, origin, direction)
-        --     if not (nx and ny) then movable = false end
-        --     targets = findCells(level.cells, nx, ny)
-        --     for _, target in ipairs(targets) do
-        --         if target.cell == Cell.Wall then movable = false end
-        --     end
-        --     if movable then
-        --         ok the origin move used to be added here but now it's handled along with the other move logic
-        --         local origin_move = {
-        --             type = Event.OriginMove,
-        --             from_x = origin.x,
-        --             from_y = origin.y,
-        --             to_x = nx,
-        --             to_y = ny,
-        --             cell = origin
-        --         }
-        --         table.insert(events, origin_move)
-        --     end
+            if shouldBreak then
+                break
+            end
+        end
+
         if not blocked then
             for _, box in ipairs(boxes) do
                 local teleport = {

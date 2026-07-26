@@ -278,6 +278,7 @@ function Menu.draw(menu)
         local fontWidth = globals.menuFont:getWidth(rect.levelIndex)
         local fontHeight = globals.menuFont:getHeight()
 
+        local text
         local challenge = indexOf(globals.challengeLevels, rect.levelIndex)
         if challenge ~= -1 then
             text = "C" .. tostring(challenge)

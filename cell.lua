@@ -15,6 +15,8 @@ Cell = {
     Timer = makeType(2.5),
     Origin = makeType(2),
     Goal = makeType(3),
+
+    Tree = makeType(5),
 }
 
 function Cell.draw(cell, level, cellSize)
@@ -125,6 +127,19 @@ function Cell.draw(cell, level, cellSize)
         love.graphics.setCanvas(level.layers[3])
         drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
             (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
+
+    elseif cell.cell == Cell.Tree then
+        local scale = cellSize / 150
+        local w, h = globals.tree:getWidth() * scale, globals.tree:getHeight() * scale
+        love.graphics.setCanvas(level.layers[5])
+        love.graphics.draw(
+            globals.tree,
+            (x + 0.5) * cellSize + (state.width - level.width * cellSize - w) / 2,
+            (y + 0.5) * cellSize + (state.height - level.height * cellSize + cellSize * 1.5) / 2 - h,
+            0,
+            scale,
+            scale
+        )
     end
     love.graphics.setCanvas()
 end
@@ -168,6 +183,8 @@ function Cell.fromChar(x, y, id, character)
         return Cell.new(x, y, id, Cell.Box, character)
     elseif character == "P" then
         return Cell.new(x, y, id, Cell.Player, character)
+    elseif character == "T" then
+        return Cell.new(x, y, id, Cell.Tree, character)
     end
 end
 

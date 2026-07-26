@@ -43,12 +43,13 @@ globals = {
     levelFontFile = "fonts/Comfortaa-Regular.ttf", -- *REALLY* NOT a placeholder,
 
     entered_level_six = 0,
+    tree = love.graphics.newImage("tree.png"),
     man = {
         [[
         #########
         ##.....##
         #.......#
-        #..A....#
+        #..AT...#
         #.......#
         ##.....##
         ###...###
