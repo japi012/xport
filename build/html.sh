@@ -23,5 +23,5 @@ cp -f ./build/export/XPORT.love ./build/export/XPORT-WEB/XPORT.love
 rm -f ./build/export/XPORT-WEB/nogame.love
 
 cd ./build/export/XPORT-WEB
-python -m http.server 8000
+python -m http.server
 cd "$SCRIPT_DIR"
