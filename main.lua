@@ -188,7 +188,7 @@ function love.load()
             #########
             ]],
             "1 - Déjà Vu",
-            "Use WASD or the arrow keys to move"
+            "Use WASD or the arrow keys to move."
         },{
             [[
             #########
@@ -221,7 +221,7 @@ function love.load()
             #########
             ]],
             "2 - Sokoban",
-            "Use Z to undo and R to reset"
+            "Use Z to undo and R to reset."
         },{
             [[
             #################
@@ -254,7 +254,7 @@ function love.load()
             #################
             ]],
             "3 - Joined Together",
-            "Multiblocks can move as one unit"
+            "Multiblocks can move as one unit."
         },{
             [[
             ########
@@ -315,6 +315,7 @@ function love.load()
             #########
             ]],
             "5 - Point of No Return",
+            "Press ESCAPE or BACKSPACE to exit level."
         },{
             [[
             ########
@@ -347,7 +348,7 @@ function love.load()
 			########
             ]],
             "6 - Origin Shift",
-            "Press ESCAPE to exit level"
+            "There is a room in between."
         },{
             [[
             #######
@@ -376,7 +377,7 @@ function love.load()
 			##G#G##
             #######
             ]],
-            "7 - Nailing it",
+            "7 - Nailing It",
         },{
             [[
             ###############
@@ -405,7 +406,7 @@ function love.load()
 			##...........##
             ###############
             ]],
-            "8 - A bit of a stretch",
+            "8 - A Bit of a Stretch",
         },{
             [[
             #########
@@ -463,7 +464,7 @@ function love.load()
 			##G#G#G#G##
             ###########
             ]],
-            "10 - Screwing it",
+            "10 - Screwing It",
         },{
             [[
             #######
