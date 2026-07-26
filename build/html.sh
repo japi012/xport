@@ -22,7 +22,8 @@ cp -f ./build/html-overrides/index.html ./build/export/XPORT-WEB/index.html
 cp -f ./build/export/XPORT.love ./build/export/XPORT-WEB/XPORT.love
 rm -f ./build/export/XPORT-WEB/nogame.love
 
-zip -v -r ./build/export/XPORT-WEB.zip ./build/export/XPORT-WEB/
+cd ./build/export/XPORT-WEB/
+zip -v -r -9 ../XPORT-WEB.zip ./
 
 cd ./build/export/XPORT-WEB
 python -m http.server
