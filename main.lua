@@ -118,10 +118,26 @@ end
 function love.load()
     local firstPalette = Palette.defaultList()
     local secondPalette = Palette.list({
-
+        [Cell.Wall] = col255(54, 63, 105),
+        [Cell.Box] = Palette.gradientHSV(col255(95, 50, 225), col255(43, 6, 100), 6),
+        [Cell.Origin] = {
+            default = Palette.gradientHSV(col255(110, 90, 255), col255(87, 45, 200), 6),
+            player = col(1, 1, 1)
+        },
+        background = col255(13, 13, 26),
+        levelFill = col255(25, 25, 45),
+        levelStroke = col255(0, 0, 255),
     })
     local challengePalette = Palette.list({
-
+        [Cell.Wall] = col255(147, 35, 30),
+        [Cell.Box] = Palette.gradientHSV(col255(230, 17, 47), col255(153, 6, 20), 6),
+        [Cell.Origin] = {
+            default = Palette.gradientHSV(col255(130, 27, 51), col255(70, 7, 20), 6),
+            player = col(1, 1, 1)
+        },
+        background = col255(29, 1, 6),
+        levelFill = col255(51, 3, 8),
+        levelStroke = col255(255, 0, 0),
     })
     local secretPalette = Palette.list({
         [Cell.Wall] = col(0, 0, 0),
@@ -268,6 +284,8 @@ function love.load()
 			########
             ]],
             "4 - Welcome to XPORT",
+            "Exhaust the timer!",
+            "o lili e ilo tenpo!"
         },{
             [[
             #########
@@ -358,7 +376,7 @@ function love.load()
 			##G#G##
             #######
             ]],
-            "7 - Impulse",
+            "7 - Nailing it",
         },{
             [[
             ###############
@@ -387,7 +405,7 @@ function love.load()
 			##...........##
             ###############
             ]],
-            "8 - Outreach",
+            "8 - A bit of a stretch",
         },{
             [[
             #########
@@ -445,7 +463,7 @@ function love.load()
 			##G#G#G#G##
             ###########
             ]],
-            "10 - Hammering",
+            "10 - Screwing it",
         },{
             [[
             #######
@@ -474,13 +492,13 @@ function love.load()
 			###.###
             #######
             ]],
-            "C1 - Delayed",
+            "C1 - RE: House Flipper",
         },{
             [[
             #######
             #.....#
-            #..BC.#
-            ##..A.#
+            #..CA.#
+            ##..E.#
             #.P...#
 			#..#..#
             #######
@@ -508,9 +526,9 @@ function love.load()
             [[
             ###########
             #......####
-            #..B...####
+            #..C...####
             #..P.#.A..#
-			#..C...####
+			#..E...####
 			#......####
             ###########
             ]],
@@ -561,7 +579,7 @@ function love.load()
             ########
             #.....##
             #.....##
-            #.BPA.##
+            #.FPA.##
             #.....##
             #####..#
             ########
@@ -579,7 +597,7 @@ function love.load()
             ########
             #.....##
             #.....##
-            #.BPA.##
+            #.....##
             #.....##
             #####.G#
             ########

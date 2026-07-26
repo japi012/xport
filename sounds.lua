@@ -41,8 +41,6 @@ function Music.play(music, duration)
         end
     end
     if state.currentMusic then
-        print(state.currentMusic.filename)
-        print(music.filename)
         state.currentMusic.fading = true
         local startingVolume = state.musicVolume
         local currentMusic = state.currentMusic
