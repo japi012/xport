@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=XPORT
+Comment=Sokoban on a leash
+MimeType=application/x-love-game;
+Exec=XPORT %f
+Type=Application
+Categories=Development;Game;
+Terminal=false
+Icon=XPORT
+NoDisplay=true
