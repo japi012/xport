@@ -67,7 +67,7 @@ function Level.new(height, width, cells, palette, title, text)
     return result
 end
 
-function Level.fromGrid(grid, palette)
+function Level.fromGrid(grid, paletteIndex)
     local layer1, layer2, layer3, title, text = grid[1], grid[2], grid[3], grid[4], grid[5]
     local cells = {}
 
@@ -130,7 +130,7 @@ function Level.fromGrid(grid, palette)
     end
 
     -- sort of finished
-    return Level.new(y, x, cells, palette, title, text)
+    return Level.new(y, x, cells, globals.paletteLists[paletteIndex], title, text)
 end
 
 function Level.onResize(level)
@@ -476,7 +476,7 @@ function Level.turn(level, key)
         else
             state.levelIndex = -6
             globals.entered_level_six = 6.66
-            state.level = Level.fromGrid(globals.man)
+            state.level = Level.fromGrid(globals.man, state.levelIndex)
             Animation.start(Level.fadeFromBlack(1))
             Music.play(Music.secret, 1)
         end

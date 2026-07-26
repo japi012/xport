@@ -56,7 +56,6 @@ globals = {
         ###...###
         ###.P.###
         ###...###
-        #########
         ]],
         [[
         #########
@@ -69,7 +68,6 @@ globals = {
         ###...###
         ###...###
         ###...###
-        #########
         ]],
         [[
         #########
@@ -82,7 +80,6 @@ globals = {
         ###...###
         ###...###
         ###...###
-        #########
         ]],
         "",
         "There is a man here."
@@ -119,6 +116,37 @@ function forceUpdateGraphics()
 end
 
 function love.load()
+    local firstPalette = Palette.defaultList()
+    local secondPalette = Palette.list({
+
+    })
+    local challengePalette = Palette.list({
+    })
+    local secretPalette = Palette.list({
+        [Cell.Wall] = col(0, 0, 0),
+        background = col(0, 0, 0),
+        levelFill = col255(59, 22, 65),
+        levelStroke = col255(0, 0, 0)
+    })
+
+    globals.paletteLists = {
+        [-6] = secretPalette,
+        [1] = firstPalette,
+        [2] = firstPalette,
+        [3] = firstPalette,
+        [4] = firstPalette,
+        [5] = firstPalette,
+        [6] = firstPalette,
+        [7] = secondPalette,
+        [8] = secondPalette,
+        [9] = secondPalette,
+        [10] = secondPalette,
+        [11] = challengePalette,
+        [12] = challengePalette,
+        [13] = challengePalette,
+        [14] = challengePalette,
+        [15] = challengePalette
+    }
     globals.levels = {
         {
             [[
@@ -617,7 +645,7 @@ function love.load()
     }
 
     state.levelIndex = 1
-    state.level = Level.fromGrid(globals.levels[state.levelIndex])
+    state.level = Level.fromGrid(globals.levels[state.levelIndex], state.levelIndex)
     state.levelClears = {}
 
     local menuLevelSize = 0.1

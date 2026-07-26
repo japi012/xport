@@ -383,7 +383,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                 else globals.entered_level_six = 0 end
 
                 Sounds.levelStart:play()
-                state.level = Level.fromGrid(globals.levels[state.levelIndex])
+                state.level = Level.fromGrid(globals.levels[state.levelIndex], state.levelIndex)
                 state.mode = Mode.Gameplay
 
                 rect.clicked = false
