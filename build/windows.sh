@@ -16,7 +16,7 @@ FULL_DIR=""
 cd "$SCRIPT_DIR"
 cd ..  # lmao
 
-zip -v -r ./build/export/XPORT.love ./ -x ./build -x ./.git
+zip -v -r ./build/export/XPORT.love ./ -x "./build/*" "./.git/*" "./.gitignore" @
 # rm ./build/dependencies/love-11.5-win64.zip
 
 if [ ! -e "./build/dependencies/love-11.5-win64.zip" ]; then
@@ -30,6 +30,8 @@ mv ./build/export/love-11.5-win64 ./build/export/XPORT-WINDOWS
 cat ./build/export/XPORT-WINDOWS/love.exe ./build/export/XPORT.love > ./build/export/XPORT-WINDOWS/XPORT.exe
 rm -f ./build/export/XPORT-WINDOWS/love.exe
 
-zip -v -r ./build/export/XPORT-WINDOWS.zip ./build/export/XPORT-WINDOWS/
+cd ./build/export/XPORT-WINDOWS/
+rm -f ../XPORT-WINDOWS.zip
+zip -v -r -9 ../XPORT-WINDOWS.zip ./
 
 cd "$SCRIPT_DIR"

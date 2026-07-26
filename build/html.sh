@@ -15,9 +15,17 @@ FULL_DIR=""
 cd "$SCRIPT_DIR"
 cd ..  # lmao
 
-zip -v -r ./build/export/XPORT.love ./ -x ./build -x ./.git
-love.js ./build/export/XPORT.love ./build/export/XPORT -t XPORT -v 0.0.1 -m 200000000 -c
+zip -v -r ./build/export/XPORT.love ./ -x "./build/*" "./.git/*" "./.gitignore" @
+rm -f -r ./build/export/XPORT-WEB
+git clone https://github.com/2dengine/love.js ./build/export/XPORT-WEB
+cp -f ./build/html-overrides/index.html ./build/export/XPORT-WEB/index.html
+cp -f ./build/export/XPORT.love ./build/export/XPORT-WEB/XPORT.love
+rm -f ./build/export/XPORT-WEB/nogame.love
+
+cd ./build/export/XPORT-WEB/
+rm -f ../XPORT-WEB.zip
+zip -v -r -9 ../XPORT-WEB.zip ./
 
 cd ./build/export/XPORT-WEB
-python -m http.server 8000
+python -m http.server
 cd "$SCRIPT_DIR"
