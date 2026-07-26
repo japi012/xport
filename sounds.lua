@@ -14,7 +14,7 @@ end
 
 local function newSound(filename, volume, variation, loop)
     return {
-        audio = love.audio.newSource("sounds/" .. filename, "stream"),
+        audio = love.audio.newSource("sounds/" .. filename, "static"),
         variation = variation or 0.1,
         volume = volume or 0.25,
         loop = (loop ~= nil) and loop or false,
@@ -25,7 +25,7 @@ end
 local function newMusic(filename, volume)
     return {
         filename = filename,
-        audio = love.audio.newSource("music/" .. filename, "stream"),
+        audio = love.audio.newSource("music/" .. filename, "static"),
         variation = 0,
         volume = volume or 0.25,
         loop = true,
@@ -106,19 +106,20 @@ Sounds.undo = newSound("sfx_undo.wav", 0.2, 0.2)
 Sounds.hoverUI = newSound("sfx_menu-hover.wav")
 Sounds.selectUI = newSound("sfx_menu-select.wav")
 Sounds.teleport = newSound("sfx_teleport.wav", 0.4, 0.05)
+Sounds.originMove = newSound("sfx_spawnpoint-move.wav", 0.4, 0.05)
 Sounds.levelStart = newSound("sfx_level-start.wav", nil, 0.01)
 Sounds.levelRestart = newSound("sfx_level-restart.wav", nil, 0.05)
 Sounds.levelComplete = newSound("sfx_level-complete.wav", nil, 0)
 
-Music.menu = newMusic("mus_menu.ogg", nil, 0, true)
-Music.secret = newMusic("mus_secret.ogg", nil, 0, true)
-Music.level1 = newMusic("mus_level1.ogg", nil, 0, true)
-Music.level2 = newMusic("mus_level2.ogg", nil, 0, true)
-Music.level3 = newMusic("mus_level3.ogg", nil, 0, true)
-Music.level4 = newMusic("mus_level4.ogg", nil, 0, true)
-Music.level5 = newMusic("mus_level5.ogg", nil, 0, true)
-Music.challenge1 = newMusic("mus_challenge1.ogg", nil, 0, true)
-Music.challenge2 = newMusic("mus_challenge2.ogg", nil, 0, true)
-Music.challenge3 = newMusic("mus_challenge3.ogg", nil, 0, true)
+Music.menu = newMusic("mus_menu.ogg", nil)
+Music.secret = newMusic("mus_secret.ogg", 0.125)
+Music.level1 = newMusic("mus_level1.ogg", nil)
+Music.level2 = newMusic("mus_level2.ogg", nil)
+Music.level3 = newMusic("mus_level3.ogg", nil)
+Music.level4 = newMusic("mus_level4.ogg", nil)
+Music.level5 = newMusic("mus_level5.ogg", nil)
+Music.challenge1 = newMusic("mus_challenge1.ogg", nil)
+Music.challenge2 = newMusic("mus_challenge2.ogg", nil)
+Music.challenge3 = newMusic("mus_challenge3.ogg", nil)
 
 return Sounds

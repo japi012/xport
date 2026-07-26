@@ -81,22 +81,20 @@ function Cell.draw(cell, level, cellSize)
         end
 
         love.graphics.setCanvas(level.layers[3])
-        if not timerIsZero then
-            love.graphics.setColor(color())
-        else
-            local r, g, b = color()
+        if timerIsZero then
             love.graphics.setColor(r - 0.2, g - 0.2, b - 0.2) -- REALLY stupid
         end
         love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
             y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
 
-        love.graphics.setCanvas(level.layers[2])
-        local r, g, b = color()
-        love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2) -- REALLY stupid
-        love.graphics.setLineWidth(4)
-        love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
-            y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
-        love.graphics.setLineWidth(1)
+        if (r ~= 0 or g ~= 0 or b ~= 0) then
+            love.graphics.setCanvas(level.layers[2])
+            love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2) -- REALLY stupid
+            love.graphics.setLineWidth(4)
+            love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
+                y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
+            love.graphics.setLineWidth(1)
+        end
 
     elseif cell.cell == Cell.Timer then
         local fwidth = globals.font:getWidth(cell.val)
