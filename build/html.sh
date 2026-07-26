@@ -23,6 +23,7 @@ cp -f ./build/export/XPORT.love ./build/export/XPORT-WEB/XPORT.love
 rm -f ./build/export/XPORT-WEB/nogame.love
 
 cd ./build/export/XPORT-WEB/
+rm -f ../XPORT-WEB.zip
 zip -v -r -9 ../XPORT-WEB.zip ./
 
 cd ./build/export/XPORT-WEB
