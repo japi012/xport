@@ -385,6 +385,8 @@ local function secondPassEvents(level, teleports)
     for _, event in ipairs(teleports) do
         if not bannedregions[event.timer.region] then
             table.insert(unbannedevents, event)
+        else
+            Animation.start(Particle.teleFailParticle(event.to_x, event.to_y, level, event.cell))
         end
     end
     return unbannedevents
