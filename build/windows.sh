@@ -29,6 +29,7 @@ unzip -e ./build/dependencies/love-11.5-win64.zip -d ./build/export
 mv ./build/export/love-11.5-win64 ./build/export/XPORT-WINDOWS
 cat ./build/export/XPORT-WINDOWS/love.exe ./build/export/XPORT.love > ./build/export/XPORT-WINDOWS/XPORT.exe
 rm -f ./build/export/XPORT-WINDOWS/love.exe
+rm -f ./build/export/XPORT-WINDOWS/lovec.exe
 
 cd ./build/export/XPORT-WINDOWS/
 rm -f ../XPORT-WINDOWS.zip
