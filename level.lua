@@ -471,7 +471,7 @@ end
 function Level.turn(level, key)
     if level.goalPlaying then return end
 
-    if key == "escape" then
+    if key == "escape" or key == "backspace" then
         if (globals.entered_level_six ~= 6) then
             state.mode = Mode.Menu
             Animation.start(Level.fadeFromBlack(2))

@@ -31,6 +31,7 @@ cat ./build/export/XPORT-WINDOWS/love.exe ./build/export/XPORT.love > ./build/ex
 rm -f ./build/export/XPORT-WINDOWS/love.exe
 
 cd ./build/export/XPORT-WINDOWS/
+rm -f ../XPORT-WINDOWS.zip
 zip -v -r -9 ../XPORT-WINDOWS.zip ./
 
 cd "$SCRIPT_DIR"
