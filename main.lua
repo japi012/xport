@@ -129,7 +129,7 @@ function love.load()
         levelStroke = col255(0, 0, 255),
     })
     local challengePalette = Palette.list({
-        [Cell.Wall] = col255(147, 35, 30),
+        [Cell.Wall] = col255(0, 0, 0),
         [Cell.Box] = Palette.gradientHSV(col255(230, 17, 47), col255(153, 6, 20), 6),
         [Cell.Origin] = {
             default = Palette.gradientHSV(col255(130, 27, 51), col255(70, 7, 20), 6),
@@ -315,7 +315,7 @@ function love.load()
             #########
             ]],
             "5 - Point of No Return",
-            "Press ESCAPE or BACKSPACE to exit level."
+            "Press ESCAPE or BACKSPACE to exit a level."
         },{
             [[
             ########
