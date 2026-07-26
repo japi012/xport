@@ -39,7 +39,7 @@ globals = {
     levelFont = {},
     tutorialFont = {},
 
-    fontFile = "fonts/futura-pt-bold.ttf", -- NOT a placeholder
+    fontFile = "fonts/intrebol.ttf", -- NOT a placeholder
     levelFontFile = "fonts/Comfortaa-Regular.ttf", -- *REALLY* NOT a placeholder,
 
     entered_level_six = 0,

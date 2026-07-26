@@ -26,6 +26,5 @@ cd ./build/export/XPORT-WEB/
 rm -f ../XPORT-WEB.zip
 zip -v -r -9 ../XPORT-WEB.zip ./
 
-cd ./build/export/XPORT-WEB
 python -m http.server
 cd "$SCRIPT_DIR"
