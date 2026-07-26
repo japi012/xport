@@ -134,12 +134,7 @@ function Menu.update(menu, dt)
 
         if pointInRect(mx, my, realX - realW / 2, realY - realH / 2, realW, realH) then
             if not rect.hovering then
-                local scaleRect = Animation.new(
-                    0.2, function(self, progress)
-                        local progress = easeOutCubic(progress)
-                        rect.scale = 1 + progress * 0.2
-                    end
-                )
+                local scaleRect = Menu.rectScaleAnim(rect)
                 Animation.start(scaleRect)
                 rect.anim = scaleRect
             end
@@ -157,13 +152,7 @@ function Menu.update(menu, dt)
             end
         else
             if rect.hovering then
-                rect.anim.stop = true
-                local scaleRect = Animation.new(
-                    0.2, function(self, progress)
-                        local progress = easeOutCubic(progress)
-                        rect.scale =  1 + (1 - progress) * 0.2
-                    end
-                )
+                local scaleRect = Menu.rectUnscaleAnim(rect)
                 Animation.delayedStart(0.01, scaleRect)
             end
             rect.hovering = false
@@ -221,11 +210,11 @@ end
 
 function Menu.draw(menu)
     love.graphics.setBackgroundColor(0, 0, 0)
-        -- love.graphics.setColor(0.2, 0.2, 0.2)
-        -- love.graphics.rectangle("fill",
-            -- menu.borderX, menu.borderY, state.width - menu.borderX * 2, state.height - menu.borderY * 2)
-        -- love.graphics.rectangle("fill",
-        --     menu.marginX, menu.marginY, state.width - menu.marginX * 2, state.height - menu.marginY * 2)
+    -- love.graphics.setColor(0.2, 0.2, 0.2)
+    -- love.graphics.rectangle("fill",
+        -- menu.borderX, menu.borderY, state.width - menu.borderX * 2, state.height - menu.borderY * 2)
+    -- love.graphics.rectangle("fill",
+    --     menu.marginX, menu.marginY, state.width - menu.marginX * 2, state.height - menu.marginY * 2)
 
     local randCellSize = math.min(state.width, state.height) * 0.2
     local randCellsWidth = state.width / randCellSize
@@ -278,7 +267,7 @@ function Menu.draw(menu)
 
         love.graphics.setLineWidth(5)
         if state.levelClears[rect.levelIndex] then
-            love.graphics.setColor(love.math.colorFromBytes(43, 39, 81))
+            love.graphics.setColor(love.math.colorFromBytes(81, 14, 78))
         else
             love.graphics.setColor(love.math.colorFromBytes(121, 26, 94))
         end
@@ -341,6 +330,27 @@ function Menu.draw(menu)
     love.graphics.setColor(1, 1, 1)
 end
 
+function Menu.rectScaleAnim(rect)
+    return Animation.new(
+        0.2, function(self, progress)
+            local progress = easeOutCubic(progress)
+            rect.scale = 1 + progress * 0.2
+        end
+    )
+end
+
+function Menu.rectUnscaleAnim(rect)
+    return Animation.new(
+        0.2, function(self, progress)
+            local progress = easeOutCubic(progress)
+            rect.scale =  1 + (1 - progress) * 0.2
+        end, function()
+            rect.anim.stop = true
+            rect.anim = nil
+        end
+    )
+end
+
 function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
     return Animation.chained(
         Animation.new(
@@ -354,6 +364,8 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                     realX + realW / 2, realY + realH / 2,
                     scale, scale, angle)
                 love.graphics.setColor(1, 1, 1)
+            end, function()
+                Music.play(Music[globals.levelMusic[rect.levelIndex]])
             end
         ),
         Animation.new(
@@ -375,6 +387,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
 
                 rect.clicked = false
                 rect.hovering = false
+                rect.scale = 1
                 menu.levelOpening = false
                 forceUpdateGraphics()
             end

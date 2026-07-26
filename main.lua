@@ -105,7 +105,7 @@ end
 function forceUpdateGraphics()
     state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.65
     globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
-    globals.menuFont = love.graphics.newFont(globals.fontFile, math.min(state.width, state.height) * 0.067)
+    globals.menuFont = love.graphics.newFont(globals.fontFile, math.min(state.width, state.height) * 0.06)
     globals.levelFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.067)
     globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.05)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
@@ -549,6 +549,25 @@ function love.load()
         ["hand"] = love.mouse.getSystemCursor("hand"),
         ["arrow"] = love.mouse.getSystemCursor("arrow"),
     }
+    globals.levelMusic = {
+        [1] = "level1",
+        [2] = "level1",
+        [3] = "level1",
+        [4] = "level2",
+        [5] = "level2",
+        [6] = "level2",
+        [7] = "level3",
+        [8] = "level4",
+        [9] = "level5",
+        [10] = "level5",
+        [11] = "challenge1",
+        [12] = "challenge1",
+        [13] = "challenge2",
+        [14] = "challenge2",
+        [15] = "challenge3",
+    }
+
+    Music.play(Music.menu)
 end
 
 KEYS_PRESSED = {}
@@ -580,6 +599,8 @@ function love.update(dt)
     elseif state.mode == Mode.Menu then
         Menu.update(state.menu, dt)
     end
+
+    Music.update(dt)
 end
 
 function love.draw()

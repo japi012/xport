@@ -2,6 +2,7 @@ local love = require "love"
 if Sounds ~= nil then return Sounds end
 
 Sounds = {}
+Music = {}
 
 local function playSound(sound, isMusic, loop)
     sound.audio:stop()
@@ -21,6 +22,77 @@ local function newSound(filename, volume, variation, loop)
     }
 end
 
+local function newMusic(filename, volume)
+    return {
+        filename = filename,
+        audio = love.audio.newSource("music/" .. filename, "stream"),
+        variation = 0,
+        volume = volume or 0.25,
+        loop = true,
+        play = playSound
+    }
+end
+
+function Music.play(music, duration)
+    local duration = duration or 1
+    if state.currentMusic then
+        print(state.currentMusic.filename)
+        print(music.filename)
+        state.currentMusic.fading = true
+        local startingVolume = state.musicVolume
+        local currentMusic = state.currentMusic
+        local fadeOutAnim = Animation.new(
+            duration * 2, function(self, progress)
+                local progress = easeOutCubic(progress)
+                currentMusic.audio:setVolume((1 - progress) * startingVolume)
+            end, nil, function()
+                currentMusic.audio:setVolume(0)
+                currentMusic.audio:stop()
+            end
+        )
+        state.currentMusic = music
+        local fadeInAnim = Animation.new(
+            duration * 2, function(self, progress)
+                local progress = easeOutCubic(progress)
+                music.audio:setVolume(progress * state.musicVolume)
+            end, function()
+                playSound(music, true, true)
+                music.fading = false
+                currentMusic.fading = false
+                music.audio:setVolume(0.0)
+            end, function()
+                music.audio:setVolume(state.musicVolume)
+                state.currentMusic = music
+            end
+        )
+        Animation.start(fadeOutAnim)
+        Animation.delayedStart(duration, fadeInAnim)
+    else
+        state.currentMusic = music
+        local fadeInAnim = Animation.new(
+            duration * 2, function(self, progress)
+                local progress = easeOutCubic(progress)
+                music.audio:setVolume(progress * state.musicVolume)
+            end, function()
+                playSound(music, true, true)
+                music.fading = false
+                music.audio:setVolume(0.0)
+            end, function()
+                music.audio:setVolume(state.musicVolume)
+                state.currentMusic = music
+            end
+        )
+        Animation.start(fadeInAnim)
+    end
+end
+
+function Music.update(dt)
+    if state.currentMusic and not state.currentMusic.fading
+        and state.currentMusic.audio:getVolume() ~= state.musicVolume then
+        state.currentMusic.audio:setVolume(state.musicVolume)
+    end
+end
+
 Sounds.move = newSound("sfx_move.wav")
 Sounds.moveFail = newSound("sfx_move-fail.wav")
 Sounds.undo = newSound("sfx_undo.wav", 0.2, 0.2)
@@ -30,5 +102,16 @@ Sounds.teleport = newSound("sfx_teleport.wav", 0.4, 0.05)
 Sounds.levelStart = newSound("sfx_level-start.wav", nil, 0.01)
 Sounds.levelRestart = newSound("sfx_level-restart.wav", nil, 0.05)
 Sounds.levelComplete = newSound("sfx_level-complete.wav", nil, 0)
+
+Music.menu = newMusic("mus_menu.ogg", nil, 0, true)
+Music.secret = newMusic("mus_secret.ogg", nil, 0, true)
+Music.level1 = newMusic("mus_level1.ogg", nil, 0, true)
+Music.level2 = newMusic("mus_level2.ogg", nil, 0, true)
+Music.level3 = newMusic("mus_level3.ogg", nil, 0, true)
+Music.level4 = newMusic("mus_level4.ogg", nil, 0, true)
+Music.level5 = newMusic("mus_level5.ogg", nil, 0, true)
+Music.challenge1 = newMusic("mus_challenge1.ogg", nil, 0, true)
+Music.challenge2 = newMusic("mus_challenge2.ogg", nil, 0, true)
+Music.challenge3 = newMusic("mus_challenge3.ogg", nil, 0, true)
 
 return Sounds
