@@ -486,11 +486,14 @@ function Level.turn(level, key)
     if key == "escape" then
         if (globals.entered_level_six ~= 6) then
             state.mode = Mode.Menu
+            Animation.start(Level.fadeFromBlack(2))
+            Music.play(Music.menu, 0.2)
         else
             state.levelIndex = -6
             globals.entered_level_six = 6.66
             state.level = Level.fromGrid(globals.man)
             Animation.start(Level.fadeFromBlack(1))
+            Music.play(Music.secret, 1)
         end
         Sounds.levelRestart:play()
         forceUpdateGraphics()
@@ -565,6 +568,10 @@ function Level.turn(level, key)
         Sounds.levelComplete:play()
         state.levelClears[state.levelIndex] = true
 
+        -- print("-----")
+        -- print(state.currentMusic.filename)
+        -- print("-----")
+
         local goals = allWithPredicate(level.cells, function(cell)
             return cell.cell == Cell.Goal
         end)
@@ -605,6 +612,7 @@ function Level.levelEndAnim(duration)
     end, function()
         state.mode = Mode.Menu
         forceUpdateGraphics()
+        Music.play(Music.menu, 0.5)
     end)
 end
 
