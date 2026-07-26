@@ -35,6 +35,11 @@ end
 
 function Music.play(music, duration)
     local duration = duration or 1
+    for k, m in pairs(Music) do
+        if type(m) == "table" and m.fading then
+            m.audio:stop()
+        end
+    end
     if state.currentMusic then
         print(state.currentMusic.filename)
         print(music.filename)
@@ -42,7 +47,7 @@ function Music.play(music, duration)
         local startingVolume = state.musicVolume
         local currentMusic = state.currentMusic
         local fadeOutAnim = Animation.new(
-            duration * 2, function(self, progress)
+            duration, function(self, progress)
                 local progress = easeOutCubic(progress)
                 currentMusic.audio:setVolume((1 - progress) * startingVolume)
             end, nil, function()
@@ -52,21 +57,22 @@ function Music.play(music, duration)
         )
         state.currentMusic = music
         local fadeInAnim = Animation.new(
-            duration * 2, function(self, progress)
+            duration, function(self, progress)
                 local progress = easeOutCubic(progress)
                 music.audio:setVolume(progress * state.musicVolume)
             end, function()
                 playSound(music, true, true)
-                music.fading = false
+                music.fading = true
                 currentMusic.fading = false
                 music.audio:setVolume(0.0)
             end, function()
                 music.audio:setVolume(state.musicVolume)
                 state.currentMusic = music
+                music.fading = false
             end
         )
         Animation.start(fadeOutAnim)
-        Animation.delayedStart(duration, fadeInAnim)
+        Animation.delayedStart(duration / 2, fadeInAnim)
     else
         state.currentMusic = music
         local fadeInAnim = Animation.new(
@@ -75,11 +81,12 @@ function Music.play(music, duration)
                 music.audio:setVolume(progress * state.musicVolume)
             end, function()
                 playSound(music, true, true)
-                music.fading = false
+                music.fading = true
                 music.audio:setVolume(0.0)
             end, function()
                 music.audio:setVolume(state.musicVolume)
                 state.currentMusic = music
+                music.fading = false
             end
         )
         Animation.start(fadeInAnim)
