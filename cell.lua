@@ -19,6 +19,11 @@ Cell = {
     Tree = makeType(5),
 }
 
+function Cell.lineWidth(cellSize, strokeSize)
+    return cellSize * strokeSize / 60
+    -- return strokeSize
+end
+
 function Cell.draw(cell, level, cellSize)
     local expAnimTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
@@ -45,14 +50,14 @@ function Cell.draw(cell, level, cellSize)
     if cell.cell == Cell.Goal then
         love.graphics.setColor(r, g, b, 0.45)
         love.graphics.setCanvas(level.layers[1])
-        love.graphics.setLineWidth(5)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
         love.graphics.rectangle("line", drawX, drawY, cellSize, cellSize)
 
         love.graphics.setColor(r, g, b, 0.15)
         love.graphics.setCanvas(level.layers[5])
-        love.graphics.setLineWidth(5)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
         love.graphics.rectangle("line", drawX, drawY, cellSize, cellSize)
-        love.graphics.setLineWidth(1)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
 
     elseif cell.cell == Cell.Player then
         local w
@@ -90,10 +95,10 @@ function Cell.draw(cell, level, cellSize)
         if (r ~= 0 or g ~= 0 or b ~= 0) then
             love.graphics.setCanvas(level.layers[2])
             love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2) -- REALLY stupid
-            love.graphics.setLineWidth(4)
+            love.graphics.setLineWidth(Cell.lineWidth(cellSize, 4))
             love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
                 y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
-            love.graphics.setLineWidth(1)
+            love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
         end
 
     elseif cell.cell == Cell.Timer then
@@ -101,13 +106,13 @@ function Cell.draw(cell, level, cellSize)
         local fheight = globals.font:getHeight()
 
         love.graphics.setCanvas(level.layers[5])
-        love.graphics.setLineWidth(1)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
         love.graphics.print(cell.val, globals.font,
             x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
             y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 1.4)) / 2)
 
         love.graphics.setColor(1, 1, 1, 0.5)
-        love.graphics.setLineWidth(5)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
         local origins = allWithPredicate(level.cells, function(c)
             return c.region == cell.region and c.cell == Cell.Origin
         end)
