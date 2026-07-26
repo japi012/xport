@@ -14,7 +14,7 @@ end
 
 local function newSound(filename, volume, variation, loop)
     return {
-        audio = love.audio.newSource("sounds/" .. filename, "stream"),
+        audio = love.audio.newSource("sounds/" .. filename, "static"),
         variation = variation or 0.1,
         volume = volume or 0.25,
         loop = (loop ~= nil) and loop or false,
@@ -25,7 +25,7 @@ end
 local function newMusic(filename, volume)
     return {
         filename = filename,
-        audio = love.audio.newSource("music/" .. filename, "stream"),
+        audio = love.audio.newSource("music/" .. filename, "static"),
         variation = 0,
         volume = volume or 0.25,
         loop = true,
@@ -106,6 +106,7 @@ Sounds.undo = newSound("sfx_undo.wav", 0.2, 0.2)
 Sounds.hoverUI = newSound("sfx_menu-hover.wav")
 Sounds.selectUI = newSound("sfx_menu-select.wav")
 Sounds.teleport = newSound("sfx_teleport.wav", 0.4, 0.05)
+Sounds.originMove = newSound("sfx_spawnpoint-move.wav", 0.4, 0.05)
 Sounds.levelStart = newSound("sfx_level-start.wav", nil, 0.01)
 Sounds.levelRestart = newSound("sfx_level-restart.wav", nil, 0.05)
 Sounds.levelComplete = newSound("sfx_level-complete.wav", nil, 0)

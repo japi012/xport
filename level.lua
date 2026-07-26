@@ -455,6 +455,7 @@ local function runEvent(level, event)
         event.cell.y = event.to_y
         event.timer.val = event.timer.default_val
     elseif event.type == Event.OriginMove then
+        Sounds.originMove:play()
         event.cell.x = event.to_x
         event.cell.y = event.to_y
     elseif event.type == Event.Reset then
