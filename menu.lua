@@ -346,8 +346,10 @@ function Menu.rectUnscaleAnim(rect)
             local progress = easeOutCubic(progress)
             rect.scale =  1 + (1 - progress) * 0.2
         end, function()
-            rect.anim.stop = true
-            rect.anim = nil
+            if rect.anim then
+                rect.anim.stop = true
+                rect.anim = nil
+            end
         end
     )
 end
