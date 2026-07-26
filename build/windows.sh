@@ -16,7 +16,7 @@ FULL_DIR=""
 cd "$SCRIPT_DIR"
 cd ..  # lmao
 
-zip -v -r ./build/export/XPORT.love ./ -x ./build -x ./.git
+zip -v -r ./build/export/XPORT.love ./ -x "./build/*" "./.git/*" "./.gitignore" @
 # rm ./build/dependencies/love-11.5-win64.zip
 
 if [ ! -e "./build/dependencies/love-11.5-win64.zip" ]; then
