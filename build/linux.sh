@@ -9,7 +9,7 @@ FULL_DIR=""
 cd "$SCRIPT_DIR"
 cd ..  # lmao
 
-zip -v -r ./build/export/XPORT.love ./ -x "./build/*" "./.git/*" "./.gitignore" @
+zip -v -r ./build/export/XPORT.love ./ -x "./build/*" -x "./.git/*" -x "./.git" -x "./.gitignore"
 
 rm -f -r ./build/export/XPORT-LINUX
 mkdir ./build/export/XPORT-LINUX

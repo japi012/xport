@@ -15,7 +15,7 @@ FULL_DIR=""
 cd "$SCRIPT_DIR"
 cd ..  # lmao
 
-zip -v -r ./build/export/XPORT.love ./ -x "./build/*" "./.git/*" "./.gitignore" @
+zip -v -r ./build/export/XPORT.love ./ -x "./build/*" -x "./.git/*" -x "./.git" -x "./.gitignore"
 rm -f -r ./build/export/XPORT-WEB
 git clone https://github.com/2dengine/love.js ./build/export/XPORT-WEB
 cp -f ./build/html-overrides/index.html ./build/export/XPORT-WEB/index.html

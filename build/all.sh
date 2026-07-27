@@ -9,4 +9,5 @@ FULL_DIR=""
 cd "$SCRIPT_DIR"
 ./linux.sh
 ./windows.sh
+./mac.sh
 ./html.sh
