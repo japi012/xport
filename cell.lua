@@ -19,11 +19,6 @@ Cell = {
     Tree =      makeType(5),
 }
 
-function Cell.drawPos(x, y, level)
-    return x * level.cellSize + (state.width - level.width * level.cellSize) / 2,
-           y * level.cellSize + (state.height - level.height * level.cellSize) / 2
-end
-
 function Cell.lineWidth(cellSize, strokeSize)
     return cellSize * strokeSize / 60
     -- return strokeSize
@@ -49,7 +44,7 @@ function Cell.draw(cell, level, cellSize)
     local r, g, b = color()
     love.graphics.setColor(r, g, b)
 
-    local drawX, drawY = Cell.drawPos(x + 0.5, y + 0.5, level)
+    local drawX, drawY = Level.drawPos(x + 0.5, y + 0.5, level)
 
     if cell.cell == Cell.Goal then
         love.graphics.setColor(r, g, b, 0.45)
@@ -98,7 +93,7 @@ function Cell.draw(cell, level, cellSize)
             love.graphics.setCanvas(level.layers[2])
             love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2) -- REALLY stupid
             love.graphics.setLineWidth(Cell.lineWidth(cellSize, 4))
-            drawCenteredRectangle("fill", drawX, drawY, cellSize, cellSize)
+            drawCenteredRectangle("line", drawX, drawY, cellSize, cellSize)
             love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
         end
 
@@ -123,7 +118,7 @@ function Cell.draw(cell, level, cellSize)
 
         love.graphics.setCanvas(level.layers[1])
         for _, origin in ipairs(origins) do
-            love.graphics.line(drawX, drawY, Cell.drawPos(origin.x + 0.5, origin.y + 0.5, level))
+            love.graphics.line(drawX, drawY, Level.drawPos(origin.x + 0.5, origin.y + 0.5, level))
         end
 
     elseif cell.cell == Cell.Origin then

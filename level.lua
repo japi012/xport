@@ -158,6 +158,11 @@ function Level.update(level, dt)
     end
 end
 
+function Level.drawPos(x, y, level)
+    return x * level.cellSize + (state.width - level.width * level.cellSize) / 2,
+           y * level.cellSize + (state.height - level.height * level.cellSize) / 2
+end
+
 function Level.draw(level)
     love.graphics.setBackgroundColor(level.palette.background())
     love.graphics.setColor(level.palette.levelStroke())
