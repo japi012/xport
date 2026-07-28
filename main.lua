@@ -27,11 +27,13 @@ state = {
     width = 0,
     height = 0,
 
-    sfxVolume = 0.5;
-    musicVolume = 0.5;
+    sfxVolume = 0.5,
+    musicVolume = 0.5,
 
-    mode = Mode.Menu,
-    cellSize = 0
+    levelIndex = 1,
+    levelClears = {},
+
+    mode = Mode.Menu
 }
 
 globals = {
@@ -101,8 +103,6 @@ function updateGraphics()
 end
 
 function forceUpdateGraphics()
-    state.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.65
-    globals.font = love.graphics.newFont(globals.fontFile, state.cellSize * 0.9)
     globals.menuFont = love.graphics.newFont(globals.fontFile, math.min(state.width, state.height) * 0.06)
     globals.levelFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.067)
     globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.05)
@@ -373,7 +373,7 @@ function love.load()
 			#.....#
             #.....#
             #.....#
-            #.....#
+            #...G.#
 			##G#G##
             #######
             ]],
@@ -693,9 +693,7 @@ function love.load()
         -- },
     }
 
-    state.levelIndex = 1
     state.level = Level.fromGrid(globals.levels[state.levelIndex], state.levelIndex)
-    state.levelClears = {}
 
     local menuLevelSize = 0.1
     state.menu = Menu.new(1, 1, {

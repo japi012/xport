@@ -13,9 +13,6 @@ function Menu.new(width, height, levelRects, scrollBars)
         levelRects = levelRects,
         scrollBars = scrollBars,
 
-        borderX = borderX,
-        borderY = borderY,
-
         marginX = 0,
         marginY = 0,
         pixelWidth = 0,

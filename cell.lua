@@ -9,15 +9,20 @@ local function makeType(drawLayer)
 end
 
 Cell = {
-    Wall = makeType(1),
-    Player = makeType(1),
-    Box = makeType(1),
-    Timer = makeType(2.5),
-    Origin = makeType(2),
-    Goal = makeType(3),
+    Wall =      makeType(1),
+    Player =    makeType(1),
+    Box =       makeType(1),
+    Timer =     makeType(3),
+    Origin =    makeType(2),
+    Goal =      makeType(4),
 
-    Tree = makeType(5),
+    Tree =      makeType(5),
 }
+
+function Cell.drawPos(x, y, level)
+    return x * level.cellSize + (state.width - level.width * level.cellSize) / 2,
+           y * level.cellSize + (state.height - level.height * level.cellSize) / 2
+end
 
 function Cell.lineWidth(cellSize, strokeSize)
     return cellSize * strokeSize / 60
@@ -44,19 +49,18 @@ function Cell.draw(cell, level, cellSize)
     local r, g, b = color()
     love.graphics.setColor(r, g, b)
 
-    local drawX = x * cellSize + (state.width - level.width * cellSize) / 2
-    local drawY = y * cellSize + (state.height - level.height * cellSize) / 2
+    local drawX, drawY = Cell.drawPos(x + 0.5, y + 0.5, level)
 
     if cell.cell == Cell.Goal then
         love.graphics.setColor(r, g, b, 0.45)
         love.graphics.setCanvas(level.layers[1])
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
-        love.graphics.rectangle("line", drawX, drawY, cellSize, cellSize)
+        drawCenteredRectangle("line", drawX, drawY, cellSize, cellSize)
 
         love.graphics.setColor(r, g, b, 0.15)
         love.graphics.setCanvas(level.layers[5])
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
-        love.graphics.rectangle("line", drawX, drawY, cellSize, cellSize)
+        drawCenteredRectangle("line", drawX, drawY, cellSize, cellSize)
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
 
     elseif cell.cell == Cell.Player then
@@ -71,8 +75,7 @@ function Cell.draw(cell, level, cellSize)
         if cell.lastY == cell.y then h, w = w, h end
 
         love.graphics.setCanvas(level.layers[5])
-        love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize - (w - 1) * cellSize) / 2,
-        y * cellSize + (state.height - level.height * cellSize - (h - 1) * cellSize) / 2, w * cellSize, h * cellSize)
+        drawCenteredRectangle("fill", drawX, drawY, w * cellSize, h * cellSize)
 
     elseif cell.cell == Cell.Wall or cell.cell == Cell.Box then
         local timerIsZero = false
@@ -89,27 +92,28 @@ function Cell.draw(cell, level, cellSize)
         if timerIsZero then
             love.graphics.setColor(r - 0.2, g - 0.2, b - 0.2) -- REALLY stupid
         end
-        love.graphics.rectangle("fill", x * cellSize + (state.width - level.width * cellSize) / 2,
-            y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
+        drawCenteredRectangle("fill", drawX, drawY, cellSize, cellSize)
 
         if (r ~= 0 or g ~= 0 or b ~= 0) then
             love.graphics.setCanvas(level.layers[2])
             love.graphics.setColor(r + 0.2, g + 0.2, b + 0.2) -- REALLY stupid
             love.graphics.setLineWidth(Cell.lineWidth(cellSize, 4))
-            love.graphics.rectangle("line", x * cellSize + (state.width - level.width * cellSize) / 2,
-                y * cellSize + (state.height - level.height * cellSize) / 2, cellSize, cellSize)
+            drawCenteredRectangle("fill", drawX, drawY, cellSize, cellSize)
             love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
         end
 
     elseif cell.cell == Cell.Timer then
-        local fwidth = globals.font:getWidth(cell.val)
-        local fheight = globals.font:getHeight()
+        local fwidth = globals.timerFont:getWidth(cell.val)
+        -- local fheight = globals.timerFont:getHeight()
 
         love.graphics.setCanvas(level.layers[5])
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
-        love.graphics.print(cell.val, globals.font,
-            x * cellSize + (state.width - level.width * cellSize + (cellSize - fwidth)) / 2,
-            y * cellSize + (state.height - level.height * cellSize - (cellSize - fheight * 0.8)) / 2)
+        love.graphics.print(cell.val, globals.timerFont,
+            drawX - (fwidth / 2),
+            drawY - (cellSize * 0.55)
+            -- drawX + (cellSize - fwidth) / 2,
+            -- drawY + (cellSize - fheight * 0.8) / 2
+        )
 
         love.graphics.setColor(1, 1, 1, 0.5)
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
@@ -119,17 +123,12 @@ function Cell.draw(cell, level, cellSize)
 
         love.graphics.setCanvas(level.layers[1])
         for _, origin in ipairs(origins) do
-            love.graphics.line(
-                (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
-                (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2,
-                (origin.x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
-                (origin.y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2)
+            love.graphics.line(drawX, drawY, Cell.drawPos(origin.x + 0.5, origin.y + 0.5, level))
         end
 
     elseif cell.cell == Cell.Origin then
         love.graphics.setCanvas(level.layers[3])
-        drawRotatedRectangle("fill", (x + 0.5) * cellSize + (state.width - level.width * cellSize) / 2,
-            (y + 0.5) * cellSize + (state.height - level.height * cellSize) / 2, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
+        drawRotatedRectangle("fill", drawX, drawY, cellSize / 2, cellSize / 2, cell.animTime * 2 * math.pi)
 
     elseif cell.cell == Cell.Tree then
         local scale = cellSize / 150
@@ -137,8 +136,8 @@ function Cell.draw(cell, level, cellSize)
         love.graphics.setCanvas(level.layers[5])
         love.graphics.draw(
             globals.tree,
-            (x + 0.5) * cellSize + (state.width - level.width * cellSize - w) / 2,
-            (y + 0.5) * cellSize + (state.height - level.height * cellSize + cellSize * 1.5) / 2 - h,
+            drawX - (w / 2),
+            drawY + (cellSize * 1.5) / 2 - h,
             0,
             scale,
             scale

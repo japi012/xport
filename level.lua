@@ -53,6 +53,7 @@ function Level.new(height, width, cells, palette, title, text)
         palette = palette or Palette.defaultList(),
         winning = false,
         animationTime = 0,
+        cellSize = 0,
         layers = {},
         eventLog = {},
         goalPlaying = false,
@@ -134,6 +135,9 @@ function Level.fromGrid(grid, paletteIndex)
 end
 
 function Level.onResize(level)
+    level.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.65
+    globals.timerFont = love.graphics.newFont(globals.fontFile, level.cellSize * 0.9)
+
     for i = 1, 5 do
         if level.layers[i] ~= nil then level.layers[i]:release() end
         level.layers[i] = love.graphics.newCanvas()
@@ -158,17 +162,17 @@ function Level.draw(level)
     love.graphics.setBackgroundColor(level.palette.background())
     love.graphics.setColor(level.palette.levelStroke())
     love.graphics.setLineWidth(5)
-    love.graphics.rectangle("line", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
-        state.cellSize * level.width, state.cellSize * level.height)
+    love.graphics.rectangle("line", (state.width - level.width * level.cellSize) / 2, (state.height - level.height * level.cellSize) / 2,
+        level.cellSize * level.width, level.cellSize * level.height)
     love.graphics.setLineWidth(1)
 
     love.graphics.setColor(level.palette.levelFill())
-    love.graphics.rectangle("fill", (state.width - level.width * state.cellSize) / 2, (state.height - level.height * state.cellSize) / 2,
-        state.cellSize * level.width, state.cellSize * level.height)
+    love.graphics.rectangle("fill", (state.width - level.width * level.cellSize) / 2, (state.height - level.height * level.cellSize) / 2,
+        level.cellSize * level.width, level.cellSize * level.height)
     love.graphics.setColor(1, 1, 1)
 
     for _, cell in ipairs(level.cells) do
-        cell:draw(level, state.cellSize)
+        cell:draw(level, level.cellSize)
     end
 
     love.graphics.setCanvas()
@@ -189,12 +193,12 @@ function Level.draw(level)
     love.graphics.setBlendMode("alpha") -- Default blend mode.
 
     if level.title then
-        local padding = state.cellSize / 2
+        local padding = level.cellSize / 2
         love.graphics.print(level.title, globals.levelFont, padding, padding)
     end
 
     if level.text then
-        local padding = state.cellSize / 2
+        local padding = level.cellSize / 2
         local fontWidth = globals.tutorialFont:getWidth(level.text)
         local fontHeight = globals.tutorialFont:getHeight()
         love.graphics.print(level.text, globals.tutorialFont, state.width / 2 - fontWidth / 2, state.height - padding - fontHeight)
@@ -583,8 +587,8 @@ function Level.levelClearAnim(duration, level, goal)
         local angle = progress * 2 * math.pi
         love.graphics.setColor(255 / 255, 193 / 255, 247 / 255)
         drawRotatedRectangle("fill",
-            (goal.x + 0.5) * state.cellSize + (state.width - level.width * state.cellSize) / 2,
-            (goal.y + 0.5) * state.cellSize + (state.height - level.height * state.cellSize) / 2,
+            (goal.x + 0.5) * level.cellSize + (state.width - level.width * level.cellSize) / 2,
+            (goal.y + 0.5) * level.cellSize + (state.height - level.height * level.cellSize) / 2,
             scale, scale, angle)
         love.graphics.setColor(1, 1, 1)
     end)

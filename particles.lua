@@ -1,9 +1,10 @@
 local Animation = require "anim"
+local love = require "love"
 
 Particle = {}
 
 function Particle.playerParticle(x, y, level)
-    local cellSize = state.cellSize
+    local cellSize = level.cellSize
     return Animation.new(
         1.5, function(self, progress)
             local progress = easeOutCubic(progress)
@@ -16,7 +17,6 @@ function Particle.playerParticle(x, y, level)
 end
 
 function Particle.teleParticle(x, y, level, cell)
-    
     local color = level.palette[cell.cell]
     while color.r == nil do
         local rootColor = color
@@ -30,8 +30,8 @@ function Particle.teleParticle(x, y, level, cell)
         end
     end
     -- help . how do i change the alpha
-    
-    local cellSize = state.cellSize
+
+    local cellSize = level.cellSize
     local yrand = math.random() + 5.5
     local xrand = (math.random() - 0.5) * 2
     local rrand = (math.random() - 0.5) * 5
@@ -54,8 +54,8 @@ end
 
 
 function Particle.teleFailParticle(x, y, level, cell)
-    
-    local cellSize = state.cellSize
+
+    local cellSize = level.cellSize
     local scalemul = 1
     if cell.cell == Cell.Timer then scalemul = 0 end
     return Animation.new(
