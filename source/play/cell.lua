@@ -28,7 +28,7 @@ end
 function Cell.draw(cell, level)
     local expAnimTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
-    local cellSize = level.finalCellSize
+    local cellSize = level.cellSize
 
     local color = level.palette[cell.cell] or col(0, 0, 0)
     while color.r == nil do

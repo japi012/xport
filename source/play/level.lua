@@ -161,7 +161,7 @@ function Level.update(level, dt)
     end
 end
 
-function Level.drawPos(x, y, level)
+function Level.drawPos(level, x, y)
     return x * level.cellSize + (state.width - level.width * level.cellSize) / 2,
            y * level.cellSize + (state.height - level.height * level.cellSize) / 2
 end
