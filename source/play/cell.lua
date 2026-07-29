@@ -120,7 +120,7 @@ function Cell.draw(cell, level)
 
         love.graphics.setCanvas(level.layers[1])
         for _, origin in ipairs(origins) do
-            love.graphics.line(drawX, drawY, Level.drawPos(origin.x + 0.5, origin.y + 0.5, level))
+            love.graphics.line(drawX, drawY, Level.drawPos(level, origin.x + 0.5, origin.y + 0.5))
         end
 
     elseif cell.cell == Cell.Origin then
