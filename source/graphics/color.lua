@@ -88,7 +88,7 @@ HSV_METATABLE = {
         return "hsv(" .. t.h .. "," .. t.s .. "," .. t.v .. ")"
     end,
     __call = function (t)
-        return Color.convertFromHSV(t.h, t.s, t.v)
+        return Color.convertFromHSV(t.h, t.s, t.v, t.a)
     end
 }
 
