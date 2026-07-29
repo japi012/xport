@@ -19,7 +19,8 @@ DEBUG = {
 
 Mode = {
     Gameplay = {},
-    Menu = {}
+    Menu = {},
+    Editor = {}
 }
 
 state = {

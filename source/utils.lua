@@ -107,8 +107,14 @@ end
 function drawCenteredRectangle(mode, x, y, width, height)
     love.graphics.push()
     love.graphics.translate(x, y)
-    love.graphics.rectangle(mode, -width/2, -height/2, width, height)
+    love.graphics.rectangle(mode, -width / 2, -height / 2, width, height)
     love.graphics.pop()
+end
+
+function needsImplementation(str)
+    return function()
+        error("Unimplemented error! Message: " .. str)
+    end
 end
 
 function cosh(x)
