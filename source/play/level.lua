@@ -50,9 +50,6 @@ end
 
 function Level.new(height, width, cells, palette, title, text)
     local result = {
-        x = 0,
-        y = 0,
-
         width = width,
         height = height,
 
@@ -60,7 +57,6 @@ function Level.new(height, width, cells, palette, title, text)
         palette = palette or Palette.defaultList(),
         winning = false,
 
-        animationTime = 0,
         cellSize = 0,
         layers = {},
         eventLog = {},
@@ -144,7 +140,7 @@ function Level.fromGrid(grid, paletteIndex)
 end
 
 function Level.onResize(level)
-    level.cellSize = math.min(state.width / state.level.width, state.height / state.level.height) * 0.65
+    level.cellSize = math.min(state.width / level.width, state.height / level.height) * 0.65
     globals.timerFont = love.graphics.newFont(globals.fontFile, level.cellSize * 0.9)
 
     for i = 1, 5 do
@@ -154,8 +150,6 @@ function Level.onResize(level)
 end
 
 function Level.update(level, dt)
-    -- level.animationTime = math.min(1, level.animationTime + dt / DEBUG.AnimationTime)
-
     for _, cell in ipairs(level.cells) do
         if cell.animTime < 1 then
             cell.animTime = math.min(1, cell.animTime + dt / DEBUG.AnimationTime)
@@ -186,7 +180,7 @@ function Level.draw(level)
     love.graphics.setColor(1, 1, 1)
 
     for _, cell in ipairs(level.cells) do
-        cell:draw(level, level.cellSize)
+        cell:draw(level)
     end
 
     love.graphics.setCanvas()
@@ -425,8 +419,6 @@ local function isWinning(level)
 end
 
 local function runUndo(level)
-    level.animationTime = 0
-
     local events = table.remove(level.eventLog)
     if events == nil then
         return

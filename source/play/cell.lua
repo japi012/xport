@@ -25,11 +25,12 @@ function Cell.lineWidth(cellSize, strokeSize)
     -- return strokeSize
 end
 
-function Cell.draw(cell, level, cellSize)
+function Cell.draw(cell, level)
     local expAnimTime = easeOutExpo(cell.animTime)
     local x, y = lerp(cell.lastX, cell.x, expAnimTime), lerp(cell.lastY, cell.y, expAnimTime)
+    local cellSize = level.finalCellSize
 
-    local color = level.palette[cell.cell]
+    local color = level.palette[cell.cell] or col(0, 0, 0)
     while color.r == nil do
         local rootColor = color
         color = color[string.byte(cell.region) - 64]
@@ -45,7 +46,7 @@ function Cell.draw(cell, level, cellSize)
     local r, g, b = color()
     love.graphics.setColor(r, g, b)
 
-    local drawX, drawY = Level.drawPos(x + 0.5, y + 0.5, level)
+    local drawX, drawY = Level.drawPos(level, x + 0.5, y + 0.5)
 
     if cell.cell == Cell.Goal then
         love.graphics.setColor(r, g, b, 0.45)
