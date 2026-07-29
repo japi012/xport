@@ -57,10 +57,6 @@ function cloneUnitTables(value)
     end
 end
 
-function easeOutExpo(x)
-    return (x == 1) and 1 or (1 - 2^(-10 * x));
-end
-
 function allWithPredicate(list, predicate)
     -- imperative under the hood, but we hide it under a functional wrapper
     -- kinda neat

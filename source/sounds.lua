@@ -1,5 +1,5 @@
-local love = require "love"
 if Sounds ~= nil then return Sounds end
+local love = require "love"
 
 Sounds = {}
 Music = {}

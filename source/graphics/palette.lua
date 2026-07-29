@@ -1,7 +1,5 @@
-local Color = require "color"
 if Palette ~= nil then return Palette end
-
--- PALETTE HANDLING
+require "source.graphics.color"
 
 Palette = {}
 
@@ -57,7 +55,7 @@ end
 --             result[key] = value
 --         end
 --     end
--- 
+--
 --     return result
 -- end
 

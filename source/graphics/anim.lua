@@ -1,7 +1,8 @@
+if Animation ~= nil then return Animation end
 local love = require "love"
 
 Animation = {}
-animations = {}
+Animations = {}
 
 -- `duration` is the duration in seconds
 -- `draw` is the function that draws the animation, takes the animation itself and progess from 0 to 1
@@ -25,7 +26,7 @@ end
 
 function Animation.start(animation)
     animation.startTime = love.timer.getTime()
-    table.insert(animations, animation)
+    table.insert(Animations, animation)
 
     animation:onStart()
 end
@@ -72,7 +73,7 @@ end
 
 function updateAnimations(dt)
     local deleteAnimations = {}
-    for i, animation in ipairs(animations) do
+    for i, animation in ipairs(Animations) do
         if animation then
             animation.progress = (love.timer.getTime() - animation.startTime) / animation.duration
             animation.dt = dt
@@ -88,17 +89,17 @@ function updateAnimations(dt)
     end
 
     local newAnimations = {}
-    for _, animation in ipairs(animations) do
+    for _, animation in ipairs(Animations) do
         if not elem(deleteAnimations, animation) then
             table.insert(newAnimations, animation)
         end
     end
 
-    animations = newAnimations
+    Animations = newAnimations
 end
 
 function drawAnimations()
-    for i, animation in ipairs(animations) do
+    for i, animation in ipairs(Animations) do
         if animation then
             animation:draw(animation.progress)
         end

@@ -1,9 +1,12 @@
+if Level ~= nil then return Level end
 local love = require "love"
-local Cell = require "cell"
-local Sounds = require "sounds"
-local Palette = require "palette"
-local Animation = require "anim"
-local Particle = require "particles"
+
+require "source.graphics.palette"
+require "source.graphics.anim"
+require "source.graphics.particles"
+
+require "source.play.cell"
+require "source.sounds"
 
 Level = {}
 
@@ -41,22 +44,28 @@ local function movableWithRegion(cells, region)
     end)
 end
 
-local function isInBounds(level, x, y)
+function Level.isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
 function Level.new(height, width, cells, palette, title, text)
     local result = {
-        height = height,
+        x = 0,
+        y = 0,
+
         width = width,
+        height = height,
+
         cells = cells,
         palette = palette or Palette.defaultList(),
         winning = false,
+
         animationTime = 0,
         cellSize = 0,
         layers = {},
         eventLog = {},
         goalPlaying = false,
+
         title = title,
         text = text
     }
@@ -184,9 +193,6 @@ function Level.draw(level)
     love.graphics.setBlendMode("alpha", "premultiplied")
 
     for i, layer in ipairs(level.layers) do
-        -- love.graphics.setColor(0, 0, 0, 0.5)
-        -- love.graphics.rectangle("fill", 0, 0, state.width, state.height)
-        local layer = level.layers[i]
         love.graphics.setColor(1, 1, 1)
         love.graphics.draw(layer)
 
@@ -325,7 +331,7 @@ local function handleTeleports(level, direction)
         end)
         local blocked = false
         for _, box in ipairs(boxes) do
-            if not isInBounds(level, box.x - timer.x + origin.x, box.y - timer.y + origin.y) then
+            if not Level.isInBounds(level, box.x - timer.x + origin.x, box.y - timer.y + origin.y) then
                 -- print("oops out of bounds")
                 blocked = true
                 break -- this one is my fault though

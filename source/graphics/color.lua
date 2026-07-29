@@ -1,5 +1,4 @@
 if Color ~= nil then return Color end
-
 Color = {}
 
 local function hsvHelpers(r, g, b)

@@ -1,6 +1,8 @@
+if Menu ~= nil then return Menu end
+
 local love = require "love"
-local Animation = require "anim"
-require "level"
+require "source.graphics.anim"
+require "source.play.level"
 
 Menu = {}
 Menu.scrollBarWidth = 0.05

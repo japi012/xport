@@ -1,5 +1,7 @@
-local Animation = require "anim"
+if Particle ~= nil then return Particle end
+
 local love = require "love"
+require "source.graphics.anim"
 
 Particle = {}
 

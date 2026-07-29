@@ -1,9 +1,8 @@
 local love = require "love"
-require "util"
-require "level"
-
-local Menu = require "menu"
-local Animation = require "anim"
+require "source.utils"
+require "source.graphics.anim"
+require "source.play.level"
+require "source.menu"
 
 --[[
 
@@ -919,7 +918,7 @@ function love.draw()
     if state.mode == Mode.Gameplay then
         Level.draw(state.level)
     elseif state.mode == Mode.Menu then
-        Menu.draw(state.menu, dt)
+        Menu.draw(state.menu)
     end
     drawAnimations()
 end
