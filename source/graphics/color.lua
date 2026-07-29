@@ -15,6 +15,7 @@ RGB_METATABLE = {
         if k == 0 then return t.r end
         if k == 1 then return t.g end
         if k == 2 then return t.b end
+        if k == 3 then return t.a end
 
         -- HUE
         if k == "h" then
@@ -42,19 +43,22 @@ RGB_METATABLE = {
             if k == 0 then t.r = v
         elseif k == 1 then t.g = v
         elseif k == 2 then t.b = v
+        elseif k == 3 then t.a = v
         elseif k == "h" or k == "s" or k == "v" then
             local h, s, v = t.h, t.s, t.v
             t.r, t.g, t.b = nil, nil, nil
 
             setmetatable(t, HSV_METATABLE)
-            t.r, t.g, t.b = h, s, v
+            t.h, t.s, t.v = h, s, v
             t[k] = v
         end
     end,
     __tostring = function(t)
+        if t.a ~= nil then return "rgba(" .. t.r .. "," .. t.g .. "," .. t.b .. "," .. t.a .. ")" end
         return "rgb(" .. t.r .. "," .. t.g .. "," .. t.b .. ")"
     end,
-    __call = function (t)
+    __call = function(t)
+        if t.a ~= nil then return t.r, t.g, t.b, t.a end
         return t.r, t.g, t.b
     end
 }
@@ -64,11 +68,13 @@ HSV_METATABLE = {
         if k == "r" or k == 0 then return table.pack(Color.convertFromHSV(t.h, t.s, t.v))[1] end
         if k == "g" or k == 1 then return table.pack(Color.convertFromHSV(t.h, t.s, t.v))[2] end
         if k == "b" or k == 2 then return table.pack(Color.convertFromHSV(t.h, t.s, t.v))[3] end
+        if k == 3 then return t.a end
 
         return nil
     end,
     __newindex = function (t, k, v)
-        if k == "r" or k == "g" or k == "b"
+        if k == 3 then t.a = v
+        elseif k == "r" or k == "g" or k == "b"
         or k == 0 or k == 1 or k == 2 then
             local r, g, b = t.r, t.g, t.b
             t.h, t.s, t.v = nil, nil, nil
@@ -86,18 +92,18 @@ HSV_METATABLE = {
     end
 }
 
-function Color.new(r, g, b)
-    local result = setmetatable({r=r, g=g, b=b}, RGB_METATABLE)
-
+function Color.new(r, g, b, a)
+    local result = setmetatable({r=r, g=g, b=b, a=a}, RGB_METATABLE)
     return result
 end
 
-function Color.from255(r, g, b)
-    return Color.new(r / 255, g / 255, b / 255)
+function Color.from255(r, g, b, a)
+    if a ~= nil then a = a / 255 end
+    return Color.new(r / 255, g / 255, b / 255, a)
 end
 
 -- shamelessly stolen from https://github.com/iskolbin/lhsx/blob/master/hsx.lua (thank you)
-function Color.convertFromHSV(h, s, v)
+function Color.convertFromHSV(h, s, v, a)
     local C = v * s
     local m = v - C
     local r, g, b = m, m, m
@@ -113,11 +119,13 @@ function Color.convertFromHSV(h, s, v)
 		else                r, g, b = C, 0, X
 		end
 	end
+
+	if a ~= nil then return r + m, g + m, b + m, a end
 	return r + m, g + m, b + m
 end
 
-function Color.fromHSV(h, s, v)
-    local result = setmetatable({h=h, s=s, v=v}, HSV_METATABLE)
+function Color.fromHSV(h, s, v, a)
+    local result = setmetatable({h=h, s=s, v=v, a=a}, HSV_METATABLE)
     return result
 end
 
@@ -125,12 +133,12 @@ function Color.inRGB(col)
     if (getmetatable(col) == RGB_METATABLE) then
         return Color.new(col())
     else
-        return Color.new(Color.convertFromHSV(col.h, col.s, col.v))
+        return Color.new(Color.convertFromHSV(col.h, col.s, col.v, col.a))
     end
 end
 
 function Color.inHSV(col)
-    return Color.fromHSV(col.h, col.s, col.v)
+    return Color.fromHSV(col.h, col.s, col.v, col.a)
 end
 
 function Color.lerp(from, to, i)
