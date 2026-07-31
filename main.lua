@@ -3,6 +3,7 @@ require "source.utils"
 require "source.graphics.anim"
 require "source.play.level"
 require "source.menu"
+require "source.editor.interface"
 
 --[[
 
@@ -878,6 +879,7 @@ function love.load()
     }
 
     Music.play(Music.menu)
+    state.interface = Interface.new()
 end
 
 KEYS_PRESSED = {}
@@ -888,7 +890,7 @@ local pressTime = 0
 local repeatTime = 0
 
 function love.update(dt)
-    updateAnimations(dt)
+    Animation.update(dt)
     updateGraphics()
 
     local currentKey = KEYS_PRESSED[#KEYS_PRESSED]
@@ -908,9 +910,12 @@ function love.update(dt)
         Level.update(state.level, dt)
     elseif state.mode == Mode.Menu then
         Menu.update(state.menu, dt)
+    elseif state.mode == Mode.Editor then
+        Interface.update(state.interface, dt)
     end
 
     Music.update(dt)
+
 end
 
 function love.draw()
@@ -920,8 +925,10 @@ function love.draw()
         Level.draw(state.level)
     elseif state.mode == Mode.Menu then
         Menu.draw(state.menu)
+    elseif state.mode == Mode.Editor then
+        Interface.draw(state.interface)
     end
-    drawAnimations()
+    Animation.draw()
 end
 
 function love.keypressed(key)
@@ -933,6 +940,9 @@ function love.keypressed(key)
        or key == "f11" then
        state.fullscreen = not state.fullscreen
        love.window.setFullscreen(state.fullscreen)
+    elseif key == "e" then
+        state.mode = Mode.Editor
+        state.musicVolume = 0.0
     end
 end
 
@@ -953,4 +963,16 @@ function keyClear(key, time)
     repeatTime = 0
     local index = indexOf(KEYS_PRESSED, key)
     table.remove(KEYS_PRESSED, index)
+end
+
+function love.wheelmoved(x, y)
+    if state.mode == Mode.Editor then
+        Interface.wheelmoved(state.interface, x, y)
+    end
+end
+
+function love.mousemoved(x, y, dx, dy, istouch)
+    if state.mode == Mode.Editor then
+        Interface.mousemoved(state.interface, x, y, dx, dy, istouch)
+    end
 end
