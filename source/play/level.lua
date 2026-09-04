@@ -1,5 +1,6 @@
 if Level ~= nil then return Level end
 local love = require "love"
+require "source.data.levels"
 
 require "source.graphics.palette"
 require "source.graphics.anim"
@@ -71,6 +72,77 @@ function Level.new(height, width, cells, palette, title, text)
     end)
 
     return result
+end
+
+function Level.fromSingleGrid(grid, cells)
+
+end
+
+function Level.fromData(levelData, paletteIndex)
+    local title, text = levelData.title, levelData.subtitle
+    local layer1, layer2, layer3 = table.unpack(levelData.grid)
+    local cells = {}
+
+    local y = 0
+    local x = 0
+    for line in string.gmatch(layer1, "[^\n]+") do
+        local trimmedLine = string.gsub(line, "%s+", "")
+        if trimmedLine == "" then
+            break
+        end
+        x = 0
+        for character in string.gmatch(trimmedLine, ".") do
+            if character ~= "." then
+                table.insert(cells, Cell.fromChar(x, y, #cells + 1, character))
+            end
+            x = x + 1
+        end
+        y = y + 1
+    end
+
+    y = 0
+    for line in string.gmatch(layer2, "[^\n]+") do
+        local trimmedLine = string.gsub(line, "%s+", "")
+        if trimmedLine == "" then
+            break
+        end
+        x = 0
+        for character in string.gmatch(trimmedLine, ".") do
+            if string.match(character, "[#.]") then
+            elseif string.match(character, "%d") then
+                local r
+                for _, cell in ipairs(findCells(cells, x, y)) do
+                    if cell.region ~= nil then
+                        r = cell.region
+                    end
+                end
+                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Origin, r))
+                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Timer, r, tonumber(character)))
+            end
+            x = x + 1
+        end
+        y = y + 1
+    end
+
+    y = 0
+    for line in string.gmatch(layer3, "[^\n]+") do
+        local trimmedLine = string.gsub(line, "%s+", "")
+        if trimmedLine == "" then
+            break
+        end
+        x = 0
+        for character in string.gmatch(trimmedLine, ".") do
+            if string.match(character, "[#.]") then
+            elseif string.match(character, "G") then
+                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Goal))
+            end
+            x = x + 1
+        end
+        y = y + 1
+    end
+
+    -- sort of finished
+    return Level.new(y, x, cells, globals.paletteLists[paletteIndex], title, text)
 end
 
 function Level.fromGrid(grid, paletteIndex)
@@ -486,7 +558,7 @@ function Level.turn(level, key)
         else
             state.levelIndex = -6
             globals.entered_level_six = 6.66
-            state.level = Level.fromGrid(globals.man, state.levelIndex)
+            state.level = Level.fromData(Levels.areas.man.lobby, state.levelIndex)
             Animation.start(Level.fadeFromBlack(1))
             Music.play(Music.secret, 1)
         end

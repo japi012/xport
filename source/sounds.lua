@@ -27,7 +27,7 @@ local function newMusic(filename, volume)
         filename = filename,
         audio = love.audio.newSource("music/" .. filename, "static"),
         variation = 0,
-        volume = volume or 0.25,
+        volume = volume or 1,
         loop = true,
         play = playSound
     }
@@ -42,14 +42,14 @@ function Music.play(music, duration)
     end
     if state.currentMusic then
         state.currentMusic.fading = true
-        local startingVolume = state.musicVolume
+        local startingVolume = state.musicVolume * state.currentMusic.volume
         local currentMusic = state.currentMusic
         local fadeOutAnim = Animation.new(
             duration, function(self, progress)
                 local progress = easeOutCubic(progress)
                 currentMusic.audio:setVolume((1 - progress) * startingVolume)
             end, nil, function()
-                currentMusic.audio:setVolume(0)
+                currentMusic.audio:setVolume(0.0)
                 currentMusic.audio:stop()
             end
         )
@@ -57,14 +57,14 @@ function Music.play(music, duration)
         local fadeInAnim = Animation.new(
             duration, function(self, progress)
                 local progress = easeOutCubic(progress)
-                music.audio:setVolume(progress * state.musicVolume)
+                music.audio:setVolume(progress * state.musicVolume * music.volume)
             end, function()
                 playSound(music, true, true)
                 music.fading = true
                 currentMusic.fading = false
                 music.audio:setVolume(0.0)
             end, function()
-                music.audio:setVolume(state.musicVolume)
+                music.audio:setVolume(state.musicVolume * music.volume)
                 state.currentMusic = music
                 music.fading = false
             end
@@ -76,13 +76,13 @@ function Music.play(music, duration)
         local fadeInAnim = Animation.new(
             duration * 2, function(self, progress)
                 local progress = easeOutCubic(progress)
-                music.audio:setVolume(progress * state.musicVolume)
+                music.audio:setVolume(progress * state.musicVolume * music.volume)
             end, function()
                 playSound(music, true, true)
                 music.fading = true
                 music.audio:setVolume(0.0)
             end, function()
-                music.audio:setVolume(state.musicVolume)
+                music.audio:setVolume(state.musicVolume * music.volume)
                 state.currentMusic = music
                 music.fading = false
             end
@@ -93,8 +93,8 @@ end
 
 function Music.update(dt)
     if state.currentMusic and not state.currentMusic.fading
-        and state.currentMusic.audio:getVolume() ~= state.musicVolume then
-        state.currentMusic.audio:setVolume(state.musicVolume)
+        and state.currentMusic.audio:getVolume() ~= (state.musicVolume * state.currentMusic.volume) then
+        state.currentMusic.audio:setVolume(state.musicVolume * state.currentMusic.volume)
     end
 end
 
@@ -110,7 +110,7 @@ Sounds.levelRestart = newSound("sfx_level-restart.wav", nil, 0.05)
 Sounds.levelComplete = newSound("sfx_level-complete.wav", nil, 0)
 
 Music.menu = newMusic("mus_menu.ogg", nil)
-Music.secret = newMusic("mus_secret.ogg", 0.125)
+Music.secret = newMusic("mus_secret.ogg", 0.5)
 Music.level1 = newMusic("mus_level1.ogg", nil)
 Music.level2 = newMusic("mus_level2.ogg", nil)
 Music.level3 = newMusic("mus_level3.ogg", nil)

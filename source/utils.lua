@@ -72,17 +72,34 @@ function allWithPredicate(list, predicate)
 end
 
 -- borrowed from https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console
-function dump(o)
-   if type(o) == 'table' then
-      local s = '{ '
-      for k,v in pairs(o) do
-         if type(k) ~= 'number' then k = '"'..dump(k)..'"' end
-         s = s .. '['..dump(k)..'] = ' .. dump(v) .. ','
-      end
-      return s .. '} '
-   else
-      return tostring(o)
-   end
+function dump(o, depth)
+    if depth == -1 then return '...' end
+    if type(o) == 'table' then
+        local s = '{ '
+        for k,v in pairs(o) do
+            -- if type(k) ~= 'number' then k = dump(k) end
+            s = s .. '['..dump(k)..'] = ' .. dump(v, depth and (depth - 1) or nil) .. ', '
+        end
+        return string.sub(s, 1, -3) .. ' }'
+    elseif type(o) == 'string' then
+        return '"' .. o .. '"'
+    else
+        return tostring(o)
+    end
+end
+
+-- Source - https://stackoverflow.com/a/25449599
+-- Posted by Diego Pino, modified by community. See post 'Timeline' for change history
+-- Retrieved 2026-09-04, License - CC BY-SA 3.0
+-- Source - https://stackoverflow.com/a/20100401
+-- Posted by Ivo
+-- Retrieved 2026-09-04, License - CC BY-SA 3.0
+function string.split(str, sep)
+    local result = {}
+    for match in (str..sep):gmatch("(.-)"..sep) do
+        table.insert(result, match);
+    end
+    return result
 end
 
 -- SPECIAL ENUM FUNCTIONS
@@ -119,4 +136,39 @@ end
 
 function cosh(x)
     return (math.exp(x) + math.exp(-x)) / 2
+end
+
+-- Because LOVE2D uses the deprecated function for some reason
+
+if table.unpack == nil then
+    table.unpack = unpack
+end
+
+if unpack == nil then
+    unpack = table.unpack
+end
+
+-- DEBUGGING
+
+function debugPrint(...)
+    local string = ''
+
+    for _, str in ipairs({ ... }) do
+        if type(str) == 'string' then string = string .. str .. ' '
+        else string = string .. dump(str) .. ' ' end
+    end
+
+    print(string)
+end
+
+
+function depthPrint(depth, ...)
+    local string = ''
+
+    for _, str in ipairs({ ... }) do
+        if type(str) == 'string' then string = string .. str .. ' '
+        else string = string .. dump(str, depth) .. ' ' end
+    end
+
+    print(string)
 end
