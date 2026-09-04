@@ -41,6 +41,7 @@ function Palette.defaultList()
         background = col255(51, 28, 47),
         levelFill = col255(69, 32, 75),
         levelStroke = col255(127, 34, 153),
+        levelTransition = col255(255, 193, 247)
     }
 end
 

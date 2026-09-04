@@ -9,4 +9,5 @@ return Palette.list({
     background = col255(13, 13, 26),
     levelFill = col255(25, 25, 45),
     levelStroke = col255(0, 0, 255),
+    levelTransition = col255(95, 75, 225)
 })

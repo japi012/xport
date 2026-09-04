@@ -164,7 +164,7 @@ function Menu.update(menu, dt)
 
             if love.mouse.isDown(1) and not rect.clicked and not menu.levelOpening and not alreadySliding then
                 rect.clicked = true
-                Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
+                Animation.start(Menu.levelStart(menu, rect, realX, realY, realW, realH))
                 menu.levelOpening = true
                 Sounds.selectUI:play()
                 break
@@ -208,7 +208,7 @@ function Menu.keypressed(menu, key)
 
                 Sounds.selectUI:play()
                 rect.clicked = true
-                Animation.start(Menu.levelStartAnim(menu, rect, realX, realY, realW, realH))
+                Animation.start(Menu.levelStart(menu, rect, realX, realY, realW, realH))
                 menu.levelOpening = true
             end
         elseif key == "up" or key == "w" then
@@ -396,7 +396,10 @@ function Menu.rectUnscaleAnim(rect)
     )
 end
 
-function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
+function Menu.levelStart(menu, rect, realX, realY, realW, realH)
+    local newLevel = Level.fromData(Levels.areas[rect.levelArea].levels[rect.levelIndex])
+    local r, g, b = newLevel.palette.levelTransition()
+
     return Animation.chained(
         Animation.new(
             1.5, function(self, progress)
@@ -404,7 +407,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                 local scale =
                     math.max(state.width, state.height) * progress * 2
                 local angle = progress * 2 * math.pi
-                love.graphics.setColor(255 / 255, 193 / 255, 247 / 255)
+                love.graphics.setColor(r, g, b)
                 drawRotatedRectangle("fill",
                     realX + realW / 2, realY + realH / 2,
                     scale, scale, angle)
@@ -417,18 +420,20 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
             0.5, function(self, progress)
                 local progress = easeOutCubic(progress)
                 local scale = math.max(state.width, state.height)
-                love.graphics.setColor(255 / 255, 193 / 255, 247 / 255, 1 - progress)
+                love.graphics.setColor(r, g, b, 1 - progress)
                 drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
                 love.graphics.setColor(1, 1, 1)
             end, function()
                 noHover(menu)
                 state.levelArea = rect.levelArea
                 state.levelIndex = rect.levelIndex
+
+                state.level = newLevel
+
                 if (state.levelIndex == 6) then globals.entered_level_six = globals.entered_level_six + 1
                 else globals.entered_level_six = 0 end
 
                 Sounds.levelStart:play()
-                state.level = Level.fromData(Levels.areas[state.levelArea].levels[state.levelIndex])
                 state.mode = Mode.Gameplay
 
                 rect.clicked = false
