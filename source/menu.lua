@@ -214,14 +214,34 @@ function Menu.keypressed(menu, key)
         elseif key == "up" or key == "w" then
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
-                scrollBar.value = math.min(1, scrollBar.value + 0.1)
+
+                if scrollBar.snapping then
+                    if scrollBar.scale then
+                        scrollBar.value = math.min(scrollBar.scale, (scrollBar.value + 1) / scrollBar.snapping * scrollBar.scale)
+                    else
+                        scrollBar.value = math.min(scrollBar.snapping - 1, scrollBar.value + 1)
+                    end
+                else
+                    scrollBar.value = math.min(scrollBar.scale, scrollBar.value + 0.1 * (scrollBar.scale or 1))
+                end
+
                 scrollBar.value = scrollBar.connect(scrollBar, scrollBar.value) or scrollBar.value
                 if scrollBar.release then scrollBar.release(scrollBar, scrollBar.value) end
             end
         elseif key == "down" or key == "s" then
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
-                scrollBar.value = math.max(scrollBar.value - 0.1, 0)
+
+                if scrollBar.snapping then
+                    if scrollBar.scale then
+                        scrollBar.value = math.max(0, (scrollBar.value - 1) / scrollBar.snapping * scrollBar.scale)
+                    else
+                        scrollBar.value = math.max(0, scrollBar.value - 1)
+                    end
+                else
+                    scrollBar.value = math.max(0, scrollBar.value - 0.1 * (scrollBar.scale or 1))
+                end
+
                 scrollBar.value = scrollBar.connect(scrollBar, scrollBar.value) or scrollBar.value
                 if scrollBar.release then scrollBar.release(scrollBar, scrollBar.value) end
             end
