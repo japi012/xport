@@ -49,7 +49,7 @@ function Level.isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
-function Level.new(width, height, cells, palette, musicID, title, text)
+function Level.new(width, height, cells, palette, musicID, number, name, text)
     local result = {
         width = width,
         height = height,
@@ -64,7 +64,8 @@ function Level.new(width, height, cells, palette, musicID, title, text)
         eventLog = {},
         goalPlaying = false,
 
-        title = Locale.localizeText(title),
+        number = Locale.localizeText(number),
+        name = Locale.localizeText(name),
         text = Locale.localizeText(text)
     }
 
@@ -142,7 +143,7 @@ function Level.fromData(levelData)
     end
 
     -- sort of finished
-    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.title, levelData.subtitle)
+    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.name, levelData.subtitle)
 end
 
 function Level.onResize(level)
@@ -206,9 +207,16 @@ function Level.draw(level)
 
     love.graphics.setBlendMode("alpha") -- Default blend mode.
 
-    if level.title then
+    if level.number ~= "" and level.name ~= "" then
         local padding = level.cellSize / 2
-        love.graphics.print(level.title, globals.levelFont, padding, padding)
+        local header = level.number .. " - "
+        local footer = ""
+        if Locale.current == "sitelen_pona" then
+            header = "󱤽" .. Locale.levelNumberSitelenPona(level.number) .. "󱤡 「"
+            footer = "」"
+        end
+
+        love.graphics.print(header.. level.name .. footer, globals.levelFont, padding, padding)
     end
 
     if level.text then

@@ -57,4 +57,52 @@ function Locale.changeLanguage(language)
     end
 end
 
+function Locale.convertNumberToSitelenPona(number)
+    -- not dealing with floats
+    number = math.floor(number)
+
+    if number == 0 then
+        return "󱤂"
+    elseif number < 0 then
+        -- unofficial system for negative numbers
+        local name = Locale.convertNumberToSitelenPona(-number)
+        return name .. "󱥶"
+    end
+
+    local function below100(n)
+        if n == 0 then return "" end
+
+        local mute, below20 = math.floor(n / 20), math.fmod(number, 20)
+        local luka, below5 = math.floor(below20 / 5), math.fmod(below20, 5)
+        local tu, below2 = math.floor(below5 / 2), math.fmod(below5, 2)
+        local wan = below2 == 1 and 1 or 0
+
+        return string.rep("󱤼", mute)
+            .. string.rep("󱤭", luka)
+            .. string.rep("󱥮", tu)
+            .. string.rep("󱥳", wan)
+    end
+
+    local ale, rest = math.floor(number / 100), math.fmod(number, 100)
+
+    if ale == 0 then
+        return below100(rest)
+    else
+        return Locale.convertNumberToSitelenPona(ale) .. "󱤄" .. below100(rest)
+    end
+end
+
+function Locale.levelNumberSitelenPona(s)
+    local str = s
+    if string.sub(s, 1, 1) == "C" then
+        str = string.sub(s, 2)
+        str = "-" .. str
+    end
+    local num = tonumber(str)
+    if num == nil then
+        return s
+    end
+    return Locale.convertNumberToSitelenPona(num)
+end
+
 return Locale

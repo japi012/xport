@@ -97,7 +97,7 @@ end
 function string.split(str, sep)
     local result = {}
     for match in (str..sep):gmatch("(.-)"..sep) do
-        table.insert(result, match);
+        table.insert(result, match)
     end
     return result
 end

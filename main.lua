@@ -49,8 +49,9 @@ globals = {
 
     fontFile = "fonts/intrebol.ttf", -- NOT a placeholder
     levelFontFile = "fonts/Comfortaa-Regular.ttf", -- *REALLY* NOT a placeholder,
-    ponaFontFile1 = "fonts/sitelenselikiwenjuniko.ttf", -- toki pona :D
-    ponaFontFile2 = "fonts/sitelenselikiwenmonojuniko.ttf", -- toki pona :D
+    -- ponaFontFile = "fonts/sitelenselikiwenjuniko.ttf", -- toki pona :D
+    -- ponaFontFile = "fonts/sitelenselikiwenmonojuniko.ttf", -- toki pona :D
+    ponaFontFile = "fonts/nishiki-teki-lili.ttf", -- toki pona :D
 
     levels = {},
     entered_level_six = 0,
@@ -72,7 +73,8 @@ function updateGraphics()
 end
 
 function reloadFonts()
-    local ponaAltFile = Locale.current == 'toki_pona' and globals.ponaFontFile1 or (Locale.current == 'sitelen_pona' and globals.ponaFontFile2 or nil)
+    -- local ponaAltFile = Locale.current == 'toki_pona' and globals.ponaFontFile1 or (Locale.current == 'sitelen_pona' and globals.ponaFontFile2 or nil)
+    local ponaAltFile = Locale.current == 'sitelen_pona' and globals.ponaFontFile or nil
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
     if state.mode == Mode.Gameplay then
@@ -255,7 +257,7 @@ function love.load()
             label = "menu.volume.music"
         },
         {
-            x = 6/7 - Menu.scrollBarWidth / 2,
+            x = 1/7 - Menu.scrollBarWidth / 2,
             y = 1/10,
             h = 0.3,
             snapping = #Locale.languages,
@@ -264,7 +266,7 @@ function love.load()
                 local newLang = Locale.languages[value + 1]
                 Locale.changeLanguage(newLang)
 
-                scrollbar.label = "menu.language.label\n(menu.language." .. newLang .. ")"
+                scrollbar.label = "menu.language." .. newLang
                 return value
             end,
             -- release = function(scrollbar, value)
@@ -273,7 +275,7 @@ function love.load()
 
             --     scrollbar.label = "menu.language.label\n(menu.language." .. Locale.current .. ")"
             -- end,
-            label = "menu.language.label\n(menu.language.en_US)"
+            label = "menu.language.en_US"
         }
     })
 

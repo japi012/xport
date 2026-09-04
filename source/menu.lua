@@ -317,15 +317,25 @@ function Menu.draw(menu)
         love.graphics.setLineWidth(1)
 
         love.graphics.setColor(love.math.colorFromBytes(255, 193, 247))
+    end
+
+    for i, rect in ipairs(menu.levelRects) do
+        local realX = menu.marginX + (rect.x / menu.width) * menu.pixelWidth
+        local realY = menu.marginY + (rect.y / menu.height) * menu.pixelHeight
+        local realW = ((rect.w * rect.scale) / menu.width) * menu.pixelWidth
+        local realH = ((rect.h * rect.scale) / menu.height) * menu.pixelHeight
+
         local fontWidth = globals.menuFont:getWidth(rect.levelIndex)
         local fontHeight = globals.menuFont:getHeight()
 
         local text
         local challenge = indexOf(globals.challengeLevels, rect.levelIndex)
         if challenge ~= -1 then
-            text = "C" .. tostring(challenge)
+            text = Locale.current == "sitelen_pona" and Locale.convertNumberToSitelenPona(-challenge)
+                or "C" .. tostring(challenge)
         else
-            text = tostring(rect.levelIndex)
+            text = Locale.current == "sitelen_pona" and Locale.convertNumberToSitelenPona(rect.levelIndex)
+                or tostring(rect.levelIndex)
         end
 
         love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))

@@ -19,7 +19,7 @@ RGB_METATABLE = {
 
         -- HUE
         if k == "h" then
-            local cmax, _, diff = hsvHelpers(t.r, t.g, t.b);
+            local cmax, _, diff = hsvHelpers(t.r, t.g, t.b)
             if cmax == t.r then return (60 * ((t.g - t.b) / diff) + 360) % 360 end
             if cmax == t.g then return (60 * ((t.b - t.r) / diff) + 120) % 360 end
             if cmax == t.b then return (60 * ((t.r - t.g) / diff) + 240) end
@@ -27,7 +27,7 @@ RGB_METATABLE = {
 
         -- SATURATION
         if k == "s" then
-            local cmax, _, diff = hsvHelpers(t.r, t.g, t.b);
+            local cmax, _, diff = hsvHelpers(t.r, t.g, t.b)
             if cmax == 0 then return 0 end
             return (diff / cmax)
         end

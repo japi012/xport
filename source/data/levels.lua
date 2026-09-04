@@ -15,6 +15,7 @@ function Levels.getDimensionFromGrid(grid)
 end
 
 function Levels.encodeLevelFromFile(id, content)
+    content = string.gsub(content, "\r\n", "\n")
     local rawData = string.split(content, '\n\n')
     local thingy = string.find(rawData[1], '\n') -- well-named variable
 
@@ -25,8 +26,17 @@ function Levels.encodeLevelFromFile(id, content)
 
     -- debugPrint("[LEVELS] Decoding, with raw content: ", content)
     -- debugPrint("[LEVELS] Decoding, with raw data: ", rawData)
+    -- local
+    local title = string.sub(rawData[1], 0, thingy and (thingy - 1) or #rawData[1])
+    local start, finish = string.find(title, " %- ")
+    if start == nil or finish == nil then
+        start = 0
+        finish = 0
+    end
+
     local result = {
-        title = string.sub(rawData[1], 0, thingy and (thingy - 1) or #rawData[1]),
+        number = string.sub(title, 1, start - 1),
+        name = string.sub(title, finish + 1),
         subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
         -- title = string.sub(rawData[1], 0, thingy or #rawData[1]),
         -- subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
@@ -37,15 +47,15 @@ function Levels.encodeLevelFromFile(id, content)
 
     local curIndex = 3
     local cX, cY = Levels.getDimensionFromGrid(rawData[2])
-    -- debugPrint("[LEVELS] Grid dimensions:", cX, cY);
+    -- debugPrint("[LEVELS] Grid dimensions:", cX, cY)
 
     while true do
         if (curIndex) > #rawData then break end
         local gridCheck = rawData[curIndex]
-        -- debugPrint("[LEVELS] Checking grid", curIndex);
+        -- debugPrint("[LEVELS] Checking grid", curIndex)
 
         local cX2, cY2 = Levels.getDimensionFromGrid(gridCheck)
-        -- debugPrint("[LEVELS] Comparing grid dimensions:", cX2, cY2);
+        -- debugPrint("[LEVELS] Comparing grid dimensions:", cX2, cY2)
         if cX ~= cX2 or cY ~= cY2 or #rawData[2] ~= #gridCheck then break end
 
         result.grid[#result.grid + 1] = gridCheck
@@ -61,7 +71,7 @@ function Levels.encodeLevelFromFile(id, content)
     end
 
     -- Insert save retrieval logic here. Someday.
-    result.isCleared = false;
+    result.isCleared = false
 
     -- debugPrint("[LEVELS] Decoding, with resultant: ", result)
     return result
@@ -107,15 +117,15 @@ function Levels.loadData()
 
         for _, levelfile in ipairs(levelfiles) do
             local levelID = string.gsub(levelfile, ".xlvl", "")
-            local fileContents = love.filesystem.read(areadir .. '/levels/' .. levelfile);
+            local fileContents = love.filesystem.read(areadir .. '/levels/' .. levelfile)
 
             debugPrint('[LEVELS] Parsing level "'.. areakey .. '/' .. levelID .. '"')
             local resultLevel = Levels.encodeLevelFromFile(levelID, fileContents)
 
-            Levels.order[#Levels.order + 1] = resultLevel;
-            Levels.plain[areakey .. '/' .. levelID] = resultLevel;
-            Levels.areas[areakey].levels[levelID] = resultLevel;
-            Levels.areas[areakey].levels[#Levels.areas[areakey].levels + 1] = resultLevel;
+            Levels.order[#Levels.order + 1] = resultLevel
+            Levels.plain[areakey .. '/' .. levelID] = resultLevel
+            Levels.areas[areakey].levels[levelID] = resultLevel
+            Levels.areas[areakey].levels[#Levels.areas[areakey].levels + 1] = resultLevel
 
             -- depthPrint(2, '[LEVELS] Result:', Levels.areas)
         end

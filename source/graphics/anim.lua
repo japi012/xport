@@ -125,14 +125,14 @@ function easeInCubic(t)
 end
 
 function easeInBack(t)
-    local c1 = 1.70158;
-    local c3 = c1 + 1;
+    local c1 = 1.70158
+    local c3 = c1 + 1
 
-    return c3 * t ^ 3 - c1 * t * t;
+    return c3 * t ^ 3 - c1 * t * t
 end
 
 function easeOutExpo(x)
-    return (x == 1) and 1 or (1 - 2^(-10 * x));
+    return (x == 1) and 1 or (1 - 2^(-10 * x))
 end
 
 return Animation
