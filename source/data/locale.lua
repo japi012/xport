@@ -3,7 +3,7 @@ if Locale ~= nil then return Locale end
 local love = require "love"
 Locale = {
     fallback = "en-US",
-    current = "fil-PH",
+    current = "en-US",
 
     mappings = {}
 }

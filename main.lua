@@ -212,14 +212,14 @@ function love.load()
             levelArea = 'demoworld',
             levelIndex = 15,
         },
-        {
-            x = 0.5 + menuLevelSize * 1.5,
-            y = 0,
-            w = menuLevelSize,
-            h = menuLevelSize,
-            levelArea = 'demoworld',
-            levelIndex = 16,
-        },
+        -- {
+        --     x = 0.5 + menuLevelSize * 1.5,
+        --     y = 0,
+        --     w = menuLevelSize,
+        --     h = menuLevelSize,
+        --     levelArea = 'demoworld',
+        --     levelIndex = 16,
+        -- },
     },{
         {
             x = 1/7 - Menu.scrollBarWidth / 2,

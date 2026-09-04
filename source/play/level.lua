@@ -64,8 +64,8 @@ function Level.new(width, height, cells, palette, musicID, title, text)
         eventLog = {},
         goalPlaying = false,
 
-        title = title,
-        text = text
+        title = Locale.localizeText(title),
+        text = Locale.localizeText(text)
     }
 
     table.sort(result.cells, function(a, b)

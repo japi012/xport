@@ -26,8 +26,8 @@ function Levels.encodeLevelFromFile(id, content)
     -- debugPrint("[LEVELS] Decoding, with raw content: ", content)
     -- debugPrint("[LEVELS] Decoding, with raw data: ", rawData)
     local result = {
-        title = Locale.localizeText(string.sub(rawData[1], 0, thingy and (thingy - 1) or #rawData[1])),
-        subtitle = thingy and Locale.localizeText(string.sub(rawData[1], thingy + 1)) or '',
+        title = string.sub(rawData[1], 0, thingy and (thingy - 1) or #rawData[1]),
+        subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
         -- title = string.sub(rawData[1], 0, thingy or #rawData[1]),
         -- subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
         grid = {
