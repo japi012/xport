@@ -1,5 +1,5 @@
-6 - Origin Shift
-There is a room in between.
+6 - demoworld.level6.title
+demoworld.level6.description
 
 ########
 ####...#
@@ -27,3 +27,6 @@ There is a room in between.
 #......#
 ###....#
 ########
+
+demoworld/a_colors
+mus_level2

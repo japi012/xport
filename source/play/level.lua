@@ -49,13 +49,14 @@ function Level.isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
-function Level.new(height, width, cells, palette, title, text)
+function Level.new(width, height, cells, palette, musicID, title, text)
     local result = {
         width = width,
         height = height,
 
         cells = cells,
-        palette = palette or Palette.defaultList(),
+        palette = palette and require('areas.' .. string.gsub(palette, '/', '.palettes.')) or Palette.defaultList(),
+        musicID = musicID or '',
         winning = false,
 
         cellSize = 0,
@@ -78,8 +79,7 @@ function Level.fromSingleGrid(grid, cells)
 
 end
 
-function Level.fromData(levelData, paletteIndex)
-    local title, text = levelData.title, levelData.subtitle
+function Level.fromData(levelData)
     local layer1, layer2, layer3 = table.unpack(levelData.grid)
     local cells = {}
 
@@ -142,73 +142,7 @@ function Level.fromData(levelData, paletteIndex)
     end
 
     -- sort of finished
-    return Level.new(y, x, cells, globals.paletteLists[paletteIndex], title, text)
-end
-
-function Level.fromGrid(grid, paletteIndex)
-    local layer1, layer2, layer3, title, text = grid[1], grid[2], grid[3], grid[4], grid[5]
-    local cells = {}
-
-    local y = 0
-    local x = 0
-    for line in string.gmatch(layer1, "[^\n]+") do
-        local trimmedLine = string.gsub(line, "%s+", "")
-        if trimmedLine == "" then
-            break
-        end
-        x = 0
-        for character in string.gmatch(trimmedLine, ".") do
-            if character ~= "." then
-                table.insert(cells, Cell.fromChar(x, y, #cells + 1, character))
-            end
-            x = x + 1
-        end
-        y = y + 1
-    end
-
-    y = 0
-    for line in string.gmatch(layer2, "[^\n]+") do
-        local trimmedLine = string.gsub(line, "%s+", "")
-        if trimmedLine == "" then
-            break
-        end
-        x = 0
-        for character in string.gmatch(trimmedLine, ".") do
-            if string.match(character, "[#.]") then
-            elseif string.match(character, "%d") then
-                local r
-                for _, cell in ipairs(findCells(cells, x, y)) do
-                    if cell.region ~= nil then
-                        r = cell.region
-                    end
-                end
-                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Origin, r))
-                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Timer, r, tonumber(character)))
-            end
-            x = x + 1
-        end
-        y = y + 1
-    end
-
-    y = 0
-    for line in string.gmatch(layer3, "[^\n]+") do
-        local trimmedLine = string.gsub(line, "%s+", "")
-        if trimmedLine == "" then
-            break
-        end
-        x = 0
-        for character in string.gmatch(trimmedLine, ".") do
-            if string.match(character, "[#.]") then
-            elseif string.match(character, "G") then
-                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Goal))
-            end
-            x = x + 1
-        end
-        y = y + 1
-    end
-
-    -- sort of finished
-    return Level.new(y, x, cells, globals.paletteLists[paletteIndex], title, text)
+    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.title, levelData.subtitle)
 end
 
 function Level.onResize(level)
@@ -556,11 +490,11 @@ function Level.turn(level, key)
             Animation.start(Level.fadeFromBlack(2))
             Music.play(Music.menu, 0.2)
         else
-            state.levelIndex = -6
+            -- state.levelIndex = -6
             globals.entered_level_six = 6.66
-            state.level = Level.fromData(Levels.areas.man.lobby, state.levelIndex)
+            state.level = Level.fromData(Levels.areas.man.lobby)
             Animation.start(Level.fadeFromBlack(1))
-            Music.play(Music.secret, 1)
+            Music.play(Music[Levels.areas.man.lobby.musicID], 1)
         end
         Sounds.levelRestart:play()
         forceUpdateGraphics()

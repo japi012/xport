@@ -26,7 +26,7 @@ function Levels.encodeLevelFromFile(id, content)
     -- debugPrint("[LEVELS] Decoding, with raw content: ", content)
     -- debugPrint("[LEVELS] Decoding, with raw data: ", rawData)
     local result = {
-        title = Locale.localizeText(string.sub(rawData[1], 0, thingy or #rawData[1])),
+        title = Locale.localizeText(string.sub(rawData[1], 0, thingy and (thingy - 1) or #rawData[1])),
         subtitle = thingy and Locale.localizeText(string.sub(rawData[1], thingy + 1)) or '',
         -- title = string.sub(rawData[1], 0, thingy or #rawData[1]),
         -- subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
@@ -35,21 +35,27 @@ function Levels.encodeLevelFromFile(id, content)
         }
     }
 
-    local curGrid = 2
+    local curIndex = 3
     local cX, cY = Levels.getDimensionFromGrid(rawData[2])
     -- debugPrint("[LEVELS] Grid dimensions:", cX, cY);
 
     while true do
-        if (curGrid + 1) > #rawData then break end
-        local gridCheck = rawData[curGrid + 1]
-        -- debugPrint("[LEVELS] Checking grid", curGrid);
+        if (curIndex) > #rawData then break end
+        local gridCheck = rawData[curIndex]
+        -- debugPrint("[LEVELS] Checking grid", curIndex);
 
         local cX2, cY2 = Levels.getDimensionFromGrid(gridCheck)
         -- debugPrint("[LEVELS] Comparing grid dimensions:", cX2, cY2);
         if cX ~= cX2 or cY ~= cY2 or #rawData[2] ~= #gridCheck then break end
 
         result.grid[#result.grid + 1] = gridCheck
-        curGrid = curGrid + 1
+        curIndex = curIndex + 1
+    end
+
+    if rawData[curIndex] ~= nil then
+        local thingy2 = string.find(rawData[curIndex], '\n') -- well-named variable 2
+        result.palette = string.sub(rawData[curIndex], 0, thingy2 - 1)
+        result.musicID = string.sub(rawData[curIndex], thingy2 + 1)
     end
 
     -- debugPrint("[LEVELS] Decoding, with resultant: ", result)

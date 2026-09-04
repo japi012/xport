@@ -1,0 +1,25 @@
+// demoworld.level1.title
+// demoworld.level2.title
+demoworld.level3.title \: Halo-halo
+demoworld.level4.title \: Kumusta, XPORT
+demoworld.level5.title \: Touchmove
+demoworld.level6.title \: Bagong Simula
+demoworld.level7.title \: Pako
+demoworld.level8.title \: Banana Split
+demoworld.level9.title \: Kambal
+demoworld.level10.title \: Tornilyo
+// demoworld.levelC1.title
+demoworld.levelC2.title \: Susi at Butas
+demoworld.levelC3.title \: Karayom
+demoworld.levelC4.title \: Aso
+// demoworld.levelC5.title
+
+demoworld.level1.description \: Use WASD or the arrow keys to move
+demoworld.level2.description \: Gamitin ang Z upang mag-undo at R upang bumalik sa simula.
+demoworld.level3.description \: Ang multiblocks ay gumagalaw na isang pangkat.
+demoworld.level4.description \: Ubusin ang timer!
+demoworld.level5.description \: Gamitin ang ESCAPE o BACKSPACE upang lumabas sa level.
+// demoworld.level6.description
+
+menu.volume.sfx \: tunog
+menu.volume.music \: musika

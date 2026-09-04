@@ -1,5 +1,5 @@
-5 - Point of No Return
-Press ESCAPE or BACKSPACE to exit a level.
+5 - demoworld.level5.title
+demoworld.level5.description
 
 #########
 #.P....##
@@ -24,3 +24,6 @@ Press ESCAPE or BACKSPACE to exit a level.
 #...#####
 #......G#
 #########
+
+demoworld/a_colors
+mus_level2

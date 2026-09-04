@@ -1,5 +1,5 @@
-2 - Sokoban
-Use Z to undo and R to reset.
+2 - demoworld.level2.title
+demoworld.level2.description
 
 #########
 ######.##
@@ -27,3 +27,6 @@ Use Z to undo and R to reset.
 #......##
 #......##
 #########
+
+demoworld/a_colors
+mus_level1

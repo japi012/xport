@@ -1,3 +1,25 @@
+demoworld.level1.title \: Déjà Vu
+demoworld.level2.title \: Sokoban
+demoworld.level3.title \: Joined Together
+demoworld.level4.title \: Welcome to XPORT
+demoworld.level5.title \: Point of No Return
+demoworld.level6.title \: Origin Shift
+demoworld.level7.title \: Nailing It
+demoworld.level8.title \: A Bit of a Stretch
+demoworld.level9.title \: Twins
+demoworld.level10.title \: Screwing It
+demoworld.levelC1.title \: RE: House Flipper
+demoworld.levelC2.title \: Loaded
+demoworld.levelC3.title \: Pinpoint
+demoworld.levelC4.title \: Bone
+demoworld.levelC5.title \: Embed
+
+demoworld.level1.description \: Use WASD or the arrow keys to move
+demoworld.level2.description \: Use Z to undo and R to reset.
+demoworld.level3.description \: Multiblocks can move as one unit.
 demoworld.level4.description \: Exhaust the timer!
+demoworld.level5.description \: Press ESCAPE or BACKSPACE to exit a level.
+demoworld.level6.description \: There is a room in between.
+
 menu.volume.sfx \: sfx
 menu.volume.music \: music

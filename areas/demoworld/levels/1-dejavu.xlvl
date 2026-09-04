@@ -1,5 +1,5 @@
-1 - Déjà Vu
-Use WASD or the arrow keys to move
+1 - demoworld.level1.title
+demoworld.level1.description
 
 #########
 #P...####
@@ -18,3 +18,6 @@ Use WASD or the arrow keys to move
 #....####
 #......G#
 #########
+
+demoworld/a_colors
+mus_level1

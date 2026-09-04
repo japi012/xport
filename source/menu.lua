@@ -367,7 +367,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                     scale, scale, angle)
                 love.graphics.setColor(1, 1, 1)
             end, function()
-                Music.play(Music[globals.levelMusic[rect.levelIndex]])
+                Music.play(Music[globals.levels[rect.levelIndex].musicID])
             end
         ),
         Animation.new(
@@ -384,7 +384,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                 else globals.entered_level_six = 0 end
 
                 Sounds.levelStart:play()
-                state.level = Level.fromData(globals.levels[state.levelIndex], state.levelIndex)
+                state.level = Level.fromData(globals.levels[state.levelIndex])
                 state.mode = Mode.Gameplay
 
                 rect.clicked = false

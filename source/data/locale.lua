@@ -3,7 +3,7 @@ if Locale ~= nil then return Locale end
 local love = require "love"
 Locale = {
     fallback = "en-US",
-    current = "en-US",
+    current = "fil-PH",
 
     mappings = {}
 }
@@ -17,9 +17,11 @@ function Locale.loadMappings()
         local result = {}
 
         for line in love.filesystem.lines("translations/" .. transfile) do
-            local lines = string.split(line, " \\: ")
-            if #lines == 2 then
-                result[lines[1]] = lines[2]
+            if (string.sub(line, 1, 2) ~= '//') then
+                local lines = string.split(line, " \\: ")
+                if #lines <= 2 then
+                    result[lines[1]] = lines[2] or ''
+                end
             end
         end
 

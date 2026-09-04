@@ -1,4 +1,4 @@
-4 - Welcome to XPORT
+4 - demoworld.level4.title
 demoworld.level4.description
 
 ########
@@ -24,3 +24,6 @@ demoworld.level4.description
 #......#
 #......#
 ########
+
+demoworld/a_colors
+mus_level2

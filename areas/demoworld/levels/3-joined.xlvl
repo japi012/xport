@@ -1,5 +1,5 @@
-3 - Joined Together
-Multiblocks can move as one unit.
+3 - demoworld.level3.title
+demoworld.level3.description
 
 #################
 #..P..###.......#
@@ -27,3 +27,6 @@ Multiblocks can move as one unit.
 #......#####....#
 #......###......#
 #################
+
+demoworld/a_colors
+mus_level1

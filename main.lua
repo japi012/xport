@@ -8,6 +8,7 @@ require "source.play.level"
 
 require "source.menu"
 require "source.editor.interface"
+require "source.graphics.palette"
 
 --[[
 
@@ -85,58 +86,9 @@ function forceUpdateGraphics()
 end
 
 function love.load()
-    local firstPalette = Palette.defaultList()
-    local secondPalette = Palette.list({
-        [Cell.Wall] = col255(54, 63, 105),
-        [Cell.Box] = Palette.gradientHSV(col255(95, 50, 225), col255(43, 6, 100), 6),
-        [Cell.Origin] = {
-            default = Palette.gradientHSV(col255(110, 90, 255), col255(87, 45, 200), 6),
-            player = col(1, 1, 1)
-        },
-        background = col255(13, 13, 26),
-        levelFill = col255(25, 25, 45),
-        levelStroke = col255(0, 0, 255),
-    })
-    local challengePalette = Palette.list({
-        [Cell.Wall] = col255(0, 0, 0),
-        [Cell.Box] = Palette.gradientHSV(col255(230, 17, 47), col255(153, 6, 20), 6),
-        [Cell.Origin] = {
-            default = Palette.gradientHSV(col255(130, 27, 51), col255(70, 7, 20), 6),
-            player = col(1, 1, 1)
-        },
-        background = col255(29, 1, 6),
-        levelFill = col255(51, 3, 8),
-        levelStroke = col255(255, 0, 0),
-    })
-    local secretPalette = Palette.list({
-        [Cell.Wall] = col(0, 0, 0),
-        background = col(0, 0, 0),
-        levelFill = col255(59, 22, 65),
-        levelStroke = col255(0, 0, 0)
-    })
-
-    globals.paletteLists = {
-        [-6] = secretPalette,
-        [1] = firstPalette,
-        [2] = firstPalette,
-        [3] = firstPalette,
-        [4] = firstPalette,
-        [5] = firstPalette,
-        [6] = firstPalette,
-        [7] = secondPalette,
-        [8] = secondPalette,
-        [9] = secondPalette,
-        [10] = secondPalette,
-        [11] = challengePalette,
-        [12] = challengePalette,
-        [13] = challengePalette,
-        [14] = challengePalette,
-        [15] = challengePalette
-    }
-
     Locale.loadMappings()
     Levels.loadData()
-    -- state.level = Level.fromData(globals.levels[state.levelIndex], state.levelIndex)
+    -- state.level = Level.fromData(globals.levels[state.levelIndex])
 
     local menuLevelSize = 0.1
     state.menu = Menu.new(1, 1, {
@@ -301,23 +253,6 @@ function love.load()
     globals.mouseCursors = {
         ["hand"] = love.mouse.getSystemCursor("hand"),
         ["arrow"] = love.mouse.getSystemCursor("arrow"),
-    }
-    globals.levelMusic = {
-        [1] = "level1",
-        [2] = "level1",
-        [3] = "level1",
-        [4] = "level2",
-        [5] = "level2",
-        [6] = "level2",
-        [7] = "level3",
-        [8] = "level4",
-        [9] = "level5",
-        [10] = "level5",
-        [11] = "challenge1",
-        [12] = "challenge1",
-        [13] = "challenge2",
-        [14] = "challenge2",
-        [15] = "challenge3",
     }
 
     Music.play(Music.menu)
