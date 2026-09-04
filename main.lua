@@ -97,6 +97,7 @@ function love.load()
             y = menuLevelSize,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 1,
         },
         {
@@ -104,6 +105,7 @@ function love.load()
             y = menuLevelSize,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 2,
         },
         {
@@ -111,6 +113,7 @@ function love.load()
             y = menuLevelSize,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 3,
         },
         {
@@ -118,6 +121,7 @@ function love.load()
             y = menuLevelSize * 2.4,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 4,
         },
         {
@@ -125,6 +129,7 @@ function love.load()
             y = menuLevelSize * 2.4,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 5,
         },
         {
@@ -132,6 +137,7 @@ function love.load()
             y = menuLevelSize * 2.4,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 6,
         },
         {
@@ -139,6 +145,7 @@ function love.load()
             y = 0.5 - menuLevelSize * 0.7,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 7,
         },
         {
@@ -146,6 +153,7 @@ function love.load()
             y = 0.5 - menuLevelSize * 0.7,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 8,
         },
         {
@@ -153,6 +161,7 @@ function love.load()
             y = 0.5 - menuLevelSize * 0.7,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 9,
         },
         {
@@ -160,6 +169,7 @@ function love.load()
             y = 0.5 + menuLevelSize * 0.7,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 10,
         },
         {
@@ -167,6 +177,7 @@ function love.load()
             y = 1 - menuLevelSize * 2.4,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 11,
         },
         {
@@ -174,6 +185,7 @@ function love.load()
             y = 1 - menuLevelSize * 2.4,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 12,
         },
         {
@@ -181,6 +193,7 @@ function love.load()
             y = 1 - menuLevelSize,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 13,
         },
         {
@@ -188,6 +201,7 @@ function love.load()
             y = 1 - menuLevelSize,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 14,
         },
         {
@@ -195,7 +209,16 @@ function love.load()
             y = 1 - menuLevelSize,
             w = menuLevelSize,
             h = menuLevelSize,
+            levelArea = 'demoworld',
             levelIndex = 15,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = 0,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 16,
         },
     },{
         {

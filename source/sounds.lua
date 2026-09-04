@@ -109,6 +109,8 @@ Sounds.levelStart = newSound("sfx_level-start.wav", nil, 0.01)
 Sounds.levelRestart = newSound("sfx_level-restart.wav", nil, 0.05)
 Sounds.levelComplete = newSound("sfx_level-complete.wav", nil, 0)
 
+Music.undefined = newMusic("mus_level1.ogg", 0) -- placeholder track
+
 Music.menu = newMusic("mus_menu.ogg", nil)
 Music.mus_secret = newMusic("mus_secret.ogg", 0.5)
 Music.mus_level1 = newMusic("mus_level1.ogg", nil)

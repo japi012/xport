@@ -265,11 +265,12 @@ function Menu.draw(menu)
         love.graphics.rectangle("fill", realX - realW / 2, realY - realH / 2, realW, realH)
 
         love.graphics.setLineWidth(5)
-        if state.levelClears[rect.levelIndex] then
+        if Levels.areas[rect.levelArea].levels[rect.levelIndex].isCleared then
             love.graphics.setColor(love.math.colorFromBytes(81, 14, 78))
         else
             love.graphics.setColor(love.math.colorFromBytes(121, 26, 94))
         end
+
         love.graphics.rectangle("line", realX - realW / 2, realY - realH / 2, realW, realH)
         love.graphics.setLineWidth(1)
 
@@ -367,7 +368,7 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                     scale, scale, angle)
                 love.graphics.setColor(1, 1, 1)
             end, function()
-                Music.play(Music[globals.levels[rect.levelIndex].musicID])
+                Music.play(Music[Levels.areas[rect.levelArea].levels[rect.levelIndex].musicID])
             end
         ),
         Animation.new(
@@ -379,12 +380,13 @@ function Menu.levelStartAnim(menu, rect, realX, realY, realW, realH)
                 love.graphics.setColor(1, 1, 1)
             end, function()
                 noHover(menu)
+                state.levelArea = rect.levelArea
                 state.levelIndex = rect.levelIndex
                 if (state.levelIndex == 6) then globals.entered_level_six = globals.entered_level_six + 1
                 else globals.entered_level_six = 0 end
 
                 Sounds.levelStart:play()
-                state.level = Level.fromData(globals.levels[state.levelIndex])
+                state.level = Level.fromData(Levels.areas[state.levelArea].levels[state.levelIndex])
                 state.mode = Mode.Gameplay
 
                 rect.clicked = false

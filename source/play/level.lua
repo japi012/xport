@@ -56,7 +56,7 @@ function Level.new(width, height, cells, palette, musicID, title, text)
 
         cells = cells,
         palette = palette and require('areas.' .. string.gsub(palette, '/', '.palettes.')) or Palette.defaultList(),
-        musicID = musicID or '',
+        musicID = musicID or 'undefined',
         winning = false,
 
         cellSize = 0,
@@ -567,7 +567,8 @@ function Level.turn(level, key)
 
     if isWinning(level) then
         Sounds.levelComplete:play()
-        state.levelClears[state.levelIndex] = true
+        Levels.areas[state.levelArea].levels[state.levelIndex].isCleared = true
+        -- state.levelClears[state.levelIndex] = true
 
         -- print("-----")
         -- print(state.currentMusic.filename)

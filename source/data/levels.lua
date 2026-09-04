@@ -56,7 +56,12 @@ function Levels.encodeLevelFromFile(id, content)
         local thingy2 = string.find(rawData[curIndex], '\n') -- well-named variable 2
         result.palette = string.sub(rawData[curIndex], 0, thingy2 - 1)
         result.musicID = string.sub(rawData[curIndex], thingy2 + 1)
+    else
+        result.musicID = 'undefined'
     end
+
+    -- Insert save retrieval logic here. Someday.
+    result.isCleared = false;
 
     -- debugPrint("[LEVELS] Decoding, with resultant: ", result)
     return result
