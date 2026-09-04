@@ -584,40 +584,44 @@ function Level.turn(level, key)
         local goalAnimTime = 2.0
         local endAnimTime = 1.0
         for _, goal in ipairs(goals) do
-            Animation.delayedStart(startDelay, Level.levelClearAnim(goalAnimTime, endAnimTime, level, goal))
+            Animation.delayedStart(startDelay, Level.levelClearAnim(goalAnimTime, level, goal))
         end
+        Animation.delayedStart(startDelay + goalAnimTime, Level.levelEndAnim(endAnimTime, level))
 
         level.goalPlaying = true
     end
 end
 
-function Level.levelClearAnim(duration, endDuration, level, goal)
+function Level.levelClearAnim(duration, level, goal)
     local r, g, b = level.palette.levelTransition()
-    return Animation.chained(
-        Animation.new(duration, function(self, progress)
-            local progress = easeInOutCubic(progress)
-            local scale =
-                math.max(state.width, state.height) * progress * 2
-            local angle = progress * 2 * math.pi
-            love.graphics.setColor(r, g, b)
-            drawRotatedRectangle("fill",
-                (goal.x + 0.5) * level.cellSize + (state.width - level.width * level.cellSize) / 2,
-                (goal.y + 0.5) * level.cellSize + (state.height - level.height * level.cellSize) / 2,
-                scale, scale, angle)
-            love.graphics.setColor(1, 1, 1)
-        end),
-        Animation.new(endDuration, function(self, progress)
-            local progress = easeOutCubic(progress)
-            local scale = math.max(state.width, state.height)
-            love.graphics.setColor(r, g, b, 1 - progress)
-            drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
-            love.graphics.setColor(1, 1, 1)
-        end, function()
-            state.mode = Mode.Menu
-            forceUpdateGraphics()
-            Music.play(Music.menu, 0.5)
-        end)
-    )
+    return Animation.new(duration, function(self, progress)
+        local progress = easeInOutCubic(progress)
+        local scale =
+            math.max(state.width, state.height) * progress * 2
+        local angle = progress * 2 * math.pi
+        love.graphics.setColor(r, g, b)
+        drawRotatedRectangle("fill",
+            (goal.x + 0.5) * level.cellSize + (state.width - level.width * level.cellSize) / 2,
+            (goal.y + 0.5) * level.cellSize + (state.height - level.height * level.cellSize) / 2,
+            scale, scale, angle)
+        love.graphics.setColor(1, 1, 1)
+    end)
+end
+
+
+function Level.levelEndAnim(duration, level)
+    local r, g, b = level.palette.levelTransition()
+    return Animation.new(duration, function(self, progress)
+        local progress = easeOutCubic(progress)
+        local scale = math.max(state.width, state.height)
+        love.graphics.setColor(r, g, b, 1 - progress)
+        drawRotatedRectangle("fill", state.width / 2, state.height / 2, scale, scale, 0)
+        love.graphics.setColor(1, 1, 1)
+    end, function()
+        state.mode = Mode.Menu
+        forceUpdateGraphics()
+        Music.play(Music.menu, 0.5)
+    end)
 end
 
 function Level.fadeFromBlack(duration)
