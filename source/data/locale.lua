@@ -29,7 +29,12 @@ function Locale.loadMappings()
     end
 end
 
+-- We should make sure to clear this when switching languages
+-- or when it starts to cache too much
+local localizeCache = {}
 function Locale.localizeText(text)
+    if localizeCache[text] then return localizeCache[text] end
+
     for key, string in pairs(Locale.mappings[Locale.current]) do
         text = string.gsub(text, key, string)
     end
@@ -38,6 +43,7 @@ function Locale.localizeText(text)
         text = string.gsub(text, key, string)
     end
 
+    localizeCache[text] = text
     return text
 end
 
