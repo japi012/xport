@@ -2,9 +2,10 @@ if Locale ~= nil then return Locale end
 
 local love = require "love"
 Locale = {
-    fallback = "en-US",
-    current = "en-US",
+    fallback = "en_US",
+    current = "en_US",
 
+    languages = {},
     mappings = {}
 }
 
@@ -16,6 +17,7 @@ function Locale.loadMappings()
         local lang = string.gsub(transfile, ".xln", "")
         local result = {}
 
+        Locale.languages[#Locale.languages + 1] = lang
         for line in love.filesystem.lines("translations/" .. transfile) do
             if (string.sub(line, 1, 2) ~= '//') then
                 local lines = string.split(line, " \\: ")
@@ -45,6 +47,14 @@ function Locale.localizeText(text)
 
     localizeCache[text] = text
     return text
+end
+
+function Locale.changeLanguage(language)
+    if language ~= Locale.current then
+        Locale.current = language
+        localizeCache = {}
+        reloadFonts()
+    end
 end
 
 return Locale

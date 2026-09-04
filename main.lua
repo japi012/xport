@@ -71,18 +71,25 @@ function updateGraphics()
     end
 end
 
-function forceUpdateGraphics()
-    local ponaAltFile = Locale.current == 'toki-pona' and globals.ponaFontFile1 or (Locale.current == 'sitelen-pona' and globals.ponaFontFile2 or nil)
-    globals.menuFont = love.graphics.newFont(ponaAltFile or globals.fontFile, math.min(state.width, state.height) * 0.06)
-    globals.levelFont = love.graphics.newFont(ponaAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.067)
-    globals.tutorialFont = love.graphics.newFont(ponaAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
+function reloadFonts()
+    local ponaAltFile = Locale.current == 'toki_pona' and globals.ponaFontFile1 or (Locale.current == 'sitelen_pona' and globals.ponaFontFile2 or nil)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
+    if state.mode == Mode.Gameplay then
+        Level.reloadFonts(state.level, ponaAltFile)
+    elseif state.mode == Mode.Menu then
+        Menu.reloadFonts(state.menu, ponaAltFile)
+    end
+end
+
+function forceUpdateGraphics()
     if state.mode == Mode.Gameplay then
         Level.onResize(state.level)
     elseif state.mode == Mode.Menu then
         Menu.onResize(state.menu)
     end
+
+    reloadFonts()
 end
 
 function love.load()
@@ -226,26 +233,47 @@ function love.load()
             y = 3/5,
             h = 0.3,
             value = state.sfxVolume,
-            connect = function(value)
+            connect = function(_, value)
                 if (state.sfxVolume ~= value) then
                     state.sfxVolume = value
                     Sounds.move:play()
                 end
             end,
-            label = Locale.localizeText("menu.volume.sfx")
+            label = "menu.volume.sfx"
         },
         {
             x = 6/7 - Menu.scrollBarWidth / 2,
             y = 3/5,
             h = 0.3,
             value = state.musicVolume,
-            connect = function(value)
+            connect = function(_, value)
                 if (state.musicVolume ~= value) then
                     state.musicVolume = value
                     Sounds.move:play(true)
                 end
             end,
-            label = Locale.localizeText("menu.volume.music")
+            label = "menu.volume.music"
+        },
+        {
+            x = 6/7 - Menu.scrollBarWidth / 2,
+            y = 1/10,
+            h = 0.3,
+            snapping = #Locale.languages,
+            value = 0,
+            connect = function(scrollbar, value)
+                local newLang = Locale.languages[value + 1]
+                Locale.changeLanguage(newLang)
+
+                scrollbar.label = "menu.language.label\n(menu.language." .. newLang .. ")"
+                return value
+            end,
+            -- release = function(scrollbar, value)
+            --     local newLang = Locale.languages[value + 1]
+            --     Locale.changeLanguage(newLang)
+
+            --     scrollbar.label = "menu.language.label\n(menu.language." .. Locale.current .. ")"
+            -- end,
+            label = "menu.language.label\n(menu.language.en_US)"
         }
     })
 

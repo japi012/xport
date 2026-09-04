@@ -32,6 +32,12 @@ function Menu.new(width, height, levelRects, scrollBars)
     return menu
 end
 
+function Menu.reloadFonts(menu, overrideFont)
+    globals.menuFont = love.graphics.newFont(overrideFont or globals.fontFile, math.min(state.width, state.height) * 0.06)
+    globals.levelFont = love.graphics.newFont(overrideFont or globals.levelFontFile, math.min(state.width, state.height) * 0.067)
+    globals.tutorialFont = love.graphics.newFont(overrideFont or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
+end
+
 function Menu.onResize(menu)
     -- width height
     if menu.width > menu.height then
@@ -97,7 +103,12 @@ function Menu.update(menu, dt)
     end
 
     for i, scrollBar in ipairs(menu.scrollBars) do
-        if not love.mouse.isDown(1) then scrollBar.sliding = false end
+        if not love.mouse.isDown(1) then
+            if scrollBar.sliding then
+                if scrollBar.release then scrollBar.release(scrollBar, scrollBar.value) end
+                scrollBar.sliding = false
+            end
+        end
 
         local realX = menu.marginX + (scrollBar.x / menu.width) * menu.pixelWidth
         local realY = menu.marginY + (scrollBar.y / menu.height) * menu.pixelHeight
@@ -117,9 +128,18 @@ function Menu.update(menu, dt)
 
         if scrollBar.sliding then
             local value = 1 - math.max(math.min((my - realY) / realH, 1), 0)
-            scrollBar.value = value
+
+            if scrollBar.snapping then
+                scrollBar.value = math.floor(value * (scrollBar.snapping - 1) + 0.5)
+                if scrollBar.scale then
+                    scrollBar.value = (scrollBar.value / (scrollBar.snapping - 1)) * scrollBar.scale
+                end
+            else
+                scrollBar.value = value * (scrollBar.scale or 1)
+            end
+
             hovering = true
-            scrollBar.connect(value)
+            scrollBar.value = scrollBar.connect(scrollBar, scrollBar.value) or scrollBar.value
         else
             hovering = false
         end
@@ -195,13 +215,15 @@ function Menu.keypressed(menu, key)
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
                 scrollBar.value = math.min(1, scrollBar.value + 0.1)
-                scrollBar.connect(scrollBar.value)
+                scrollBar.value = scrollBar.connect(scrollBar, scrollBar.value) or scrollBar.value
+                if scrollBar.release then scrollBar.release(scrollBar, scrollBar.value) end
             end
         elseif key == "down" or key == "s" then
             if menu.selectedIndex > #menu.levelRects then
                 local scrollBar = menu.scrollBars[menu.selectedIndex - #menu.levelRects]
                 scrollBar.value = math.max(scrollBar.value - 0.1, 0)
-                scrollBar.connect(scrollBar.value)
+                scrollBar.value = scrollBar.connect(scrollBar, scrollBar.value) or scrollBar.value
+                if scrollBar.release then scrollBar.release(scrollBar, scrollBar.value) end
             end
         end
     end
@@ -314,18 +336,18 @@ function Menu.draw(menu)
         else
             love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
         end
-        love.graphics.rectangle("fill", realX, realY + (1 - scrollBar.value) * (realH - realW), realW, realW)
+        love.graphics.rectangle("fill", realX, realY + (1 - (scrollBar.value / ((scrollBar.scale or scrollBar.snapping or 2) - 1)))  * (realH - realW), realW, realW)
 
-
-        local fontWidth = globals.tutorialFont:getWidth(scrollBar.label)
+        local transLabel = Locale.localizeText(scrollBar.label)
+        local fontWidth = globals.tutorialFont:getWidth(transLabel)
         local fontHeight = globals.tutorialFont:getHeight()
 
         -- love.graphics.setColor(0, 0, 0)
-        -- love.graphics.print(scrollBar.label, globals.tutorialFont,
+        -- love.graphics.print(transLabel, globals.tutorialFont,
             -- realX - fontWidth / 2 + realW / 2 + fontWidth / 9, realY + realH + fontHeight / 2 + fontHeight / 9)
 
         love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
-        love.graphics.print(scrollBar.label, globals.tutorialFont,
+        love.graphics.print(transLabel, globals.tutorialFont,
             realX - fontWidth / 2 + realW / 2 + realW / 6, realY + realH + fontHeight / 2)
     end
     love.graphics.setColor(1, 1, 1)

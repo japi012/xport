@@ -1,5 +1,6 @@
 if Interface ~= nil then return Interface end
 
+local love = require "love"
 Interface = {}
 
 function Interface.new()

@@ -147,12 +147,15 @@ end
 
 function Level.onResize(level)
     level.cellSize = math.min(state.width / level.width, state.height / level.height) * 0.65
-    globals.timerFont = love.graphics.newFont(globals.fontFile, level.cellSize * 0.9)
 
     for i = 1, 5 do
         if level.layers[i] ~= nil then level.layers[i]:release() end
         level.layers[i] = love.graphics.newCanvas()
     end
+end
+
+function Level.reloadFonts(level, overrideFont)
+    globals.timerFont = love.graphics.newFont(globals.fontFile, level.cellSize * 0.9)
 end
 
 function Level.update(level, dt)
