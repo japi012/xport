@@ -14,7 +14,7 @@ demoworld.levelC3.title \: Karayom
 demoworld.levelC4.title \: Aso
 // demoworld.levelC5.title
 
-demoworld.level1.description \: Use WASD or the arrow keys to move
+demoworld.level1.description \: Gamitin ang WASD o Arrow Keys upang gumalaw.
 demoworld.level2.description \: Gamitin ang Z upang mag-undo at R upang bumalik sa simula.
 demoworld.level3.description \: Ang multiblocks ay gumagalaw na isang pangkat.
 demoworld.level4.description \: Ubusin ang timer!
