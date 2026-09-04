@@ -48,6 +48,8 @@ globals = {
 
     fontFile = "fonts/intrebol.ttf", -- NOT a placeholder
     levelFontFile = "fonts/Comfortaa-Regular.ttf", -- *REALLY* NOT a placeholder,
+    ponaFontFile1 = "fonts/sitelenselikiwenjuniko.ttf", -- toki pona :D
+    ponaFontFile2 = "fonts/sitelenselikiwenmonojuniko.ttf", -- toki pona :D
 
     levels = {},
     entered_level_six = 0,
@@ -69,9 +71,10 @@ function updateGraphics()
 end
 
 function forceUpdateGraphics()
-    globals.menuFont = love.graphics.newFont(globals.fontFile, math.min(state.width, state.height) * 0.06)
-    globals.levelFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.067)
-    globals.tutorialFont = love.graphics.newFont(globals.levelFontFile, math.min(state.width, state.height) * 0.05)
+    local ponaAltFile = Locale.current == 'toki-pona' and globals.ponaFontFile1 or (Locale.current == 'sitelen-pona' and globals.ponaFontFile2 or nil)
+    globals.menuFont = love.graphics.newFont(ponaAltFile or globals.fontFile, math.min(state.width, state.height) * 0.06)
+    globals.levelFont = love.graphics.newFont(ponaAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.067)
+    globals.tutorialFont = love.graphics.newFont(ponaAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
     if state.mode == Mode.Gameplay then
@@ -254,7 +257,7 @@ function love.load()
                     Sounds.move:play()
                 end
             end,
-            label = "sfx"
+            label = Locale.localizeText("menu.volume.sfx")
         },
         {
             x = 6/7 - Menu.scrollBarWidth / 2,
@@ -267,7 +270,7 @@ function love.load()
                     Sounds.move:play(true)
                 end
             end,
-            label = "music"
+            label = Locale.localizeText("menu.volume.music")
         }
     })
 
