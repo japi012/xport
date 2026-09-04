@@ -76,7 +76,6 @@ function Levels.loadData()
         }
 
         local levelfiles = love.filesystem.getDirectoryItems(areadir .. '/levels')
-        debugPrint(levelfiles)
         table.sort(levelfiles, function(a, b)
             local numIndex1 = string.find(a, "([0-9]+)")
             local numIndex2 = string.find(b, "([0-9]+)")
@@ -94,7 +93,6 @@ function Levels.loadData()
 
             return a < b
         end)
-        debugPrint(levelfiles)
 
         for _, levelfile in ipairs(levelfiles) do
             local levelID = string.gsub(levelfile, ".xlvl", "")

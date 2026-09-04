@@ -3,16 +3,14 @@ if Locale ~= nil then return Locale end
 local love = require "love"
 Locale = {
     fallback = "en-US",
-    current = "toki-pona",
+    current = "en-US",
 
     mappings = {}
 }
 
 function Locale.loadMappings()
     for k, _ in pairs(Locale.mappings) do Locale.mappings[k] = nil end
-
     local translationFiles = love.filesystem.getDirectoryItems("translations")
-    debugPrint("[LOCALE]", translationFiles)
 
     for _, transfile in ipairs(translationFiles) do
         local lang = string.gsub(transfile, ".xln", "")
@@ -27,8 +25,6 @@ function Locale.loadMappings()
 
         Locale.mappings[lang] = result
     end
-
-    debugPrint("[LOCALE]", Locale.mappings)
 end
 
 function Locale.localizeText(text)
