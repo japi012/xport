@@ -1,6 +1,7 @@
 local love = require "love"
 require "source.data.levels"
 require "source.data.locale"
+require "source.data.json"
 
 require "source.utils"
 require "source.graphics.anim"
