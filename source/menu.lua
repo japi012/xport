@@ -34,8 +34,6 @@ end
 
 function Menu.reloadFonts(menu, overrideFont)
     globals.menuFont = love.graphics.newFont(overrideFont or globals.fontFile, math.min(state.width, state.height) * 0.06)
-    globals.levelFont = love.graphics.newFont(overrideFont or globals.levelFontFile, math.min(state.width, state.height) * 0.067)
-    globals.tutorialFont = love.graphics.newFont(overrideFont or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
 end
 
 function Menu.onResize(menu)
@@ -369,15 +367,15 @@ function Menu.draw(menu)
         love.graphics.rectangle("fill", realX, realY + (1 - (scrollBar.value / ((scrollBar.scale or scrollBar.snapping or 2) - 1)))  * (realH - realW), realW, realW)
 
         local transLabel = Locale.localizeText(scrollBar.label)
-        local fontWidth = globals.tutorialFont:getWidth(transLabel)
-        local fontHeight = globals.tutorialFont:getHeight()
+        local fontWidth = globals.hintFont:getWidth(transLabel)
+        local fontHeight = globals.hintFont:getHeight()
 
         -- love.graphics.setColor(0, 0, 0)
-        -- love.graphics.print(transLabel, globals.tutorialFont,
+        -- love.graphics.print(transLabel, globals.hintFont,
             -- realX - fontWidth / 2 + realW / 2 + fontWidth / 9, realY + realH + fontHeight / 2 + fontHeight / 9)
 
         love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
-        love.graphics.print(transLabel, globals.tutorialFont,
+        love.graphics.print(transLabel, globals.hintFont,
             realX - fontWidth / 2 + realW / 2 + realW / 6, realY + realH + fontHeight / 2)
     end
     love.graphics.setColor(1, 1, 1)

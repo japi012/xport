@@ -156,6 +156,7 @@ function Level.onResize(level)
 end
 
 function Level.reloadFonts(level, overrideFont)
+    globals.levelFont = love.graphics.newFont(overrideFont or globals.levelFontFile, math.min(state.width, state.height) * 0.067)
     globals.timerFont = love.graphics.newFont(globals.fontFile, level.cellSize * 0.9)
 end
 
@@ -221,9 +222,9 @@ function Level.draw(level)
 
     if level.text then
         local padding = level.cellSize / 2
-        local fontWidth = globals.tutorialFont:getWidth(level.text)
-        local fontHeight = globals.tutorialFont:getHeight()
-        love.graphics.print(level.text, globals.tutorialFont, state.width / 2 - fontWidth / 2, state.height - padding - fontHeight)
+        local fontWidth = globals.hintFont:getWidth(level.text)
+        local fontHeight = globals.hintFont:getHeight()
+        love.graphics.print(level.text, globals.hintFont, state.width / 2 - fontWidth / 2, state.height - padding - fontHeight)
     end
 end
 
