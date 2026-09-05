@@ -76,11 +76,13 @@ function dump(o, depth)
     if depth == -1 then return '...' end
     if type(o) == 'table' then
         local s = '{ '
+        local didsomething = false
         for k,v in pairs(o) do
             -- if type(k) ~= 'number' then k = dump(k) end
             s = s .. '['..dump(k)..'] = ' .. dump(v, depth and (depth - 1) or nil) .. ', '
+            didsomething = true
         end
-        return string.sub(s, 1, -3) .. ' }'
+        return (didsomething and string.sub(s, 1, -3) or s) .. ' }'
     elseif type(o) == 'string' then
         return '"' .. o .. '"'
     else
