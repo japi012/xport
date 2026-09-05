@@ -17,6 +17,7 @@ Cell = {
     Timer =     makeType(3),
     Origin =    makeType(2),
     Goal =      makeType(4),
+    Level =     makeType(4),
 
     Tree =      makeType(5),
 }
@@ -60,6 +61,49 @@ function Cell.draw(cell, level)
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
         drawCenteredRectangle("line", drawX, drawY, cellSize, cellSize)
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
+
+    elseif cell.cell == Cell.Level then
+        love.graphics.setColor(r, g, b, 0.45)
+        love.graphics.setCanvas(level.layers[1])
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
+        drawCenteredRectangle("line", drawX, drawY, cellSize, cellSize)
+
+        love.graphics.setColor(r, g, b, 0.15)
+        love.graphics.setCanvas(level.layers[5])
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
+        drawCenteredRectangle("line", drawX, drawY, cellSize, cellSize)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
+
+        love.graphics.setCanvas(level.layers[5])
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
+        local timerFont, val
+        if Locale.current == "sitelen_pona" then
+            timerFont = globals.ponaTimerFont
+            val = Locale.convertNumberToSitelenPona(cell.val)
+        else
+            timerFont = globals.timerFont
+            val = cell.val
+        end
+        local fwidth = timerFont:getWidth(val)
+        local fheight = timerFont:getHeight()
+
+        love.graphics.print(val, timerFont,
+            drawX - (fwidth / 2),
+            drawY - (fheight / 2)
+            -- drawX + (cellSize - fwidth) / 2,
+            -- drawY + (cellSize - fheight * 0.8) / 2
+        )
+
+        love.graphics.setColor(1, 1, 1, 0.5)
+        love.graphics.setLineWidth(Cell.lineWidth(cellSize, 5))
+        local origins = allWithPredicate(level.cells, function(c)
+            return c.region == cell.region and c.cell == Cell.Origin
+        end)
+
+        love.graphics.setCanvas(level.layers[1])
+        for _, origin in ipairs(origins) do
+            love.graphics.line(drawX, drawY, Level.drawPos(level, origin.x + 0.5, origin.y + 0.5))
+        end
 
     elseif cell.cell == Cell.Player then
         local w
@@ -194,7 +238,27 @@ function Cell.fromChar(x, y, id, character)
         return Cell.new(x, y, id, Cell.Player, character)
     elseif character == "T" then
         return Cell.new(x, y, id, Cell.Tree, character)
+    elseif character == "L" then
+        return Cell.new(x, y, id, Cell.Level, character, 0)
     end
 end
+
+-- function Cell.fromCharExpanded(x, y, id, character, number)
+--     if character == "#" then
+--         return Cell.new(x, y, id, Cell.Wall)
+--     elseif string.match(character, "[ABCDEF]") then
+--         return Cell.new(x, y, id, Cell.Box, character)
+--     elseif character == "P" then
+--         return Cell.new(x, y, id, Cell.Player, character)
+--     elseif character == "T" then
+--         return Cell.new(x, y, id, Cell.Timer, character, number)
+--     elseif character == "O" then
+--         return Cell.new(x, y, id, Cell.Origin, character)
+--     elseif character == "G" then
+--         return Cell.new(x, y, id, Cell.Goal)
+--     elseif character == "L" then
+--         return Cell.new(x, y, id, Cell.Level, )
+--     end
+-- end
 
 return Cell

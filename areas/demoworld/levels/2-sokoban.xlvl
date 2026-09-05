@@ -28,5 +28,7 @@ demoworld.level2.description
 #......##
 #########
 
+1,1:T:200
+
 demoworld/a_colors
 mus_level1

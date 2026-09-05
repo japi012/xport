@@ -14,7 +14,7 @@ function Levels.getDimensionFromGrid(grid)
     return #(yesyes[1]), #yesyes
 end
 
-function Levels.encodeLevelFromFile(id, content)
+function Levels.encodeLevelFromFile(area, id, content)
     content = string.gsub(content, "\r\n", "\n")
     local rawData = string.split(content, '\n\n')
     local thingy = string.find(rawData[1], '\n') -- well-named variable
@@ -35,9 +35,13 @@ function Levels.encodeLevelFromFile(id, content)
     end
 
     local result = {
-        number = string.sub(title, 1, start - 1),
+        id = id,
+        area = area,
+
+        number = (finish == 0) and '' or string.sub(title, 1, start - 1),
         title = string.sub(title, finish + 1),
         subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
+
         -- title = string.sub(rawData[1], 0, thingy or #rawData[1]),
         -- subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
         grid = {
@@ -63,9 +67,20 @@ function Levels.encodeLevelFromFile(id, content)
     end
 
     if rawData[curIndex] ~= nil then
-        local thingy2 = string.find(rawData[curIndex], '\n') -- well-named variable 2
-        result.palette = string.sub(rawData[curIndex], 0, thingy2 - 1)
-        result.musicID = string.sub(rawData[curIndex], thingy2 + 1)
+        local cellCheck = string.find(rawData[curIndex], '(%d+,%d+:[PTOGLABCDEF]):?%d*') -- Player-Timer-Origin-Goal-Level / Regions
+        if cellCheck ~= nil then
+            result.rawCells = string.split(rawData[curIndex], '\n')
+            debugPrint('[LEVELS]', result.rawCells)
+            curIndex = curIndex + 1
+        end
+
+        if rawData[curIndex] ~= nil then
+            local thingy2 = string.find(rawData[curIndex], '\n') -- well-named variable 2
+            result.palette = string.sub(rawData[curIndex], 0, thingy2 - 1)
+            result.musicID = string.sub(rawData[curIndex], thingy2 + 1)
+        else
+            result.musicID = 'undefined'
+        end
     else
         result.musicID = 'undefined'
     end
@@ -91,10 +106,16 @@ function Levels.loadData()
     for _, areakey in ipairs(areaFolders) do
         local areadir = "areas/" .. areakey
         debugPrint('[LEVELS] Parsing lobby "' .. areakey .. '/lobby"')
+
+        local lobbyLevel = Levels.encodeLevelFromFile(areakey, 'lobby', love.filesystem.read(areadir .. '/lobby.xlvl'))
         Levels.areas[areakey] = {
-            lobby = Levels.encodeLevelFromFile('lobby', love.filesystem.read(areadir .. '/lobby.xlvl')),
+            lobby = lobbyLevel,
             levels = {}
         }
+
+        Levels.plain[areakey .. '/lobby'] = lobbyLevel
+        Levels.areas[areakey].lobby = lobbyLevel
+        Levels.areas[areakey].levels.lobby = lobbyLevel
 
         local levelfiles = love.filesystem.getDirectoryItems(areadir .. '/levels')
         table.sort(levelfiles, function(a, b)
@@ -120,7 +141,7 @@ function Levels.loadData()
             local fileContents = love.filesystem.read(areadir .. '/levels/' .. levelfile)
 
             debugPrint('[LEVELS] Parsing level "'.. areakey .. '/' .. levelID .. '"')
-            local resultLevel = Levels.encodeLevelFromFile(levelID, fileContents)
+            local resultLevel = Levels.encodeLevelFromFile(areakey, levelID, fileContents)
 
             Levels.order[#Levels.order + 1] = resultLevel
             Levels.plain[areakey .. '/' .. levelID] = resultLevel

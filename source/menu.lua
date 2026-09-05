@@ -161,11 +161,15 @@ function Menu.update(menu, dt)
             rect.hovering = true
 
             if love.mouse.isDown(1) and not rect.clicked and not menu.levelOpening and not alreadySliding then
+                if rect.connect then rect.connect(rect) end
                 rect.clicked = true
-                Animation.start(Menu.levelStart(menu, rect, realX, realY, realW, realH))
-                menu.levelOpening = true
-                Sounds.selectUI:play()
-                break
+
+                if rect.levelArea and rect.levelIndex then
+                    Animation.start(Menu.levelStart(menu, rect, realX, realY, realW, realH))
+                    menu.levelOpening = true
+                    Sounds.selectUI:play()
+                    break
+                end
             end
         else
             if rect.hovering then
@@ -181,7 +185,9 @@ end
 
 
 function Menu.keypressed(menu, key)
-    if (key == "tab" or key == "right" or key == "d") and not menu.levelOpening then
+    if state.mode == Mode.Paused and (key == "escape" or key == "backspace") then
+        state.mode = Mode.Gameplay
+    elseif (key == "tab" or key == "right" or key == "d") and not menu.levelOpening then
         Sounds.hoverUI:play()
         if not menu.selectedIndex or menu.selectedIndex >= #menu.scrollBars + #menu.levelRects then
             menu.selectedIndex = 1
@@ -199,15 +205,19 @@ function Menu.keypressed(menu, key)
     	if key == "space" or key == "return" then
             if menu.selectedIndex <= #menu.levelRects then
                 local rect = menu.levelRects[menu.selectedIndex]
-                local realX = menu.marginX + (rect.x / menu.width) * menu.pixelWidth
-                local realY = menu.marginY + (rect.y / menu.height) * menu.pixelHeight
-                local realW = ((rect.w * rect.scale) / menu.width) * menu.pixelWidth
-                local realH = ((rect.h * rect.scale) / menu.height) * menu.pixelHeight
-
-                Sounds.selectUI:play()
+                if rect.connect then rect.connect(rect) end
                 rect.clicked = true
-                Animation.start(Menu.levelStart(menu, rect, realX, realY, realW, realH))
-                menu.levelOpening = true
+
+                if rect.levelArea and rect.levelIndex then
+                    local realX = menu.marginX + (rect.x / menu.width) * menu.pixelWidth
+                    local realY = menu.marginY + (rect.y / menu.height) * menu.pixelHeight
+                    local realW = ((rect.w * rect.scale) / menu.width) * menu.pixelWidth
+                    local realH = ((rect.h * rect.scale) / menu.height) * menu.pixelHeight
+
+                    Sounds.selectUI:play()
+                    Animation.start(Menu.levelStart(menu, rect, realX, realY, realW, realH))
+                    menu.levelOpening = true
+                end
             end
         elseif key == "up" or key == "w" then
             if menu.selectedIndex > #menu.levelRects then
@@ -264,9 +274,9 @@ function Menu.draw(menu)
     for x = 0, randCellsWidth + 1 do
         for y = 0, randCellsHeight + 1 do
             if (x + y) % 2 == 0 then
-                love.graphics.setColor(love.math.colorFromBytes(121, 26, 94))
+                love.graphics.setColor(love.math.colorFromBytes(121, 26, 94, 127))
             else
-                love.graphics.setColor(love.math.colorFromBytes(87, 17, 84))
+                love.graphics.setColor(love.math.colorFromBytes(87, 17, 84, 127))
             end
             love.graphics.rectangle(
                 "fill",
@@ -305,7 +315,7 @@ function Menu.draw(menu)
         love.graphics.rectangle("fill", realX - realW / 2, realY - realH / 2, realW, realH)
 
         love.graphics.setLineWidth(5)
-        if Levels.areas[rect.levelArea].levels[rect.levelIndex].isCleared then
+        if rect.levelArea and rect.levelIndex and Levels.areas[rect.levelArea].levels[rect.levelIndex].isCleared then
             love.graphics.setColor(love.math.colorFromBytes(81, 14, 78))
         else
             love.graphics.setColor(love.math.colorFromBytes(121, 26, 94))
@@ -323,17 +333,21 @@ function Menu.draw(menu)
         local realW = ((rect.w * rect.scale) / menu.width) * menu.pixelWidth
         local realH = ((rect.h * rect.scale) / menu.height) * menu.pixelHeight
 
-        local fontWidth = globals.menuFont:getWidth(rect.levelIndex)
+        local fontWidth = globals.menuFont:getWidth(rect.levelIndex or rect.label)
         local fontHeight = globals.menuFont:getHeight()
 
         local text
-        local challenge = indexOf(globals.challengeLevels, rect.levelIndex)
-        if challenge ~= -1 then
-            text = Locale.current == "sitelen_pona" and Locale.convertNumberToSitelenPona(-challenge)
-                or "C" .. tostring(challenge)
+        if rect.levelIndex then
+            local challenge = indexOf(globals.challengeLevels, rect.levelIndex)
+            if challenge ~= -1 then
+                text = Locale.current == "sitelen_pona" and Locale.convertNumberToSitelenPona(-challenge)
+                    or "C" .. tostring(challenge)
+            else
+                text = Locale.current == "sitelen_pona" and Locale.convertNumberToSitelenPona(rect.levelIndex)
+                    or tostring(rect.levelIndex)
+            end
         else
-            text = Locale.current == "sitelen_pona" and Locale.convertNumberToSitelenPona(rect.levelIndex)
-                or tostring(rect.levelIndex)
+            text = Locale.localizeText(rect.label)
         end
 
         love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
@@ -437,7 +451,7 @@ function Menu.levelStart(menu, rect, realX, realY, realW, realH)
                 state.levelArea = rect.levelArea
                 state.levelIndex = rect.levelIndex
 
-                state.level = newLevel
+                state.addLevel(newLevel)
 
                 if (state.levelIndex == 6) then globals.entered_level_six = globals.entered_level_six + 1
                 else globals.entered_level_six = 0 end

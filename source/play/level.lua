@@ -49,8 +49,11 @@ function Level.isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
-function Level.new(width, height, cells, palette, musicID, number, title, subtitle)
+function Level.new(id, area, width, height, cells, palette, musicID, number, title, subtitle)
     local result = {
+        id = id,
+        area = area,
+
         width = width,
         height = height,
 
@@ -81,7 +84,8 @@ function Level.fromSingleGrid(grid, cells)
 end
 
 function Level.fromData(levelData)
-    local layer1, layer2, layer3 = table.unpack(levelData.grid)
+    local layer1 = levelData.grid[1]
+    local layers = { table.unpack(levelData.grid) }; table.remove(layers, 1)
     local cells = {}
 
     local y = 0
@@ -101,49 +105,46 @@ function Level.fromData(levelData)
         y = y + 1
     end
 
-    y = 0
-    for line in string.gmatch(layer2, "[^\n]+") do
-        local trimmedLine = string.gsub(line, "%s+", "")
-        if trimmedLine == "" then
-            break
-        end
-        x = 0
-        for character in string.gmatch(trimmedLine, ".") do
-            if string.match(character, "[#.]") then
-            elseif string.match(character, "%d") then
-                local r
-                for _, cell in ipairs(findCells(cells, x, y)) do
-                    if cell.region ~= nil then
-                        r = cell.region
+    for _, layer in ipairs(layers) do
+        y = 0
+        for line in string.gmatch(layer, "[^\n]+") do
+            local trimmedLine = string.gsub(line, "%s+", "")
+            if trimmedLine == "" then
+                break
+            end
+            x = 0
+            for character in string.gmatch(trimmedLine, ".") do
+                if string.match(character, "[#.]") then
+                elseif string.match(character, "%d") then
+                    local r
+                    for _, cell in ipairs(findCells(cells, x, y)) do
+                        if cell.region ~= nil then
+                            r = cell.region
+                            if r == 'L' then
+                                -- Make sublevel.
+                                cell.default_val = tonumber(character)
+                                cell.val = cell.default_val
+                            end
+                        end
                     end
-                end
-                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Origin, r))
-                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Timer, r, tonumber(character)))
-            end
-            x = x + 1
-        end
-        y = y + 1
-    end
 
-    y = 0
-    for line in string.gmatch(layer3, "[^\n]+") do
-        local trimmedLine = string.gsub(line, "%s+", "")
-        if trimmedLine == "" then
-            break
-        end
-        x = 0
-        for character in string.gmatch(trimmedLine, ".") do
-            if string.match(character, "[#.]") then
-            elseif string.match(character, "G") then
-                table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Goal))
+                    -- Check if you already made a sublevel or what
+                    if r ~= 'L' then
+                        -- Make a timer.
+                        table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Origin, r))
+                        table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Timer, r, tonumber(character)))
+                    end
+                elseif string.match(character, "G") then
+                    table.insert(cells, Cell.new(x, y, #cells + 1, Cell.Goal))
+                end
+                x = x + 1
             end
-            x = x + 1
+            y = y + 1
         end
-        y = y + 1
     end
 
     -- sort of finished
-    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.title, levelData.subtitle)
+    return Level.new(levelData.id, levelData.area, x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.title, levelData.subtitle)
 end
 
 function Level.onResize(level)
@@ -209,13 +210,19 @@ function Level.draw(level)
 
     love.graphics.setBlendMode("alpha") -- Default blend mode.
 
-    if level.number ~= "" and level.title ~= "" then
+    if level.number ~= "" or level.title ~= "" then
         local padding = level.cellSize / 2
-        local header = level.number .. " - "
-        local footer = ""
-        if Locale.current == "sitelen_pona" then
-            header = "󱤽" .. Locale.levelNumberSitelenPona(level.number) .. "󱤡 「 "
-            footer = " 」"
+        local header, footer
+
+        if level.number ~= "" then
+            header = level.number .. " - "
+            footer = ""
+            if Locale.current == "sitelen_pona" then
+                header = "󱤽" .. Locale.levelNumberSitelenPona(level.number) .. "󱤡 「 "
+                footer = " 」"
+            end
+        else
+            header, footer = "", ""
         end
 
         love.graphics.print(header.. level.title .. footer, globals.levelFont, padding, padding)
@@ -504,19 +511,20 @@ function Level.turn(level, key)
     if level.goalPlaying then return end
 
     if key == "escape" or key == "backspace" then
-        if (globals.entered_level_six ~= 6) then
-            state.mode = Mode.Menu
-            Animation.start(Level.fadeFromBlack(2))
-            Music.play(Music.menu, 0.2)
-        else
-            -- state.levelIndex = -6
-            globals.entered_level_six = 6.66
-            state.level = Level.fromData(Levels.areas.man.lobby)
-            Animation.start(Level.fadeFromBlack(1))
-            Music.play(Music[Levels.areas.man.lobby.musicID], 1)
-        end
-        Sounds.levelRestart:play()
-        forceUpdateGraphics()
+        state.mode = Mode.Paused
+        -- if (globals.entered_level_six ~= 6) then
+        --     state.mode = Mode.Menu
+        --     Animation.start(Level.fadeFromBlack(2))
+        --     Music.play(Music.menu, 0.2)
+        -- else
+        --     -- state.levelIndex = -6
+        --     globals.entered_level_six = 6.66
+        --     state.level = Level.fromData(Levels.areas.man.lobby)
+        --     Animation.start(Level.fadeFromBlack(1))
+        --     Music.play(Music[Levels.areas.man.lobby.musicID], 1)
+        -- end
+        -- Sounds.levelRestart:play()
+        -- forceUpdateGraphics()
         return
     end
 
@@ -586,7 +594,7 @@ function Level.turn(level, key)
 
     if isWinning(level) then
         Sounds.levelComplete:play()
-        Levels.areas[state.levelArea].levels[state.levelIndex].isCleared = true
+        Levels.areas[level.area].levels[level.id].isCleared = true
         -- state.levelClears[state.levelIndex] = true
 
         -- print("-----")
@@ -600,15 +608,15 @@ function Level.turn(level, key)
         local goalAnimTime = 2.0
         local endAnimTime = 1.0
         for _, goal in ipairs(goals) do
-            Animation.delayedStart(startDelay, Level.levelClearAnim(goalAnimTime, level, goal))
+            Animation.delayedStart(startDelay, Level.transStartAnim(goalAnimTime, level, goal))
         end
-        Animation.delayedStart(startDelay + goalAnimTime, Level.levelEndAnim(endAnimTime, level))
+        Animation.delayedStart(startDelay + goalAnimTime, Level.transEndAnim(endAnimTime, level))
 
         level.goalPlaying = true
     end
 end
 
-function Level.levelClearAnim(duration, level, goal)
+function Level.transStartAnim(duration, level, cell)
     local r, g, b = level.palette.levelTransition()
     return Animation.new(duration, function(self, progress)
         local progress = easeInOutCubic(progress)
@@ -617,15 +625,15 @@ function Level.levelClearAnim(duration, level, goal)
         local angle = progress * 2 * math.pi
         love.graphics.setColor(r, g, b)
         drawRotatedRectangle("fill",
-            (goal.x + 0.5) * level.cellSize + (state.width - level.width * level.cellSize) / 2,
-            (goal.y + 0.5) * level.cellSize + (state.height - level.height * level.cellSize) / 2,
+            (cell.x + 0.5) * level.cellSize + (state.width - level.width * level.cellSize) / 2,
+            (cell.y + 0.5) * level.cellSize + (state.height - level.height * level.cellSize) / 2,
             scale, scale, angle)
         love.graphics.setColor(1, 1, 1)
     end)
 end
 
 
-function Level.levelEndAnim(duration, level)
+function Level.transEndAnim(duration, level)
     local r, g, b = level.palette.levelTransition()
     return Animation.new(duration, function(self, progress)
         local progress = easeOutCubic(progress)
@@ -636,7 +644,11 @@ function Level.levelEndAnim(duration, level)
     end, function()
         state.mode = Mode.Menu
         forceUpdateGraphics()
-        Music.play(Music.menu, 0.5)
+        if #state.levelStack > 0 then
+            Music.play(Music[state.getCurrentLevel().musicID], 0.5)
+        else
+            Music.play(Music.menu, 0.5)
+        end
     end)
 end
 

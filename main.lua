@@ -25,6 +25,7 @@ DEBUG = {
 
 Mode = {
     Gameplay = {},
+    Paused = {},
     Menu = {},
     Editor = {}
 }
@@ -39,8 +40,23 @@ state = {
     levelIndex = 1,
     levelClears = {},
 
-    mode = Mode.Menu
+    mode = Mode.Menu,
+    levelStack = {}
 }
+
+function state.getCurrentLevel()
+    return state.levelStack[#state.levelStack]
+end
+
+function state.addLevel(level)
+    state.levelStack[#state.levelStack + 1] = level
+end
+
+function state.popLevel()
+    local level = state.levelStack[#state.levelStack]
+    state.levelStack[#state.levelStack] = nil
+    return level
+end
 
 globals = {
     font = {},
@@ -79,17 +95,19 @@ function reloadFonts()
     globals.hintFont = love.graphics.newFont(ponaHintAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
-    if state.mode == Mode.Gameplay then
-        Level.reloadFonts(state.level, ponaAltFile)
-    elseif state.mode == Mode.Menu then
+    if state.mode == Mode.Gameplay or state.mode == Mode.Paused then
+        Level.reloadFonts(state.getCurrentLevel(), ponaAltFile)
+    end
+    if state.mode == Mode.Menu or state.mode == Mode.Paused then
         Menu.reloadFonts(state.menu, ponaAltFile)
     end
 end
 
 function forceUpdateGraphics()
-    if state.mode == Mode.Gameplay then
-        Level.onResize(state.level)
-    elseif state.mode == Mode.Menu then
+    if state.mode == Mode.Gameplay or state.mode == Mode.Paused then
+        Level.onResize(state.getCurrentLevel())
+    end
+    if state.mode == Mode.Menu or state.mode == Mode.Paused then
         Menu.onResize(state.menu)
     end
 
@@ -100,6 +118,9 @@ function love.load()
     Locale.loadMappings()
     Levels.loadData()
     -- state.level = Level.fromData(globals.levels[state.levelIndex])
+
+    state.addLevel(Level.fromData(Levels.areas.demoworld.lobby))
+    state.mode = Mode.Gameplay
 
     local menuLevelSize = 0.1
     state.menu = Menu.new(1, 1, {
@@ -223,6 +244,16 @@ function love.load()
             levelArea = 'demoworld',
             levelIndex = 15,
         },
+        {
+            x = 1 + menuLevelSize * 1.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            connect = function(_)
+                state.popLevel()
+            end,
+            label = 'exit'
+        },
         -- {
         --     x = 0.5 + menuLevelSize * 1.5,
         --     y = 0,
@@ -283,7 +314,6 @@ function love.load()
 
     globals.challengeLevels = { 11, 12, 13, 14, 15 }
 
-    state.mode = Mode.Menu
     state.musicVolume = 0.5
     state.fullscreen = false
 
@@ -338,9 +368,10 @@ function love.update(dt)
         end
     end
 
-    if state.mode == Mode.Gameplay then
-        Level.update(state.level, dt)
-    elseif state.mode == Mode.Menu then
+    if state.mode == Mode.Gameplay or state.mode == Mode.Paused then
+        Level.update(state.getCurrentLevel(), dt)
+    end
+    if state.mode == Mode.Menu or state.mode == Mode.Paused then
         Menu.update(state.menu, dt)
     elseif state.mode == Mode.Editor then
         Interface.update(state.interface, dt)
@@ -353,9 +384,10 @@ end
 function love.draw()
     -- does this not have deltatime?
     -- japi: yeah it's kinda crazy
-    if state.mode == Mode.Gameplay then
-        Level.draw(state.level)
-    elseif state.mode == Mode.Menu then
+    if state.mode == Mode.Gameplay or state.mode == Mode.Paused then
+        Level.draw(state.getCurrentLevel())
+    end
+    if state.mode == Mode.Menu or state.mode == Mode.Paused then
         Menu.draw(state.menu)
     elseif state.mode == Mode.Editor then
         Interface.draw(state.interface)
@@ -380,8 +412,8 @@ end
 
 function pressedKey(key)
     if state.mode == Mode.Gameplay then
-        Level.turn(state.level, key)
-    elseif state.mode == Mode.Menu then
+        Level.turn(state.getCurrentLevel(), key)
+    elseif state.mode == Mode.Menu or state.mode == Mode.Paused then
         Menu.keypressed(state.menu, key)
     end
 end
