@@ -227,7 +227,7 @@ function Level.draw(level)
         for i, text in ipairs(fontWrapped) do
             local fontWidth = globals.hintFont:getWidth(text)
             love.graphics.print(text, globals.hintFont, (state.width - fontWidth) / 2,
-                state.height - padding - (fontHeight * (#fontWrapped - i + 1)))
+                state.height - padding - fontHeight * (#fontWrapped - i + 1))
         end
         -- all our homies hate printf. i think
         -- love.graphics.printf(level.subtitle, globals.hintFont, 0, state.height - padding - fontHeight, state.width - padding, "center")
