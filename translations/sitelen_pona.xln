@@ -2,24 +2,24 @@ demoworld.level1.title \: 󱤻󱥝󱥍󱥡󱦢
 demoworld.level2.title \: 󱤻󱦐󱦁󱦝󱥋󱦝󱦑
 demoworld.level3.title \: 󱤖󱥳
 demoworld.level4.title \: 󱥄󱤖󱥔󱥩󱤻󱦐XPORT󱦑
-demoworld.level5.title \: 󱤰󱥍󱤘󱤂󱥶
+demoworld.level5.title \: 󱥓󱤧󱥶󱤉󱥼
 demoworld.level6.title \: 󱥄󱥩󱤉󱥧
 demoworld.level7.title \: 󱥌󱥼󱤽󱥳
 demoworld.level8.title \: 󱥶󱥣
 demoworld.level9.title \: 󱥼󱥖
 demoworld.level10.title \: 󱥌󱥼󱤽󱥮
 //demoworld.levelC1.title \: RE: House Flipper
-demoworld.levelC2.title \: Loaded
-demoworld.levelC3.title \: Pinpoint
+//demoworld.levelC2.title \: Loaded
+//demoworld.levelC3.title \: Pinpoint
 demoworld.levelC4.title \: 󱥊󱥛󱥲
-demoworld.levelC5.title \: Embed
+//demoworld.levelC5.title \: Embed
 
 demoworld.level1.description \: 󱥞󱥷󱥩󱤡󱥄󱤙󱥀󱦐WASD󱦑󱤇󱥀󱥍󱤿󱥩
-demoworld.level2.description \: 󱥞󱥷󱤖󱤬󱥫󱥐󱤡󱥄󱤙󱥀󱦐Z󱦑󱦜󱥞󱥷󱥝󱤉󱤻󱥁󱤡󱥄󱤙󱥀󱦐R󱦑
+demoworld.level2.description \: 󱥞󱥷󱤬󱥫󱥐󱤡󱥄󱤙󱥀󱦐Z󱦑󱦜󱥞󱥷󱥝󱤉󱤻󱥁󱤡󱥄󱤙󱥀󱦐R󱦑
 demoworld.level3.description \: 󱥼󱤼󱤧󱥳󱤡󱥆󱤧󱥩󱥖󱥼󱥳
 demoworld.level4.description \: 󱥄󱤨󱤉󱤎󱥫󱤀
 demoworld.level5.description \: 󱥞󱥷󱥶󱥧󱤻󱤡󱥄󱤙󱥀󱦐ESCAPE󱦑󱤇󱥀󱦐BACKSPACE󱦑
-demoworld.level6.description \: There is a room in between.
+//demoworld.level6.description \: There is a room in between.
 
 menu.volume.sfx \: 󱤕󱤌
 menu.volume.music \: 󱤕󱤈

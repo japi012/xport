@@ -49,9 +49,9 @@ globals = {
 
     fontFile = "fonts/intrebol.ttf", -- NOT a placeholder
     levelFontFile = "fonts/Comfortaa-Regular.ttf", -- *REALLY* NOT a placeholder,
-    -- ponaFontFile = "fonts/sitelenselikiwenjuniko.ttf", -- toki pona :D
-    -- ponaFontFile = "fonts/sitelenselikiwenmonojuniko.ttf", -- toki pona :D
-    ponaFontFile = "fonts/nishiki-teki-lili.ttf", -- toki pona :D
+    ponaFontFile = "fonts/sitelenselikiwenjuniko.ttf", -- toki pona :D
+    ponaMonoFontFile = "fonts/sitelenselikiwenmonojuniko.ttf", -- toki pona :D
+    ponaTimerFontFile = "fonts/linja-pimeja-pona.otf", -- toki pona :D
 
     levels = {},
     entered_level_six = 0,
@@ -73,9 +73,10 @@ function updateGraphics()
 end
 
 function reloadFonts()
-    -- local ponaAltFile = Locale.current == 'toki_pona' and globals.ponaFontFile1 or (Locale.current == 'sitelen_pona' and globals.ponaFontFile2 or nil)
+    -- local ponaAltFile = Locale.current == 'sitelen_pona' and globals.ponaFontFile2 or nil)
     local ponaAltFile = Locale.current == 'sitelen_pona' and globals.ponaFontFile or nil
-    globals.hintFont = love.graphics.newFont(ponaAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
+    local ponaHintAltFile = Locale.current == 'sitelen_pona' and globals.ponaMonoFontFile or nil
+    globals.hintFont = love.graphics.newFont(ponaHintAltFile or globals.levelFontFile, math.min(state.width, state.height) * 0.05)
     -- globals.titleFont = love.graphics.newFont(globals.fontFile, state.cellSize * 0.5)
 
     if state.mode == Mode.Gameplay then

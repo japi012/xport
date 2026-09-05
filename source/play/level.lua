@@ -158,6 +158,7 @@ end
 function Level.reloadFonts(level, overrideFont)
     globals.levelFont = love.graphics.newFont(overrideFont or globals.levelFontFile, math.min(state.width, state.height) * 0.067)
     globals.timerFont = love.graphics.newFont(globals.fontFile, level.cellSize * 0.9)
+    globals.ponaTimerFont = love.graphics.newFont(globals.ponaTimerFontFile, level.cellSize * 0.45)
 end
 
 function Level.update(level, dt)
@@ -213,8 +214,8 @@ function Level.draw(level)
         local header = level.number .. " - "
         local footer = ""
         if Locale.current == "sitelen_pona" then
-            header = "󱤽" .. Locale.levelNumberSitelenPona(level.number) .. "󱤡 「"
-            footer = "」"
+            header = "󱤽" .. Locale.levelNumberSitelenPona(level.number) .. "󱤡 「 "
+            footer = " 」"
         end
 
         love.graphics.print(header.. level.name .. footer, globals.levelFont, padding, padding)

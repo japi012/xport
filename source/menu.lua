@@ -366,16 +366,17 @@ function Menu.draw(menu)
         end
         love.graphics.rectangle("fill", realX, realY + (1 - (scrollBar.value / ((scrollBar.scale or scrollBar.snapping or 2) - 1)))  * (realH - realW), realW, realW)
 
+        local font = globals.hintFont
         local transLabel = Locale.localizeText(scrollBar.label)
-        local fontWidth = globals.hintFont:getWidth(transLabel)
-        local fontHeight = globals.hintFont:getHeight()
+        local fontWidth = font:getWidth(transLabel)
+        local fontHeight = font:getHeight()
 
         -- love.graphics.setColor(0, 0, 0)
         -- love.graphics.print(transLabel, globals.hintFont,
             -- realX - fontWidth / 2 + realW / 2 + fontWidth / 9, realY + realH + fontHeight / 2 + fontHeight / 9)
 
         love.graphics.setColor(love.math.colorFromBytes(255, 255, 255))
-        love.graphics.print(transLabel, globals.hintFont,
+        love.graphics.print(transLabel, font,
             realX - fontWidth / 2 + realW / 2 + realW / 6, realY + realH + fontHeight / 2)
     end
     love.graphics.setColor(1, 1, 1)

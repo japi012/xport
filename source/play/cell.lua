@@ -2,6 +2,7 @@ if Cell ~= nil then return Cell end
 
 local love = require "love"
 require "source.graphics.palette"
+require "source.data.locale"
 
 local function makeType(drawLayer)
     return {
@@ -100,14 +101,23 @@ function Cell.draw(cell, level)
         end
 
     elseif cell.cell == Cell.Timer then
-        local fwidth = globals.timerFont:getWidth(cell.val)
-        -- local fheight = globals.timerFont:getHeight()
 
         love.graphics.setCanvas(level.layers[5])
         love.graphics.setLineWidth(Cell.lineWidth(cellSize, 1))
-        love.graphics.print(cell.val, globals.timerFont,
+        local timerFont, val
+        if Locale.current == "sitelen_pona" then
+            timerFont = globals.ponaTimerFont
+            val = Locale.convertNumberToSitelenPona(cell.val)
+        else
+            timerFont = globals.timerFont
+            val = cell.val
+        end
+        local fwidth = timerFont:getWidth(val)
+        local fheight = timerFont:getHeight()
+
+        love.graphics.print(val, timerFont,
             drawX - (fwidth / 2),
-            drawY - (cellSize * 0.55)
+            drawY - (fheight / 2)
             -- drawX + (cellSize - fwidth) / 2,
             -- drawY + (cellSize - fheight * 0.8) / 2
         )
