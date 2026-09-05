@@ -49,7 +49,7 @@ function Level.isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
-function Level.new(width, height, cells, palette, musicID, number, name, text)
+function Level.new(width, height, cells, palette, musicID, number, title, subtitle)
     local result = {
         width = width,
         height = height,
@@ -65,8 +65,8 @@ function Level.new(width, height, cells, palette, musicID, number, name, text)
         goalPlaying = false,
 
         number = Locale.localizeText(number),
-        name = Locale.localizeText(name),
-        text = Locale.localizeText(text)
+        title = Locale.localizeText(title),
+        subtitle = Locale.localizeText(subtitle),
     }
 
     table.sort(result.cells, function(a, b)
@@ -143,7 +143,7 @@ function Level.fromData(levelData)
     end
 
     -- sort of finished
-    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.name, levelData.subtitle)
+    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.title, levelData.subtitle)
 end
 
 function Level.onResize(level)
@@ -208,7 +208,7 @@ function Level.draw(level)
 
     love.graphics.setBlendMode("alpha") -- Default blend mode.
 
-    if level.number ~= "" and level.name ~= "" then
+    if level.number ~= "" and level.title ~= "" then
         local padding = level.cellSize / 2
         local header = level.number .. " - "
         local footer = ""
@@ -217,14 +217,20 @@ function Level.draw(level)
             footer = "」"
         end
 
-        love.graphics.print(header.. level.name .. footer, globals.levelFont, padding, padding)
+        love.graphics.print(header.. level.title .. footer, globals.levelFont, padding, padding)
     end
 
-    if level.text then
+    if level.subtitle then
         local padding = level.cellSize / 2
-        local fontWidth = globals.hintFont:getWidth(level.text)
+        local _, fontWrapped = globals.hintFont:getWrap(level.subtitle, state.width - padding)
         local fontHeight = globals.hintFont:getHeight()
-        love.graphics.print(level.text, globals.hintFont, state.width / 2 - fontWidth / 2, state.height - padding - fontHeight)
+        for i, text in ipairs(fontWrapped) do
+            local fontWidth = globals.hintFont:getWidth(text)
+            love.graphics.print(text, globals.hintFont, (state.width - fontWidth) / 2,
+                state.height - padding - (fontHeight * (#fontWrapped - i + 1)))
+        end
+        -- all our homies hate printf. i think
+        -- love.graphics.printf(level.subtitle, globals.hintFont, 0, state.height - padding - fontHeight, state.width - padding, "center")
     end
 end
 

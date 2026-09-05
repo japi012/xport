@@ -36,7 +36,7 @@ function Levels.encodeLevelFromFile(id, content)
 
     local result = {
         number = string.sub(title, 1, start - 1),
-        name = string.sub(title, finish + 1),
+        title = string.sub(title, finish + 1),
         subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
         -- title = string.sub(rawData[1], 0, thingy or #rawData[1]),
         -- subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
