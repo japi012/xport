@@ -85,6 +85,8 @@ function dump(o, depth)
         return (didsomething and string.sub(s, 1, -3) or s) .. ' }'
     elseif type(o) == 'string' then
         return '"' .. o .. '"'
+    elseif o == nil then
+        return 'nil'
     else
         return tostring(o)
     end
