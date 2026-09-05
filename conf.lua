@@ -5,8 +5,8 @@ function love.conf(t)
     t.title = "XPORT"
     t.console = true
 
-    t.window.width = 1024
-    t.window.height = 768
+    t.window.width = 1280
+    t.window.height = 720
     t.window.resizable = true
     t.window.minwidth = 400
     t.window.minheight = 300
