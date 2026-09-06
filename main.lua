@@ -102,14 +102,14 @@ function love.load()
     Levels.loadData()
     -- state.level = Level.fromData(globals.levels[state.levelIndex])
 
-    local json = love.filesystem.read('jsontest.jsonc')
-    local jsontest = JSONParser.parse(json)
-    debugPrint(" [JSONPARSER] Test:", jsontest, '\n' .. json)
+    -- local json = love.filesystem.read('jsontest.jsonc')
+    -- local jsontest = JSONParser.parse(json)
+    -- debugPrint(" [JSONPARSER] Test:", jsontest, '\n' .. json)
 
-    local jsonencode = JSONEncoder.encode(jsontest, '  ')
-    debugPrint("[JSONEncoder] Test:", jsontest, '\n' .. jsonencode)
+    -- local jsonencode = JSONEncoder.encode(jsontest, '  ')
+    -- debugPrint("[JSONEncoder] Test:", jsontest, '\n' .. jsonencode)
 
-    love.filesystem.write('jsontest2.jsonc', jsonencode)
+    -- love.filesystem.write('jsontest2.jsonc', jsonencode)
 
     local menuLevelSize = 0.1
     state.menu = Menu.new(1, 1, {

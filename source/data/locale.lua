@@ -1,6 +1,7 @@
 if Locale ~= nil then return Locale end
 
 local love = require "love"
+-- require "source.data.json"
 Locale = {
     fallback = "en_US",
     current = "en_US",
@@ -27,6 +28,8 @@ function Locale.loadMappings()
             end
         end
 
+        -- local jsonencode = JSONEncoder.encode(result, '  ')
+        -- love.filesystem.write('' .. lang .. '.xjson', jsonencode)
         Locale.mappings[lang] = result
     end
 end
