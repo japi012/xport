@@ -1,5 +1,17 @@
 local love = require "love"
 
+-- CLASS-RELATED FUNCTIONS
+
+-- Binds a prototype table to another table, acting as a fallback for indexing
+function bindPrototype(object, prototype)
+    local mt = {}
+    mt.__index = function(table, key)
+        return prototype[key]
+    end
+
+    setmetatable(object, mt)
+end
+
 -- BASIC UTIL FUNCTIONS
 
 function elem(t, item)
@@ -20,6 +32,14 @@ function append(t1, t2)
     for _, i in ipairs(t2) do
         table.insert(t1, i)
     end
+end
+
+function invert(t1)
+    local t2 = {}
+    for k, v in pairs(t1) do
+        t1[v] = k
+    end
+    return t2
 end
 
 function lerp(from, to, i)

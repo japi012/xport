@@ -1,6 +1,7 @@
 if Levels ~= nil then return Levels end
 
 local love = require "love"
+-- require "source.data.json"
 require "source.data.locale"
 
 Levels = {
@@ -69,6 +70,9 @@ function Levels.encodeLevelFromFile(id, content)
     else
         result.musicID = 'undefined'
     end
+
+    -- local jsonencode = JSONEncoder.encode(result, '  ')
+    -- love.filesystem.write(id .. '.xjson', jsonencode)
 
     -- Insert save retrieval logic here. Someday.
     result.isCleared = false

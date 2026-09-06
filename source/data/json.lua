@@ -1,6 +1,7 @@
+if JSONParser ~= nil then return JSONParser end
 local utf8 = require "utf8"
 
-JSONParser = {}
+JSONParser, JSONEncoder = {}, {}
 
 local ESCAPES = {
     ["n"] = "\n",
@@ -276,3 +277,86 @@ function JSONParser.parseObject(parser)
     end
     return true, dict
 end
+
+function JSONEncoder.new(tab, sort --[[, objectByDefault]])
+    if tab == nil then tab = '\t' end
+    local comma, newline, space = ',\n', '\n', ' '
+    if not tab then
+        comma = ','
+        space = ''
+    end
+
+    local keySort = {}
+    for i, v in ipairs(sort or {}) do
+        keySort[v] = i
+    end
+
+    return {
+        tab = tab,
+        comma = comma,
+        space = space,
+        newline = newline,
+        keySort = keySort,
+        curTab = 1
+    }
+end
+
+function JSONEncoder.encode(obj, tab, sort)
+    local encoder = JSONEncoder.new(tab, sort)
+    local json = JSONEncoder.encodeValues(encoder, obj)
+    return json
+end
+
+-- borrowed from https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console
+function JSONEncoder.encodeValues(encoder, obj)
+    if type(obj) == 'table' then
+        local stringified = {}
+
+        local tab = string.rep(encoder.tab, encoder.curTab)
+        local tabLower = string.rep(encoder.tab, encoder.curTab - 1)
+        encoder.curTab = encoder.curTab + 1
+
+        local isObj = false
+        local elements = 0
+        for key, value in pairs(obj) do
+            if type(key) == "string" then
+                isObj = true
+            end
+
+            elements = elements + 1 -- doesn't need to be set in array case but oh well
+            stringified[key] = JSONEncoder.encodeValues(encoder, value)
+            debugPrint('[JSON] encoding', key .. ':', stringified[key])
+        end
+
+        encoder.curTab = encoder.curTab - 1
+        if isObj then
+            local s = '{' .. encoder.newline .. tab
+
+            local i = 0;
+            for key, value in pairs(stringified) do
+                i = i + 1
+                s = s .. JSONEncoder.encodeValues(encoder, key) .. ":" .. encoder.space .. value
+
+                if i ~= elements then
+                    s = s .. encoder.comma .. tab
+                end
+            end
+
+            return s .. encoder.newline .. tabLower .. '}'
+        else
+            return '[' .. encoder.newline .. tab .. table.concat(stringified, encoder.comma .. tab) .. encoder.newline .. tabLower .. ']'
+        end
+    elseif type(obj) == 'string' then
+        local s = obj
+        for raw, real in pairs(ESCAPES) do
+            s = string.gsub(s, real, "\\" .. raw)
+        end
+        return '"' .. s .. '"'
+    elseif obj == nil then
+        return 'null'
+    else
+        return tostring(obj)
+    end
+end
+
+return JSONParser, JSONEncoder

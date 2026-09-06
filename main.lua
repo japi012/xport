@@ -7,7 +7,7 @@ require "source.utils"
 require "source.graphics.anim"
 require "source.play.level"
 
-require "source.menu"
+require "source.scenes.menu"
 require "source.editor.interface"
 require "source.graphics.palette"
 
@@ -101,6 +101,15 @@ function love.load()
     Locale.loadMappings()
     Levels.loadData()
     -- state.level = Level.fromData(globals.levels[state.levelIndex])
+
+    local json = love.filesystem.read('jsontest.jsonc')
+    local jsontest = JSONParser.parse(json)
+    debugPrint(" [JSONPARSER] Test:", jsontest, '\n' .. json)
+
+    local jsonencode = JSONEncoder.encode(jsontest, '  ')
+    debugPrint("[JSONEncoder] Test:", jsontest, '\n' .. jsonencode)
+
+    love.filesystem.write('jsontest2.jsonc', jsonencode)
 
     local menuLevelSize = 0.1
     state.menu = Menu.new(1, 1, {
