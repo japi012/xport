@@ -32,6 +32,188 @@ function Menu.new(width, height, levelRects, scrollBars)
     return menu
 end
 
+function Menu.create()
+    local menuLevelSize = 0.1
+    return Menu.new(1, 1, {
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 1,
+        },
+        {
+            x = 0.5,
+            y = menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 2,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 3,
+        },
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 4,
+        },
+        {
+            x = 0.5,
+            y = menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 5,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 6,
+        },
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = 0.5 - menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 7,
+        },
+        {
+            x = 0.5,
+            y = 0.5 - menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 8,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = 0.5 - menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 9,
+        },
+        {
+            x = 0.5,
+            y = 0.5 + menuLevelSize * 0.7,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 10,
+        },
+        {
+            x = 0.5 - menuLevelSize * 0.75,
+            y = 1 - menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 11,
+        },
+        {
+            x = 0.5 + menuLevelSize * 0.75,
+            y = 1 - menuLevelSize * 2.4,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 12,
+        },
+        {
+            x = 0.5 - menuLevelSize * 1.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 13,
+        },
+        {
+            x = 0.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 14,
+        },
+        {
+            x = 0.5 + menuLevelSize * 1.5,
+            y = 1 - menuLevelSize,
+            w = menuLevelSize,
+            h = menuLevelSize,
+            levelArea = 'demoworld',
+            levelIndex = 15,
+        },
+        -- {
+        --     x = 0.5 + menuLevelSize * 1.5,
+        --     y = 0,
+        --     w = menuLevelSize,
+        --     h = menuLevelSize,
+        --     levelArea = 'demoworld',
+        --     levelIndex = 16,
+        -- },
+    },{
+        {
+            x = 1/7 - Menu.scrollBarWidth / 2,
+            y = 3/5,
+            h = 0.3,
+            value = state.sfxVolume,
+            connect = function(_, value)
+                if (state.sfxVolume ~= value) then
+                    state.sfxVolume = value
+                    Sounds.move:play()
+                end
+            end,
+            label = "menu.volume.sfx"
+        },
+        {
+            x = 6/7 - Menu.scrollBarWidth / 2,
+            y = 3/5,
+            h = 0.3,
+            value = state.musicVolume,
+            connect = function(_, value)
+                if (state.musicVolume ~= value) then
+                    state.musicVolume = value
+                    Sounds.move:play(true)
+                end
+            end,
+            label = "menu.volume.music"
+        },
+        {
+            x = 1/7 - Menu.scrollBarWidth / 2,
+            y = 1/10,
+            h = 0.3,
+            snapping = #Locale.languages,
+            value = 0,
+            connect = function(scrollbar, value)
+                local newLang = Locale.languages[value + 1]
+                Locale.changeLanguage(newLang)
+
+                scrollbar.label = "menu.language." .. newLang
+                return value
+            end,
+            -- release = function(scrollbar, value)
+            --     local newLang = Locale.languages[value + 1]
+            --     Locale.changeLanguage(newLang)
+
+            --     scrollbar.label = "menu.language.label\n(menu.language." .. Locale.current .. ")"
+            -- end,
+            label = "menu.language.en_US"
+        }
+    })
+end
+
 function Menu.reloadFonts(menu, overrideFont)
     globals.menuFont = love.graphics.newFont(overrideFont or globals.fontFile, math.min(state.width, state.height) * 0.06)
 end
