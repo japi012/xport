@@ -305,7 +305,7 @@ function Menu.draw(menu)
         love.graphics.rectangle("fill", realX - realW / 2, realY - realH / 2, realW, realH)
 
         love.graphics.setLineWidth(5)
-        if Levels.areas[rect.levelArea].levels[rect.levelIndex].isCleared then
+        if Levels.clears[rect.levelArea .. '/' .. Levels.areas[rect.levelArea].levels[rect.levelIndex].id] then
             love.graphics.setColor(love.math.colorFromBytes(81, 14, 78))
         else
             love.graphics.setColor(love.math.colorFromBytes(121, 26, 94))

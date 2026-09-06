@@ -2,12 +2,15 @@ if Levels ~= nil then return Levels end
 
 local love = require "love"
 -- require "source.data.json"
+require "source.data.saves"
 require "source.data.locale"
 
 Levels = {
     order = {}, -- Levels flattened in order (globals.levels)
     plain = {}, -- Levels flattened e.g. 'demoworld/1-dejavu'
-    areas = {}  -- Levels organized by areas e.g. 'demoworld.levels['1-dejavu']'
+    areas = {}, -- Levels organized by areas e.g. 'demoworld.levels['1-dejavu']'
+
+    clears = {}
 }
 
 function Levels.getDimensionFromGrid(grid)
@@ -15,13 +18,13 @@ function Levels.getDimensionFromGrid(grid)
     return #(yesyes[1]), #yesyes
 end
 
-function Levels.encodeLevelFromFile(id, content)
+function Levels.encodeLevelFromFile(area, id, content)
     content = string.gsub(content, "\r\n", "\n")
     local rawData = string.split(content, '\n\n')
     local thingy = string.find(rawData[1], '\n') -- well-named variable
 
     if #rawData < 2 then
-        debugPrint("[LEVELS] Couldn't encode", id .. ", so we ignore it")
+        debugPrint("[LEVELS] Couldn't encode", area .. "/" .. id .. ", so we ignore it")
         return nil
     end
 
@@ -36,11 +39,15 @@ function Levels.encodeLevelFromFile(id, content)
     end
 
     local result = {
+        id = id,
+        area = area,
+
         number = string.sub(title, 1, start - 1),
         title = string.sub(title, finish + 1),
         subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
         -- title = string.sub(rawData[1], 0, thingy or #rawData[1]),
         -- subtitle = thingy and string.sub(rawData[1], thingy + 1) or '',
+
         grid = {
             rawData[2]
         }
@@ -75,7 +82,6 @@ function Levels.encodeLevelFromFile(id, content)
     -- love.filesystem.write(id .. '.xjson', jsonencode)
 
     -- Insert save retrieval logic here. Someday.
-    result.isCleared = false
 
     -- debugPrint("[LEVELS] Decoding, with resultant: ", result)
     return result
@@ -84,6 +90,8 @@ end
 function Levels.loadData()
     globals.levels = {}
     Levels.order = globals.levels
+    local levelClears = Save.readFile('levelClears.xjson', {}) -- the or isnt necessary but zed doesnt realize that
+    debugPrint(levelClears)
 
     for k, _ in pairs(Levels.order) do Levels.order[k] = nil end
     for k, _ in pairs(Levels.plain) do Levels.plain[k] = nil end
@@ -94,9 +102,10 @@ function Levels.loadData()
 
     for _, areakey in ipairs(areaFolders) do
         local areadir = "areas/" .. areakey
-        debugPrint('[LEVELS] Parsing lobby "' .. areakey .. '/lobby"')
+        -- debugPrint('[LEVELS] Parsing lobby "' .. areakey .. '/lobby",', levelClears[areakey .. '/lobby'])
+        Levels.clears[areakey .. '/lobby'] = levelClears[areakey .. '/lobby'] or false
         Levels.areas[areakey] = {
-            lobby = Levels.encodeLevelFromFile('lobby', love.filesystem.read(areadir .. '/lobby.xlvl')),
+            lobby = Levels.encodeLevelFromFile(areakey, 'lobby', love.filesystem.read(areadir .. '/lobby.xlvl')),
             levels = {}
         }
 
@@ -123,8 +132,10 @@ function Levels.loadData()
             local levelID = string.gsub(levelfile, ".xlvl", "")
             local fileContents = love.filesystem.read(areadir .. '/levels/' .. levelfile)
 
-            debugPrint('[LEVELS] Parsing level "'.. areakey .. '/' .. levelID .. '"')
-            local resultLevel = Levels.encodeLevelFromFile(levelID, fileContents)
+            -- debugPrint('[LEVELS] Parsing level "'.. areakey .. '/' .. levelID .. '",', levelClears[areakey .. '/' .. levelID])
+            local resultLevel = Levels.encodeLevelFromFile(areakey, levelID, fileContents)
+
+            Levels.clears[areakey .. '/' .. levelID] = levelClears[areakey .. '/' .. levelID] or false
 
             Levels.order[#Levels.order + 1] = resultLevel
             Levels.plain[areakey .. '/' .. levelID] = resultLevel

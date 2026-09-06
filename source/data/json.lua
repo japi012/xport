@@ -104,6 +104,10 @@ function JSONParser.expectCharacter(parser, expect)
 end
 
 function JSONParser.parse(source)
+    if type(source) ~= "string" then
+        return '[did not pass a string to the parser]', false
+    end
+
     local parser = JSONParser.new(source)
     local success, value = JSONParser.parseValue(parser)
     if success == false then
@@ -325,7 +329,7 @@ function JSONEncoder.encodeValues(encoder, obj)
 
             elements = elements + 1 -- doesn't need to be set in array case but oh well
             stringified[key] = JSONEncoder.encodeValues(encoder, value)
-            debugPrint('[JSON] encoding', key .. ':', stringified[key])
+            -- debugPrint('[JSON] encoding', key .. ':', stringified[key])
         end
 
         encoder.curTab = encoder.curTab - 1

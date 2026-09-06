@@ -4,6 +4,8 @@ function love.conf(t)
     t.version = "11.5"
     t.title = "XPORT"
     t.console = true
+    t.identity = "XPORT"
+    t.appendidentity = true
 
     t.window.width = 1280
     t.window.height = 720

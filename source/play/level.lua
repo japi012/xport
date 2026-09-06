@@ -49,8 +49,11 @@ function Level.isInBounds(level, x, y)
     return x >= 0 and y >= 0 and x < level.width and y < level.height
 end
 
-function Level.new(width, height, cells, palette, musicID, number, title, subtitle)
+function Level.new(id, area, width, height, cells, palette, musicID, number, title, subtitle)
     local result = {
+        id = id,
+        area = area,
+
         width = width,
         height = height,
 
@@ -143,7 +146,7 @@ function Level.fromData(levelData)
     end
 
     -- sort of finished
-    return Level.new(x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.title, levelData.subtitle)
+    return Level.new(levelData.id, levelData.area, x, y, cells, levelData.palette, levelData.musicID, levelData.number, levelData.title, levelData.subtitle)
 end
 
 function Level.onResize(level)
@@ -586,7 +589,9 @@ function Level.turn(level, key)
 
     if isWinning(level) then
         Sounds.levelComplete:play()
-        Levels.areas[state.levelArea].levels[state.levelIndex].isCleared = true
+        -- Levels.areas[state.levelArea].levels[state.levelIndex].isCleared = true
+        Levels.clears[level.area .. '/' .. level.id] = true
+        Save.writeFile(Levels.clears, 'levelClears.xjson')
         -- state.levelClears[state.levelIndex] = true
 
         -- print("-----")
